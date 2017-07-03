@@ -5,6 +5,7 @@
   "license": "ISC",
   "scripts": {},
   "dependencies": {
+    "async": "^2.5.0",
     "bignumber.js": "^4.0.2",
     "chart.js": "^2.6.0",
     "jquery": "^3.2.1"
