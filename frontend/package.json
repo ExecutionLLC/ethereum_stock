@@ -1,0 +1,9 @@
+{
+  "name": "etherium stock",
+  "version": "1.0.0",
+  "scripts": {},
+  "dependencies": {
+    "bignumber.js": "^4.0.2",
+    "chart.js": "^2.6.0"
+  }
+}
