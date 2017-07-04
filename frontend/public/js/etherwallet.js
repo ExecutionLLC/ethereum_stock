@@ -33,8 +33,15 @@ const Page = {
 
 const Ether = {
     getBalance(contract, walletId, callback) {
-        const tokens = contract.clientTokens(walletId).c[0];
-        const tokenPrice = contract.tokenPrice().c[0];
+        let tokens;
+        let tokenPrice;
+        try {
+            tokens = contract.clientTokens(walletId).c[0];
+            tokenPrice = contract.tokenPrice().c[0];
+        } catch(e) {
+            callback(e);
+            return;
+        }
         getBtcFromEtH((error, result) => {
             if (error) {
                 callback(error);
@@ -92,13 +99,14 @@ function onload() {
 
     $('#balance-check-button').click(() => {
         Page.showBalanceWait(true);
+        Page.showError();
         const walletId = $('#balance-id').val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         Ether.getBalance(contract, walletId, (err, balance) => {
             if (err) {
-                Page.showError(error);
+                Page.showError(err);
             } else {
                 Page.showBalance(balance.tokens, balance.eth, balance.btc);
             }
