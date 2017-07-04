@@ -96,8 +96,12 @@ function onload() {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
-        Ether.getBalance(contract, walletId, (balance) => {
-            Page.showBalance(balance.tokens, balance.eth, balance.btc);
+        Ether.getBalance(contract, walletId, (err, balance) => {
+            if (err) {
+                Page.showError(error);
+            } else {
+                Page.showBalance(balance.tokens, balance.eth, balance.btc);
+            }
         });
     });
 
