@@ -32,14 +32,24 @@ const Page = {
 };
 
 const Ether = {
-    getBalance(contract, walletId) {
+    getBalance(contract, walletId, callback) {
         const tokens = contract.clientTokens(walletId).c[0];
         const tokenPrice = contract.tokenPrice().c[0];
-        return {
-            tokens,
-            tokenPrice,
-            eth: tokens * tokenPrice
-        };
+        getBtcFromEtH((error, result) => {
+            if (error) {
+                callback(error);
+            } else {
+                const eth = tokens * tokenPrice;
+                const btc = eth * result.BTC;
+                callback(null, {
+                    tokens,
+                    tokenPrice,
+                    eth,
+                    btc
+                });
+            }
+        });
+
     },
     getData(web3, abiArray, address, callback) {
         const MyContract = web3.eth.contract(abiArray);
@@ -65,6 +75,16 @@ const Ether = {
     }
 };
 
+function getBtcFromEtH(callback) {
+    $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
+        .done(function( data ) {
+            callback(null, data);
+        })
+        .fail(function(error) {
+            callback(error);
+        });
+}
+
 function onload() {
     Page.showError();
     Page.showBalance();
@@ -76,8 +96,9 @@ function onload() {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
-        const balance = Ether.getBalance(contract, walletId);
-        Page.showBalance(balance.tokens, balance.eth);
+        Ether.getBalance(contract, walletId, (balance) => {
+            Page.showBalance(balance.tokens, balance.eth, balance.btc);
+        });
     });
 
     Ether.getData(
