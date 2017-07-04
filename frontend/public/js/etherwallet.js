@@ -80,10 +80,8 @@ const Ether = {
             }
         });
     },
-    getPriceData(client, web3, abiArray, address, callback){
-        const MyContract = web3.eth.contract(abiArray);
-        const myContractInstance = MyContract.at(address);
-        const myEvent = myContractInstance.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
+    getPriceData(client, contract, callback){
+        const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
                 callback(error);
