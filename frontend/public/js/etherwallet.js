@@ -92,6 +92,14 @@ function getBtcFromEtH(callback) {
         });
 }
 
+function readFileContent(file, callback) {
+    const fr = new FileReader();
+    fr.onload = function () {
+        callback(fr.result);
+    };
+    fr.readAsText(file);
+}
+
 function onload() {
     Page.showError();
     Page.showBalance();
@@ -110,6 +118,26 @@ function onload() {
             } else {
                 Page.showBalance(balance.tokens, balance.eth, balance.btc);
             }
+        });
+    });
+
+    $('#add-wallet-private-key-button').click(() => {
+        const Wallet = ethers.Wallet;
+        const privateKey = $('#add-wallet-private-key').val();
+        const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
+        const wallet = new Wallet(privateKey0x);
+        console.log("Address: " + wallet.address);
+    });
+
+    $('#add-wallet-file-button').click(() => {
+        const Wallet = ethers.Wallet;
+        const file = $('#add-wallet-file')[0].files[0];
+        readFileContent(file, (content) => {
+            const password = $('#add-wallet-file-password').val();
+            Wallet.fromEncryptedWallet(content, password)
+                .then((wallet) => {
+                    console.log(wallet.address);
+                });
         });
     });
 
