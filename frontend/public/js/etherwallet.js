@@ -9,6 +9,8 @@ const CONTRACT = {
     ABI: [{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_isAcquired","type":"bool"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquiredOrReturned","type":"event"}]
 };
 
+let currentWallet = null;
+
 const Page = {
     showBalanceWait(show) {
         $('#balance-wait').toggle(show);
@@ -28,6 +30,13 @@ const Page = {
         $error = $('#balance-error');
         $error.toggle(error != null);
         $error.text(error);
+    },
+    showCurrentWallet(wallet) {
+        $('#wallet-ops').toggle(!!wallet);
+        if (!wallet) {
+            return;
+        }
+        $('#wallet-address').text(wallet.address);
     }
 };
 
@@ -104,6 +113,8 @@ function onload() {
     Page.showError();
     Page.showBalance();
     Page.showBalanceWait(false);
+    currentWallet = null;
+    Page.showCurrentWallet();
 
     $('#balance-check-button').click(() => {
         Page.showBalanceWait(true);
@@ -122,23 +133,36 @@ function onload() {
     });
 
     $('#add-wallet-private-key-button').click(() => {
+        currentWallet = null;
+        Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
         const privateKey = $('#add-wallet-private-key').val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const wallet = new Wallet(privateKey0x);
-        console.log("Address: " + wallet.address);
+        currentWallet = wallet;
+        Page.showCurrentWallet(wallet);
     });
 
     $('#add-wallet-file-button').click(() => {
+        currentWallet = null;
+        Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
         const file = $('#add-wallet-file')[0].files[0];
         readFileContent(file, (content) => {
             const password = $('#add-wallet-file-password').val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    console.log(wallet.address);
+                    currentWallet = wallet;
+                    Page.showCurrentWallet(wallet);
                 });
         });
+    });
+
+    $('#buy-tokens-button').click(() => {
+        const count = +$('#buy-tokens-count').val();
+        const MyContract = web3.eth.contract(CONTRACT.ABI);
+        const myContractInstance = MyContract.at(CONTRACT.ID);
+        myContractInstance.buy({address: currentWallet.address, value: count});
     });
 
     Ether.getData(
