@@ -41,14 +41,25 @@ function showBalance(tokens, eth, btc) {
     }
 }
 
-function getBalance(contract, walletId) {
+function getBalance(contract, walletId, callback) {
     const tokens = contract.clientTokens(walletId/*'0xA226Ca6Cd9190B39FEe7324c7E26f1B7e13476aA'*/).c[0];
     const tokenPrice = contract.tokenPrice().c[0];
-    return {
-        tokens,
-        tokenPrice,
-        eth: tokens * tokenPrice
-    };
+    getBtcFromEtH((error, result) => {
+        if (error) {
+            callback(error);
+        }else {
+            console.log('Btceth', result);
+            var eth = tokens * tokenPrice;
+            var btc = eth * result.BTC;
+            callback(null,{
+                tokens,
+                tokenPrice,
+                eth,
+                btc
+            });
+        }
+    });
+
 }
 
 function getData(url, abiArray, address, callback) {
@@ -76,6 +87,17 @@ function getData(url, abiArray, address, callback) {
     });
 }
 
+function getBtcFromEtH(callback) {
+    $.get( "https://min-api.cryptocompare.com/data/price", { fsym: "ETH", tsyms: "BTC" } )
+        .done(function( data ) {
+            console.log('data', data);
+            callback(null, data);
+        })
+        .fail(function(error) {
+            callback(error);
+        });
+}
+
 function onload() {
     showBalance();
     showBalanceWait(false);
@@ -89,8 +111,9 @@ function onload() {
                 const contract = web3.eth
                     .contract([{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquired","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenReturned","type":"event"}])
                     .at('0x231fe53762953bedf6ff9dfe0a838be2b85e5c72');
-                const balance = getBalance(contract, walletId);
-                showBalance(balance.tokens, balance.eth);
+                getBalance(contract, walletId, (error, balance) => {
+                    showBalance(balance.tokens, balance.eth, balance.btc);
+                });
             });
         }
     }
