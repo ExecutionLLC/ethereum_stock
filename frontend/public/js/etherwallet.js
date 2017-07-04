@@ -85,21 +85,17 @@ const Ether = {
 function onload() {
     Page.showBalance();
     Page.showBalanceWait(false);
-    const balanceCheckInput = document.getElementById('balance-id');
-    if (balanceCheckInput) {
-        const balanceCheckButton = document.getElementById('balance-check-button');
-        if (balanceCheckButton) {
-            balanceCheckButton.addEventListener('click', () => {
-                Page.showBalanceWait(true);
-                const walletId = balanceCheckInput.value;
-                const contract = web3.eth
-                    .contract(CONTRACT.ABI)
-                    .at(CONTRACT.ID);
-                const balance = Ether.getBalance(contract, walletId);
-                Page.showBalance(balance.tokens, balance.eth);
-            });
-        }
-    }
+
+    $('#balance-check-button').click(() => {
+        Page.showBalanceWait(true);
+        const walletId = $('#balance-id').val();
+        const contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const balance = Ether.getBalance(contract, walletId);
+        Page.showBalance(balance.tokens, balance.eth);
+    });
+
     Ether.getData(
         web3,
         CONTRACT.ABI,
@@ -149,4 +145,4 @@ function onload() {
     );
 }
 
-window.addEventListener('DOMContentLoaded', onload);
+$(onload);
