@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
     <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
     <script type="text/javascript" src="../dist/web3-light.js"></script>
+    <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
     <script type="text/javascript" src="js/etherwallet.js"></script>
 </head>
 <body>
@@ -84,6 +85,41 @@
                     </div>
 
                     <hr>
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <h1>AE Wallet add</h1>
+                            <div class="row mb-5">
+                                <div class="col-md-12 mt-3">
+                                    By private key:
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input id="add-wallet-private-key" type="text" class="form-control" style="height: 55px;"/>
+                                        <span class="input-group-btn">
+                                            <div id="add-wallet-private-key-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-5">
+                                <div class="col-md-12 mt-3">
+                                    By file:
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input id="add-wallet-file" type="file" class="form-control" style="height: 55px;"/>
+                                        <input id="add-wallet-file-password" type="text" class="form-control" style="height: 55px;"/>
+                                        <span class="input-group-btn">
+                                            <div id="add-wallet-file-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                 </div>
 
