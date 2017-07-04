@@ -14,10 +14,15 @@ const Page = {
         $('#balance-wait').toggle(show);
     },
     showBalance(tokens, eth, btc) {
-        $('#balance-container').toggle(!!tokens);
-        $('#balance-tokens').text(tokens);
-        $('#balance-eth').text(eth);
-        $('#balance-btc').text(btc);
+
+        function strNull(s) {
+            return s == null ? '...' : s;
+        }
+
+        $('#balance-container').toggle(tokens != null);
+        $('#balance-tokens').text(strNull(tokens));
+        $('#balance-eth').text(strNull(eth));
+        $('#balance-btc').text(strNull(btc));
     }
 };
 
