@@ -9,42 +9,15 @@ const CONTRACT = {
     ABI: [{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquired","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenReturned","type":"event"}]
 };
 
-const DOM = {
-    clearElement(el) {
-        while (el.firstChild) {
-            el.removeChild(el.firstChild);
-        }
-    },
-    setElementText(el, text) {
-        DOM.clearElement(el);
-        const textNode = document.createTextNode(text);
-        el.appendChild(textNode);
-    }
-};
-
 const Page = {
     showBalanceWait(show) {
-        const balanceWait = document.getElementById('balance-wait');
-        if (balanceWait) {
-            balanceWait.style.display = show ? 'block' : 'none';
-        }
+        $('#balance-wait').toggle(show);
     },
     showBalance(tokens, eth, btc) {
-
-        function showBalanceAt(elementId, balance) {
-            const balanceEl = document.getElementById(elementId);
-            if (balanceEl) {
-                DOM.setElementText(balanceEl, '' + balance)
-            }
-        }
-
-        const balanceContainer = document.getElementById('balance-container');
-        if (balanceContainer) {
-            balanceContainer.style.display = tokens ? 'block' : 'none';
-            showBalanceAt('balance-tokens', tokens);
-            showBalanceAt('balance-eth', eth);
-            showBalanceAt('balance-btc', btc);
-        }
+        $('#balance-container').toggle(!!tokens);
+        $('#balance-tokens').text(tokens);
+        $('#balance-eth').text(eth);
+        $('#balance-btc').text(btc);
     }
 };
 
