@@ -140,7 +140,36 @@ function onload() {
             if (err) {
                 Page.showError(err);
             } else {
-                Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                Ether.getPriceData(walletId, contract, (err, res) => {
+                    Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                    const $tmpl = $('#tokens-history-template');
+
+                    function addElementIdKey($el, key) {
+                        const newId = $el[0].id + '-' + key;
+                        $el.prop('id', newId);
+                    }
+
+                    function setElementContent($el, key, text) {
+                        addElementIdKey($el, key);
+                        $el.text(text);
+                    }
+
+                    function setElementIdContent($parent, elId, key, text) {
+                        const $el = $parent.find(elId);
+                        setElementContent($el, key, text);
+                    }
+
+                    const $rows = res.map((item, index) => {
+                        const $el = $tmpl.clone().show();
+                        addElementIdKey($el, index);
+                        setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
+                        setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
+                        setElementIdContent($el, '#tokens-history-op-count', index, item.count);
+                        setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
+                        return $el;
+                    });
+                    $('#tokens-history-container').empty().append($rows);
+                });
             }
         });
     });
