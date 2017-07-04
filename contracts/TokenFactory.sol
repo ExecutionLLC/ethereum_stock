@@ -33,8 +33,12 @@ contract TokenFactory is Owner {
 
     event priceChanged(uint _newPrice);
     event availableTokensChanged(uint _availableTokens);
-    event tokenAcquired(address indexed _client, uint _n, uint _currentTokenPrice);
-    event tokenReturned(address indexed _client, uint _n, uint _currentTokenPrice);
+    event tokenAcquiredOrReturned(
+        address indexed _client,
+        bool _isAcquired,
+        uint _n, 
+        uint _currentTokenPrice
+    );
     
     function TokenFactory(uint _n, uint _price) Owner(msg.sender) { 
         setPrice(_price);
@@ -82,11 +86,11 @@ contract TokenFactory is Owner {
         
         clientTokens[msg.sender] += n;
         clientReward[msg.sender] += msg.value%tokenPrice;
-        tokenAcquired(msg.sender, n, tokenPrice);
+        tokenAcquiredOrReturned(msg.sender, true, n, tokenPrice);
     }
     
     function returnToken(uint _n) {
-        require(clientTokens[msg.sender] > 0);
+        require(_n > 0);
         require(clientTokens[msg.sender] >= _n);
 
         availableTokens += _n;
@@ -94,7 +98,7 @@ contract TokenFactory is Owner {
         
         clientTokens[msg.sender] -= _n;
         clientReward[msg.sender] += _n*tokenPrice;
-        tokenReturned(msg.sender, _n, tokenPrice);
+        tokenAcquiredOrReturned(msg.sender, false, _n, tokenPrice);
     }
     
     function returnAllTokens() {
