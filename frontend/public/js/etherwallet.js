@@ -23,6 +23,11 @@ const Page = {
         $('#balance-tokens').text(strNull(tokens));
         $('#balance-eth').text(strNull(eth));
         $('#balance-btc').text(strNull(btc));
+    },
+    showError(error) {
+        $error = $('#balance-error');
+        $error.toggle(error != null);
+        $error.text(error);
     }
 };
 
@@ -61,6 +66,7 @@ const Ether = {
 };
 
 function onload() {
+    Page.showError();
     Page.showBalance();
     Page.showBalanceWait(false);
 
