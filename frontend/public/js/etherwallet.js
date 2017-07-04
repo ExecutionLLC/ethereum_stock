@@ -92,6 +92,17 @@ function getBtcFromEtH(callback) {
         });
 }
 
+function getBtcFromEthHistory(ts, callback) {
+    $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
+        .done(function( data ) {
+            callback(null, data);
+        })
+        .fail(function(error) {
+            callback(error);
+        });
+}
+
+
 function onload() {
     Page.showError();
     Page.showBalance();
