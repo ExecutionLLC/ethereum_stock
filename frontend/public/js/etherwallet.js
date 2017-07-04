@@ -56,9 +56,7 @@ function getBalance(contract, walletId) {
     };
 }
 
-function getData(url, abiArray, address, callback) {
-    const web3 = new Web3();
-    web3.setProvider(new web3.providers.HttpProvider(url));
+function getData(web3, abiArray, address, callback) {
     const MyContract = web3.eth.contract(abiArray);
     const myContractInstance = MyContract.at(address);
     const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest', 'topics': ['timestamp']});
@@ -100,7 +98,7 @@ function onload() {
         }
     }
     getData(
-        'http://192.168.1.101:8111/',
+        web3,
         CONTRACT.ABI,
         CONTRACT.ID,
         (err, res) => {
