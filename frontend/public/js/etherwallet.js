@@ -121,6 +121,13 @@ const API = {
             .fail(function(error) {
                 callback(error);
             });
+    },
+    getBtcFromEthHistoryArray(timestamps, callback) {
+        async.map(
+            timestamps,
+            (ts, callback) => API.getBtcFromEthHistory(ts, callback),
+            callback
+        );
     }
 };
 
@@ -200,24 +207,40 @@ function onload() {
                 x: log.timestamp + log.transactionIndex / timeParts[log.timestamp],
                 y: log.price
             }));
-            console.log(data);
-            const ctx = document.getElementById("myChart");
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Scatter Dataset',
-                        lineTension: 0,
-                        data: data
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            type: 'time'
-                        }]
+
+            const tss = data.map(d => d.x);
+            API.getBtcFromEthHistoryArray(tss, (err, btc) => {
+                console.log('btcs', tss, btc);
+                const data2 = data.map((d, i) => ({
+                    x: d.x,
+                    y: d.y * btc[i].ETH.BTC
+                }));
+                console.log(data, data2);
+                const ctx = document.getElementById("myChart");
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'ETH',
+                                lineTension: 0,
+                                data: data
+                            },
+                            {
+                                label: 'BTC',
+                                lineTension: 0,
+                                data: data2
+                            },
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time'
+                            }]
+                        }
                     }
-                }
+                });
             });
         }
     );
