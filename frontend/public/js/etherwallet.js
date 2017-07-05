@@ -42,7 +42,7 @@ const Ether = {
             callback(e);
             return;
         }
-        getBtcFromEtH((error, result) => {
+        API.getBtcFromEtH((error, result) => {
             if (error) {
                 callback(error);
             } else {
@@ -103,26 +103,26 @@ const Ether = {
     }
 };
 
-function getBtcFromEtH(callback) {
-    $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
-        .done(function( data ) {
-            callback(null, data);
-        })
-        .fail(function(error) {
-            callback(error);
-        });
-}
-
-function getBtcFromEthHistory(ts, callback) {
-    $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
-        .done(function( data ) {
-            callback(null, data);
-        })
-        .fail(function(error) {
-            callback(error);
-        });
-}
-
+const API = {
+    getBtcFromEtH(callback) {
+        $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
+            .done(function( data ) {
+                callback(null, data);
+            })
+            .fail(function(error) {
+                callback(error);
+            });
+    },
+    getBtcFromEthHistory(ts, callback) {
+        $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
+            .done(function( data ) {
+                callback(null, data);
+            })
+            .fail(function(error) {
+                callback(error);
+            });
+    }
+};
 
 function onload() {
     Page.showError();
