@@ -189,7 +189,6 @@ function onload() {
             if (err) {
                 throw err;
             }
-            console.log('err, res', err, res);
             const timeParts = res.reduce(
                 (parts, log) => {
                     const time = log.timestamp;
@@ -201,8 +200,6 @@ function onload() {
                 },
                 {}
             );
-            console.log('timeParts');
-            console.log(timeParts);
             const data = res.map(log => ({
                 x: log.timestamp + log.transactionIndex / timeParts[log.timestamp],
                 y: log.price
@@ -210,12 +207,10 @@ function onload() {
 
             const tss = data.map(d => d.x);
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
-                console.log('btcs', tss, btc);
                 const data2 = data.map((d, i) => ({
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                console.log(data, data2);
                 const ctx = document.getElementById("myChart");
                 new Chart(ctx, {
                     type: 'line',
