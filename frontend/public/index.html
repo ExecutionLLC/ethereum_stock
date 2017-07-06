@@ -9,7 +9,7 @@
     <script type="text/javascript" src="../node_modules/bignumber.js/bignumber.min.js"></script>
     <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
     <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
-    <script type="text/javascript" src="../dist/web3-light.js"></script>
+    <script type="text/javascript" src="../node_modules/web3/dist/web3-light.js"></script>
     <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
     <script type="text/javascript" src="js/etherwallet.js"></script>
 </head>
@@ -72,7 +72,15 @@
                             </div>
 
                             <p id="balance-container">Your tokens: <span id="balance-tokens"></span>
-                                ETH: <span id="balance-eth"></span>, BTC: <span id="balance-btc"></span></p>
+                                ETH: <span id="balance-eth"></span>, BTC: <span id="balance-btc"></span>
+                                <div id="tokens-history-template" style="display:none;">
+                                    <span id="tokens-history-op-time"></span>
+                                    <span id="tokens-history-op-name"></span>
+                                    <span id="tokens-history-op-count"></span>
+                                    <span id="tokens-history-op-price"></span>
+                                </div>
+                                <div id="tokens-history-container"></div>
+                            </p>
                             <p id="balance-wait">
                                 <b>Depending on your contribution method you might not be able to see your current AE
                                     token balance immediately. This will be updated shorty. If your transaction has been

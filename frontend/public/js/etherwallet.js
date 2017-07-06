@@ -51,7 +51,7 @@ const Ether = {
             callback(e);
             return;
         }
-        getBtcFromEtH((error, result) => {
+        API.getBtcFromEtH((error, result) => {
             if (error) {
                 callback(error);
             } else {
@@ -70,7 +70,7 @@ const Ether = {
     getData(web3, abiArray, address, callback) {
         const MyContract = web3.eth.contract(abiArray);
         const myContractInstance = MyContract.at(address);
-        const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest', 'topics': ['timestamp']});
+        const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
                 callback(error);
@@ -88,18 +88,57 @@ const Ether = {
                 }, callback);
             }
         });
+    },
+    getPriceData(client, contract, callback){
+        const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
+        myEvent.get((error, logs) => {
+            if (error) {
+                callback(error);
+            } else {
+                async.map(logs.slice(-5), (log, callback) => {
+                    web3.eth.getBlock(log.blockNumber, (error, block) => {
+                        const {args: {_currentTokenPrice, _isAcquired, _n}} = log;
+                        const {timestamp} = block;
+                        callback(null, {
+                            timestamp,
+                            tokenPrice: _currentTokenPrice.c[0],
+                            isAsquired: _isAcquired,
+                            count: _n.c[0]
+                        });
+                    });
+                }, callback);
+            }
+        });
     }
 };
 
-function getBtcFromEtH(callback) {
-    $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
-        .done(function( data ) {
-            callback(null, data);
-        })
-        .fail(function(error) {
-            callback(error);
-        });
-}
+const API = {
+    getBtcFromEtH(callback) {
+        $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
+            .done(function( data ) {
+                callback(null, data);
+            })
+            .fail(function(error) {
+                callback(error);
+            });
+    },
+    getBtcFromEthHistory(ts, callback) {
+        $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
+            .done(function( data ) {
+                callback(null, data);
+            })
+            .fail(function(error) {
+                callback(error);
+            });
+    },
+    getBtcFromEthHistoryArray(timestamps, callback) {
+        async.map(
+            timestamps,
+            (ts, callback) => API.getBtcFromEthHistory(ts, callback),
+            callback
+        );
+    }
+};
 
 function readFileContent(file, callback) {
     const fr = new FileReader();
@@ -127,7 +166,36 @@ function onload() {
             if (err) {
                 Page.showError(err);
             } else {
-                Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                Ether.getPriceData(walletId, contract, (err, res) => {
+                    Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                    const $tmpl = $('#tokens-history-template');
+
+                    function addElementIdKey($el, key) {
+                        const newId = $el[0].id + '-' + key;
+                        $el.prop('id', newId);
+                    }
+
+                    function setElementContent($el, key, text) {
+                        addElementIdKey($el, key);
+                        $el.text(text);
+                    }
+
+                    function setElementIdContent($parent, elId, key, text) {
+                        const $el = $parent.find(elId);
+                        setElementContent($el, key, text);
+                    }
+
+                    const $rows = res.map((item, index) => {
+                        const $el = $tmpl.clone().show();
+                        addElementIdKey($el, index);
+                        setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
+                        setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
+                        setElementIdContent($el, '#tokens-history-op-count', index, item.count);
+                        setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
+                        return $el;
+                    });
+                    $('#tokens-history-container').empty().append($rows);
+                });
             }
         });
     });
@@ -173,7 +241,6 @@ function onload() {
             if (err) {
                 throw err;
             }
-            console.log('err, res', err, res);
             const timeParts = res.reduce(
                 (parts, log) => {
                     const time = log.timestamp;
@@ -185,30 +252,42 @@ function onload() {
                 },
                 {}
             );
-            console.log('timeParts');
-            console.log(timeParts);
             const data = res.map(log => ({
                 x: log.timestamp + log.transactionIndex / timeParts[log.timestamp],
                 y: log.price
             }));
-            console.log(data);
-            const ctx = document.getElementById("myChart");
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Scatter Dataset',
-                        lineTension: 0,
-                        data: data
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            type: 'time'
-                        }]
+
+            const tss = data.map(d => d.x);
+            API.getBtcFromEthHistoryArray(tss, (err, btc) => {
+                const data2 = data.map((d, i) => ({
+                    x: d.x,
+                    y: d.y * btc[i].ETH.BTC
+                }));
+                const ctx = document.getElementById("myChart");
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'ETH',
+                                lineTension: 0,
+                                data: data
+                            },
+                            {
+                                label: 'BTC',
+                                lineTension: 0,
+                                data: data2
+                            },
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                type: 'time'
+                            }]
+                        }
                     }
-                }
+                });
             });
         }
     );
