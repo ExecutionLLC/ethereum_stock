@@ -1,4 +1,4 @@
-const Web3 = require('web3');
+const Web3 = Web3_require('web3');
 const web3 = new Web3();
 
 web3.setProvider(new web3.providers.HttpProvider('http://192.168.1.101:8111/'));

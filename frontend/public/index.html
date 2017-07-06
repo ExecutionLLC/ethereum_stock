@@ -9,6 +9,17 @@
     <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
     <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
     <script type="text/javascript" src="../node_modules/web3/dist/web3.js"></script>
+    <script type="text/javascript">
+        const Web3_require = ((require) => {
+            return (moduleName) => {
+                const moduleKey = {
+                    'solidity': 7
+                }[moduleName];
+                return require(moduleKey == null ? moduleName : moduleKey);
+            }
+        })(require);
+        delete require;
+    </script>
     <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
     <script type="text/javascript" src="js/etherwallet.js"></script>
 </head>
