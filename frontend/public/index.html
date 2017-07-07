@@ -570,41 +570,21 @@
 
           <!-- Rectangle (Rectangle) -->
           <div id="u113" class="ax_default shape" data-label="Rectangle">
-            <div id="u113_div" class="">
+            <div id="u113_div">
               <div>
-                By private key: <input id="add-wallet-private-key"/><div id="add-wallet-private-key-button">Add</div>
+                By private key: <input id="add-wallet-private-key"/><button id="add-wallet-private-key-button">set wallet</button>
               </div>
               <div>
-                By file: <input id="add-wallet-file" type="file"/><input id="add-wallet-file-password"/><div id="add-wallet-file-button">Add</div>
+                By file: <input id="add-wallet-file" type="file"/>, password:<input id="add-wallet-file-password"/><button id="add-wallet-file-button">set wallet</button>
               </div>
               <div id="wallet-ops">
+                <h1>Buy/sell tokens with wallet <span id="wallet-address"></span></h1>
                 <div>
-                  <h1>Buy/sell tokens with wallet <span id="wallet-address"></span></h1>
+                  Count: <input id="buy-tokens-count"/><button id="buy-tokens-button">Buy</button>
+                </div>
+                <div>
                   <div>
-                    <div>
-                      Count:
-                    </div>
-                    <div>
-                      <div>
-                        <input id="buy-tokens-count"/>
-                        <span>
-                            <div id="buy-tokens-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div>
-                      Count:
-                    </div>
-                    <div>
-                      <div>
-                        <input id="sell-tokens-count"/>
-                        <span>
-                          <div id="sell-tokens-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Sell</div>
-                      </span>
-                     </div>
-                    </div>
+                    Count: <input id="sell-tokens-count"/><button id="sell-tokens-button">Sell</button>
                   </div>
                 </div>
               </div>
