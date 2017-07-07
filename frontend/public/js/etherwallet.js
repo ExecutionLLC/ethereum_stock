@@ -22,7 +22,8 @@ const Page = {
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc'
-        }
+        },
+        CHART: 'myChart'
     },
     $id(id) {
         return $(`#${id}`);
@@ -283,7 +284,7 @@ function onload() {
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                const ctx = document.getElementById("myChart");
+                const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
                 new Chart(ctx, {
                     type: 'line',
                     data: {
