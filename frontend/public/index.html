@@ -13,7 +13,8 @@
     <script type="text/javascript">
         AXSHARE_HOST_URL = 'http://share.axure.com';
         AXSHARE_HOST_SECURE_URL = 'https://share.axure.com';
-</script><script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    </script>
+    <script src="resources/scripts/jquery-1.8.3.min.js"></script>
     <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
     <script src="resources/scripts/prototypePre.js"></script>
     <script src="data/document.js"></script>
@@ -24,6 +25,25 @@
       $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
       $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
     </script>
+
+    <script type="text/javascript" src="../node_modules/async/dist/async.min.js"></script>
+    <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
+    <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
+    <script type="text/javascript" src="../node_modules/web3/dist/web3.js"></script>
+    <script type="text/javascript">
+        const Web3_require = ((require) => {
+            return (moduleName) => {
+                const moduleKey = {
+                    'solidity': 7
+                }[moduleName];
+                return require(moduleKey == null ? moduleName : moduleKey);
+            }
+        })(require);
+        delete require;
+    </script>
+    <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
+    <script type="text/javascript" src="js/etherwallet.js"></script>
+
   </head>
   <body>
     <div id="base" class="">
@@ -64,7 +84,7 @@
 
         <!-- Unnamed (Image) -->
         <div id="u8" class="ax_default image">
-          <img id="u8_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u8.png?token=8c9fa05aa77292c5432dc5a414210f82"/>
+            <canvas id="myChart" width="100" height="30"></canvas>
           <!-- Unnamed () -->
           <div id="u9" class="text" style="display:none; visibility: hidden">
             <p><span></span></p>
@@ -119,6 +139,16 @@
           </div>
         </div>
 
+        <div id="u20-1" class="ax_default">
+          <div id="tokens-history-template" style="display:none;">
+            <span id="tokens-history-op-time"></span>
+            <span id="tokens-history-op-name"></span>
+            <span id="tokens-history-op-count"></span>
+            <span id="tokens-history-op-price"></span>
+          </div>
+          <div id="tokens-history-container" class="ax_default" style="border-width: 0px;position: absolute;left: 1189px;top: 529px;width: 343px;height: 18px;font-size: 16px;"></div>
+        </div>
+
         <!-- деньги на счету1 (Group) -->
         <div id="u21" class="ax_default ax_default_hidden" data-label="деньги на счету1" style="display:none; visibility: hidden" data-left="0" data-top="0" data-width="0" data-height="0">
 
@@ -127,7 +157,7 @@
             <div id="u22_div" class=""></div>
             <!-- Unnamed () -->
             <div id="u23" class="text">
-              <p><span>1000 </span></p>
+              <p><span id="balance-tokens">1000 </span></p>
             </div>
           </div>
 
@@ -136,7 +166,7 @@
             <div id="u24_div" class=""></div>
             <!-- Unnamed () -->
             <div id="u25" class="text">
-              <p><span>BTC</span></p>
+              <p><span>Tokens</span></p>
             </div>
           </div>
 
@@ -145,7 +175,7 @@
             <div id="u26_div" class=""></div>
             <!-- Unnamed () -->
             <div id="u27" class="text">
-              <p><span>1000 </span></p>
+              <p><span id="balance-eth">1000 </span></p>
             </div>
           </div>
 
@@ -154,7 +184,7 @@
             <div id="u28_div" class=""></div>
             <!-- Unnamed () -->
             <div id="u29" class="text">
-              <p><span>BTC</span></p>
+              <p><span>ETH</span></p>
             </div>
           </div>
 
@@ -163,7 +193,7 @@
             <div id="u30_div" class=""></div>
             <!-- Unnamed () -->
             <div id="u31" class="text">
-              <p><span>1000 </span></p>
+              <p><span id="balance-btc">1000 </span></p>
             </div>
           </div>
 
