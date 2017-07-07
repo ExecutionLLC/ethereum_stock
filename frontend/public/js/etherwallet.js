@@ -14,6 +14,19 @@ const CONTRACT = {
 let currentWallet = null;
 
 const Page = {
+    ELEMENT_ID: {
+        BALANCE: {
+            WALLET_INPUT: 'u40_input',
+            CHECK_BUTTON: 'u42',
+            CONTAINER: 'u21',
+            TOKENS: 'balance-tokens',
+            ETH: 'balance-eth',
+            BTC: 'balance-btc'
+        }
+    },
+    $id(id) {
+        return $(`#${id}`);
+    },
     showBalanceWait(show) {
         $('#balance-wait').toggle(show);
     },
@@ -23,10 +36,13 @@ const Page = {
             return s == null ? '...' : s;
         }
 
-        $('#balance-container').toggle(tokens != null);
-        $('#balance-tokens').text(strNull(tokens));
-        $('#balance-eth').text(strNull(eth));
-        $('#balance-btc').text(strNull(btc));
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
+            .removeClass('ax_default_hidden')
+            .attr('style', '')
+            .toggle(tokens != null);
+        Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
+        Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
+        Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
     showError(error) {
         $error = $('#balance-error');
@@ -158,10 +174,10 @@ function onload() {
     currentWallet = null;
     Page.showCurrentWallet();
 
-    $('#balance-check-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
         Page.showError();
-        const walletId = $('#balance-id').val();
+        const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
