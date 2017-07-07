@@ -49,11 +49,13 @@ const Page = {
                 WALLET_ADDRESS: 'wallet-address',
                 BUY: {
                     COUNT: 'buy-tokens-count',
-                    BUTTON: 'buy-tokens-button'
+                    BUTTON: 'buy-tokens-button',
+                    WAIT: 'buy-tokens-wait'
                 },
                 SELL: {
                     COUNT: 'sell-tokens-count',
-                    BUTTON: 'sell-tokens-button'
+                    BUTTON: 'sell-tokens-button',
+                    WAIT: 'sell-tokens-wait'
                 }
             }
         }
@@ -119,6 +121,16 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
+    },
+    toggleBuyWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(show);
+    },
+    toggleSellWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     }
 };
 
@@ -285,6 +297,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
+        Page.toggleBuyWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -302,11 +315,13 @@ function onload() {
                 currentWallet.provider.once(transactionHash,(transaction) => {
                     console.log('Transaction buy Minded: ' + transaction.hash);
                     console.log(transaction);
+                    Page.toggleBuyWait(false);
                 });
             });
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
+        Page.toggleSellWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         console.log('sell tokens', count);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
@@ -328,6 +343,7 @@ function onload() {
                             currentWallet.provider.once(transactionHash,(transaction) => {
                                 console.log('Transaction back maney Minded: ' + transaction.hash);
                                 console.log(transaction);
+                                Page.toggleSellWait(false);
                             });
                         });
                 });
