@@ -286,7 +286,7 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
-        const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
+        const wei = '0x' +new BigNumber(web3.toWei(count, 'ether')).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
         MyContract.buy({value: wei, gasLimit: 80000})
             .then((res) => {
@@ -304,7 +304,7 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         console.log('sell tokens', count);
-        const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
+        const wei = '0x' +new BigNumber(web3.toWei(count, 'ether')).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
         MyContract.returnToken(count)
             .then((res) => {
