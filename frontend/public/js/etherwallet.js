@@ -21,7 +21,8 @@ const Page = {
             CONTAINER: 'u21',
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
-            BTC: 'balance-btc'
+            BTC: 'balance-btc',
+            WAIT: 'u36-1'
         },
         TOKENS_HISTORY: {
             TEMPLATE: 'tokens-history-template',
@@ -64,7 +65,7 @@ const Page = {
         return $(`#${id}`);
     },
     showBalanceWait(show) {
-        $('#balance-wait').toggle(show);
+        Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
     },
     showBalance(tokens, eth, btc) {
 
@@ -259,9 +260,11 @@ function onload() {
             .at(CONTRACT.ID);
         Ether.getBalance(contract, walletId, (err, balance) => {
             if (err) {
+                Page.showBalanceWait(false);
                 Page.showError(err);
             } else {
                 Ether.getPriceData(walletId, contract, (err, res) => {
+                    Page.showBalanceWait(false);
                     Page.showBalance(balance.tokens, balance.eth, balance.btc);
                     Page.showTokensHistory(res);
                 });
