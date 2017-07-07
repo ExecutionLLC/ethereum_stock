@@ -50,6 +50,10 @@ const Page = {
                 BUY: {
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button'
+                },
+                SELL: {
+                    COUNT: 'sell-tokens-count',
+                    BUTTON: 'sell-tokens-button'
                 }
             }
         }
@@ -297,8 +301,8 @@ function onload() {
             });
     });
 
-    $('#sell-tokens-button').click(() => {
-        const count = +$('#sell-tokens-count').val();
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
+        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         console.log('sell tokens', count);
         const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
