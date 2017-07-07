@@ -223,6 +223,7 @@ function onload() {
             const password = $('#add-wallet-file-password').val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
+                    wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
                 });
