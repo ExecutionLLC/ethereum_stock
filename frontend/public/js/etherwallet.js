@@ -284,7 +284,46 @@ function onload() {
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        MyContract.buy({value: wei, gasLimit: 80000});
+        MyContract.buy({value: wei, gasLimit: 80000})
+            .then((res) => {
+                console.log(res);
+                return res.hash;
+            })
+            .then((transactionHash) => {
+                currentWallet.provider.once(transactionHash,(transaction) => {
+                    console.log('Transaction buy Minded: ' + transaction.hash);
+                    console.log(transaction);
+                });
+            });
+    });
+
+    $('#sell-tokens-button').click(() => {
+        const count = +$('#sell-tokens-count').val();
+        console.log('sell tokens', count);
+        const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
+        const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
+        MyContract.returnToken(count)
+            .then((res) => {
+                console.log(res);
+                return res.hash;
+            })
+            .then((transactionHash) => {
+                currentWallet.provider.once(transactionHash,(transaction) => {
+                    console.log('Transaction sell Minded: ' + transaction.hash);
+                    console.log(transaction);
+                    MyContract.withdraw()
+                        .then((res) => {
+                            console.log(res);
+                            return res.hash;
+                        })
+                        .then((transactionHash) => {
+                            currentWallet.provider.once(transactionHash,(transaction) => {
+                                console.log('Transaction back maney Minded: ' + transaction.hash);
+                                console.log(transaction);
+                            });
+                        });
+                });
+            });
     });
 
     Ether.getData(
