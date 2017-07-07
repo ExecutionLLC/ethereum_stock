@@ -346,7 +346,7 @@ function onload() {
                 {}
             );
             const data = res.map(log => ({
-                x: log.timestamp + log.transactionIndex / timeParts[log.timestamp],
+                x: 1000 * (log.timestamp + log.transactionIndex / timeParts[log.timestamp]),
                 y: log.price
             }));
 
