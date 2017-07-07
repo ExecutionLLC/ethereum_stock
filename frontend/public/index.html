@@ -1,789 +1,571 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Contribution Wallet | æternity Blockchain</title>
-    <link rel="stylesheet" href="css/axure_rp_page.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/styles2.css">
-    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../node_modules/async/dist/async.min.js"></script>
-    <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
-    <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
-    <script type="text/javascript" src="../node_modules/web3/dist/web3.js"></script>
+<html>
+  <head>
+    <meta name="robots" content="noindex, nofollow"/>
+    <title>Home</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
+    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
+    <link href="files/home/styles.css" type="text/css" rel="stylesheet"/>
     <script type="text/javascript">
-        const Web3_require = ((require) => {
-            return (moduleName) => {
-                const moduleKey = {
-                    'solidity': 7
-                }[moduleName];
-                return require(moduleKey == null ? moduleName : moduleKey);
-            }
-        })(require);
-        delete require;
+        AXSHARE_HOST_URL = 'http://share.axure.com';
+        AXSHARE_HOST_SECURE_URL = 'https://share.axure.com';
+</script><script src="resources/scripts/jquery-1.7.1.min.js"></script>
+    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/scripts/prototypePre.js"></script>
+    <script src="data/document.js"></script>
+    <script src="resources/scripts/prototypePost.js"></script>
+    <script src="files/home/data.js"></script>
+    <script type="text/javascript">
+      $axure.utils.getTransparentGifPath = function() { return 'http://d1h0x9w88ijkiq.cloudfront.net/3338/images/transparent.gif'; };
+      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
+      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
     </script>
-    <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
-    <script type="text/javascript" src="js/etherwallet.js"></script>
-</head>
-<body>
-<div id="base" class="">
+  </head>
+  <body>
+    <div id="base" class="">
 
-    <!-- блок курс (Group) -->
-    <div id="u0" class="ax_default" data-label="блок курс" data-left="4" data-top="700" data-width="1524" data-height="586">
+      <!-- блок курс (Group) -->
+      <div id="u0" class="ax_default" data-label="блок курс" data-left="4" data-top="700" data-width="1524" data-height="586">
 
         <!-- курс (Group) -->
         <div id="u1" class="ax_default" data-label="курс" data-left="4" data-top="700" data-width="1524" data-height="586">
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u2" class="ax_default shape" data-label="Rectangle">
-                <div id="u2_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u3" class="text" style="top: 10px; transform-origin: 747px 10px 0px;">
-                    <p><span>Курс токена</span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u2" class="ax_default shape" data-label="Rectangle">
+            <div id="u2_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u3" class="text">
+              <p><span>Курс токена</span></p>
             </div>
+          </div>
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u4" class="ax_default shape" data-label="Rectangle">
-                <div id="u4_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u5" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u4" class="ax_default shape" data-label="Rectangle">
+            <div id="u4_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u5" class="text" style="display:none; visibility: hidden">
+              <p><span></span></p>
             </div>
+          </div>
         </div>
 
         <!-- Unnamed (Rectangle) -->
         <div id="u6" class="ax_default box_2">
-            <div id="u6_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u7" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-            </div>
+          <div id="u6_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u7" class="text" style="display:none; visibility: hidden">
+            <p><span></span></p>
+          </div>
         </div>
 
         <!-- Unnamed (Image) -->
         <div id="u8" class="ax_default image">
-            <canvas id="myChart" width="100" height="30"></canvas>
-            <!-- Unnamed () -->
-            <div id="u9" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-            </div>
+          <img id="u8_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u8.png?token=8c9fa05aa77292c5432dc5a414210f82"/>
+          <!-- Unnamed () -->
+          <div id="u9" class="text" style="display:none; visibility: hidden">
+            <p><span></span></p>
+          </div>
         </div>
 
         <!-- Unnamed (Group) -->
         <div id="u10" class="ax_default" data-left="13" data-top="1112" data-width="221" data-height="34">
 
-            <!-- buttonSegmented2 (Rectangle) -->
-            <div id="u11" class="ax_default" data-label="buttonSegmented2" selectiongroup="ButtonSegmentedGroup" style="cursor: pointer;">
-                <div id="u11_div" class="" tabindex="0"></div>
-                <!-- Unnamed () -->
-                <div id="u12" class="text">
-                    <p><span>За месяц</span></p>
-                </div>
+          <!-- buttonSegmented2 (Rectangle) -->
+          <div id="u11" class="ax_default" data-label="buttonSegmented2" selectiongroup="ButtonSegmentedGroup">
+            <div id="u11_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u12" class="text">
+              <p><span>За месяц</span></p>
             </div>
+          </div>
 
-            <!-- buttonSegmented1 (Rectangle) -->
-            <div id="u13" class="ax_default selected" data-label="buttonSegmented1" selectiongroup="ButtonSegmentedGroup" style="cursor: pointer;">
-                <div id="u13_div" class="selected" tabindex="0"></div>
-                <!-- Unnamed () -->
-                <div id="u14" class="text">
-                    <p id="cache0"><span id="cache1" style="color: rgb(255, 255, 255);">За все время</span></p>
-                </div>
+          <!-- buttonSegmented1 (Rectangle) -->
+          <div id="u13" class="ax_default selected" data-label="buttonSegmented1" selectiongroup="ButtonSegmentedGroup">
+            <div id="u13_div" class="selected"></div>
+            <!-- Unnamed () -->
+            <div id="u14" class="text">
+              <p><span>За все время</span></p>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- баланс кошелька (Group) -->
-    <div id="u15" class="ax_default" data-label="баланс кошелька" data-left="4" data-top="450" data-width="1524" data-height="238">
+      <!-- баланс кошелька (Group) -->
+      <div id="u15" class="ax_default" data-label="баланс кошелька" data-left="4" data-top="450" data-width="1524" data-height="238">
 
         <!-- баланс (Group) -->
         <div id="u16" class="ax_default" data-label="баланс" data-left="4" data-top="450" data-width="1524" data-height="238">
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u17" class="ax_default shape" data-label="Rectangle">
-                <div id="u17_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u18" class="text" style="top: 10px; transform-origin: 747px 10px 0px;">
-                    <p><span>Проверьте баланс вашего кошелька</span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u17" class="ax_default shape" data-label="Rectangle">
+            <div id="u17_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u18" class="text">
+              <p><span>Проверьте баланс вашего кошелька</span></p>
             </div>
+          </div>
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u19" class="ax_default shape" data-label="Rectangle">
-                <div id="u19_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u20" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u19" class="ax_default shape" data-label="Rectangle">
+            <div id="u19_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u20" class="text" style="display:none; visibility: hidden">
+              <p><span></span></p>
             </div>
-        </div>
-
-        <div class="ax_default">
-            <div id="tokens-history-template" style="display:none;">
-                <span id="tokens-history-op-time"></span>
-                <span id="tokens-history-op-name"></span>
-                <span id="tokens-history-op-count"></span>
-                <span id="tokens-history-op-price"></span>
-            </div>
-            <div id="tokens-history-container" class="ax_default" style="border-width: 0px;position: absolute;left: 1189px;top: 529px;width: 343px;height: 18px;font-size: 16px;"></div>
+          </div>
         </div>
 
         <!-- деньги на счету1 (Group) -->
         <div id="u21" class="ax_default ax_default_hidden" data-label="деньги на счету1" style="display:none; visibility: hidden" data-left="0" data-top="0" data-width="0" data-height="0">
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u22" class="ax_default label">
-                <div id="u22_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u23" class="text">
-                    <p><span id="#balance-tokens">1000 </span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u22" class="ax_default label">
+            <div id="u22_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u23" class="text">
+              <p><span>1000 </span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u24" class="ax_default label">
-                <div id="u24_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u25" class="text">
-                    <p><span>Tokens</span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u24" class="ax_default label">
+            <div id="u24_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u25" class="text">
+              <p><span>BTC</span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u26" class="ax_default label">
-                <div id="u26_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u27" class="text">
-                    <p><span id="balance-eth">1000 </span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u26" class="ax_default label">
+            <div id="u26_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u27" class="text">
+              <p><span>1000 </span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u28" class="ax_default label">
-                <div id="u28_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u29" class="text">
-                    <p><span>ETH</span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u28" class="ax_default label">
+            <div id="u28_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u29" class="text">
+              <p><span>BTC</span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u30" class="ax_default label">
-                <div id="u30_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u31" class="text">
-                    <p><span id="balance-btc">1000 </span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u30" class="ax_default label">
+            <div id="u30_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u31" class="text">
+              <p><span>1000 </span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u32" class="ax_default label">
-                <div id="u32_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u33" class="text">
-                    <p><span>BTC</span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u32" class="ax_default label">
+            <div id="u32_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u33" class="text">
+              <p><span>BTC</span></p>
             </div>
+          </div>
 
-            <!-- Unnamed (Rectangle) -->
-            <div id="u34" class="ax_default label">
-                <div id="u34_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u35" class="text">
-                    <p><span>На вашем счету:</span></p>
-                </div>
+          <!-- Unnamed (Rectangle) -->
+          <div id="u34" class="ax_default label">
+            <div id="u34_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u35" class="text">
+              <p><span>На вашем счету:</span></p>
             </div>
+          </div>
         </div>
 
         <!-- Unnamed (Group) -->
         <div id="u36" class="ax_default" data-left="37" data-top="556" data-width="446" data-height="40">
 
-            <!-- Unnamed (Group) -->
-            <div id="u37" class="ax_default" data-left="37" data-top="556" data-width="330" data-height="40">
+          <!-- Unnamed (Group) -->
+          <div id="u37" class="ax_default" data-left="37" data-top="556" data-width="330" data-height="40">
 
-                <!-- Rectangle (Rectangle) -->
-                <div id="u38" class="ax_default" data-label="Rectangle">
-                    <div id="u38_div" class=""></div>
-                    <!-- Unnamed () -->
-                    <div id="u39" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
-                </div>
-
-                <!-- Input Field (Text Field) -->
-                <div id="u40" class="ax_default text_field" data-label="Input Field">
-                    <input id="u40_input" type="text" value="" maxlength="128" style="">
-                </div>
+            <!-- Rectangle (Rectangle) -->
+            <div id="u38" class="ax_default" data-label="Rectangle">
+              <div id="u38_div" class=""></div>
+              <!-- Unnamed () -->
+              <div id="u39" class="text" style="display:none; visibility: hidden">
+                <p><span></span></p>
+              </div>
             </div>
 
-            <!-- Unnamed (Group) -->
-            <div id="u41" class="ax_default" data-left="367" data-top="556" data-width="116" data-height="40" style="cursor: pointer;">
-
-                <!-- Rectangle (Rectangle) -->
-                <div id="u42" class="ax_default" data-label="Rectangle">
-                    <div id="u42_div" class="" tabindex="0"></div>
-                    <!-- Unnamed () -->
-                    <div id="u43" class="text">
-                        <p id="cache2"><span id="cache3">Проверить</span></p>
-                    </div>
-                </div>
-
-                <!-- Line_Vertical (Vertical Line) -->
-                <div id="u44" class="ax_default" data-label="Line_Vertical">
-                    <img id="u44_img" class="img " src="http://d26uhratvi024l.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/line_vertical_u44.png?token=12b829b690225760affe11641f05aff0">
-                    <!-- Unnamed () -->
-                    <div id="u45" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
-                </div>
+            <!-- Input Field (Text Field) -->
+            <div id="u40" class="ax_default text_field" data-label="Input Field">
+              <input id="u40_input" type="text" value="" maxlength="128"/>
             </div>
+          </div>
+
+          <!-- Unnamed (Group) -->
+          <div id="u41" class="ax_default" data-left="367" data-top="556" data-width="116" data-height="40">
+
+            <!-- Rectangle (Rectangle) -->
+            <div id="u42" class="ax_default" data-label="Rectangle">
+              <div id="u42_div" class=""></div>
+              <!-- Unnamed () -->
+              <div id="u43" class="text">
+                <p><span>Проверить</span></p>
+              </div>
+            </div>
+
+            <!-- Line_Vertical (Vertical Line) -->
+            <div id="u44" class="ax_default" data-label="Line_Vertical">
+              <img id="u44_img" class="img " src="http://d26uhratvi024l.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/line_vertical_u44.png?token=12b829b690225760affe11641f05aff0"/>
+              <!-- Unnamed () -->
+              <div id="u45" class="text" style="display:none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Unnamed (Rectangle) -->
         <div id="u46" class="ax_default label">
-            <div id="u46_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u47" class="text">
-                <p><span>Введите адрес кошелька:</span></p>
-            </div>
+          <div id="u46_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u47" class="text">
+            <p><span>Введите адрес кошелька:</span></p>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Unnamed (Rectangle) -->
-    <div id="u48" class="ax_default box_2">
+      <!-- Unnamed (Rectangle) -->
+      <div id="u48" class="ax_default box_2">
         <div id="u48_div" class=""></div>
         <!-- Unnamed () -->
-        <div id="u49" class="text" style="top: 28px; transform-origin: 764.5px 7px 0px;">
-            <p><span>Какой-то текст</span></p>
+        <div id="u49" class="text">
+          <p><span>Какой-то текст</span></p>
         </div>
-    </div>
+      </div>
 
-    <!-- меню2 (Dynamic Panel) -->
-    <div id="u50" class="ax_default ax_default_hidden" data-label="меню2" style="display: none; visibility: hidden; z-index: 1001; left: 0px; width: 1840px;">
-        <div id="u50_state0" class="panel_state" data-label="State1" style="width: 1840px;">
-            <div id="u50_state0_content" class="panel_state_content" style="margin-left: 0px;">
+      <!-- меню2 (Dynamic Panel) -->
+      <div id="u50" class="ax_default ax_default_hidden" data-label="меню2" style="display:none; visibility: hidden">
+        <div id="u50_state0" class="panel_state" data-label="State1" style="">
+          <div id="u50_state0_content" class="panel_state_content">
 
-                <!-- меню2 (Group) -->
-                <div id="u51" class="ax_default" data-label="меню2" data-left="0" data-top="0" data-width="1533" data-height="45">
+            <!-- меню2 (Group) -->
+            <div id="u51" class="ax_default" data-label="меню2" data-left="0" data-top="0" data-width="1533" data-height="45">
 
-                    <!-- Unnamed (Group) -->
-                    <div id="u52" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="45">
+              <!-- Unnamed (Group) -->
+              <div id="u52" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="45">
 
-                        <!-- Unnamed (Rectangle) -->
-                        <div id="u53" class="ax_default shape1">
-                            <div id="u53_div" class=""></div>
-                            <!-- Unnamed () -->
-                            <div id="u54" class="text" style="display:none; visibility: hidden">
-                                <p><span></span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Horizontal Line) -->
-                        <div id="u55" class="ax_default horizontal_line">
-                            <img id="u55_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d">
-                            <!-- Unnamed () -->
-                            <div id="u56" class="text" style="display:none; visibility: hidden">
-                                <p><span></span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Horizontal Line) -->
-                        <div id="u57" class="ax_default horizontal_line">
-                            <img id="u57_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u57.png?token=ff911dcd70f9e9d06a2f4f3db1cc7979">
-                            <!-- Unnamed () -->
-                            <div id="u58" class="text" style="display:none; visibility: hidden">
-                                <p><span></span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Rectangle) -->
-                        <div id="u59" class="ax_default paragraph1">
-                            <div id="u59_div" class=""></div>
-                            <!-- Unnamed () -->
-                            <div id="u60" class="text">
-                                <p><span>Какой-то текст</span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Rectangle) -->
-                        <div id="u61" class="ax_default paragraph1">
-                            <div id="u61_div" class=""></div>
-                            <!-- Unnamed () -->
-                            <div id="u62" class="text">
-                                <p><span>Проверка баланса</span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Rectangle) -->
-                        <div id="u63" class="ax_default paragraph1">
-                            <div id="u63_div" class=""></div>
-                            <!-- Unnamed () -->
-                            <div id="u64" class="text">
-                                <p><span>Курс токена</span></p>
-                            </div>
-                        </div>
-
-                        <!-- Unnamed (Rectangle) -->
-                        <div id="u65" class="ax_default paragraph1">
-                            <div id="u65_div" class=""></div>
-                            <!-- Unnamed () -->
-                            <div id="u66" class="text">
-                                <p><span>Купля / Продажа</span></p>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Unnamed (Rectangle) -->
+                <div id="u53" class="ax_default shape1">
+                  <div id="u53_div" class=""></div>
+                  <!-- Unnamed () -->
+                  <div id="u54" class="text" style="display:none; visibility: hidden">
+                    <p><span></span></p>
+                  </div>
                 </div>
+
+                <!-- Unnamed (Horizontal Line) -->
+                <div id="u55" class="ax_default horizontal_line">
+                  <img id="u55_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
+                  <!-- Unnamed () -->
+                  <div id="u56" class="text" style="display:none; visibility: hidden">
+                    <p><span></span></p>
+                  </div>
+                </div>
+
+                <!-- Unnamed (Horizontal Line) -->
+                <div id="u57" class="ax_default horizontal_line">
+                  <img id="u57_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u57.png?token=ff911dcd70f9e9d06a2f4f3db1cc7979"/>
+                  <!-- Unnamed () -->
+                  <div id="u58" class="text" style="display:none; visibility: hidden">
+                    <p><span></span></p>
+                  </div>
+                </div>
+
+                <!-- Unnamed (Rectangle) -->
+                <div id="u59" class="ax_default paragraph1">
+                  <div id="u59_div" class=""></div>
+                  <!-- Unnamed () -->
+                  <div id="u60" class="text">
+                    <p><span>Какой-то текст</span></p>
+                  </div>
+                </div>
+
+                <!-- Unnamed (Rectangle) -->
+                <div id="u61" class="ax_default paragraph1">
+                  <div id="u61_div" class=""></div>
+                  <!-- Unnamed () -->
+                  <div id="u62" class="text">
+                    <p><span>Проверка баланса</span></p>
+                  </div>
+                </div>
+
+                <!-- Unnamed (Rectangle) -->
+                <div id="u63" class="ax_default paragraph1">
+                  <div id="u63_div" class=""></div>
+                  <!-- Unnamed () -->
+                  <div id="u64" class="text">
+                    <p><span>Курс токена</span></p>
+                  </div>
+                </div>
+
+                <!-- Unnamed (Rectangle) -->
+                <div id="u65" class="ax_default paragraph1">
+                  <div id="u65_div" class=""></div>
+                  <!-- Unnamed () -->
+                  <div id="u66" class="text">
+                    <p><span>Купля / Продажа</span></p>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- меню (Dynamic Panel) -->
-    <div id="u67" class="ax_default" data-label="меню" style="z-index: 1002;">
-
-
-        <div id="u67_state1" class="panel_state" data-label="State2" style="visibility: hidden; position: relative; display: none;">
-            <div id="u67_state1_content" class="panel_state_content">
-
-                <!-- Unnamed (Group) -->
-                <div id="u87" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="46">
-
-                    <!-- Unnamed (Rectangle) -->
-                    <div id="u88" class="ax_default shape1">
-                        <div id="u88_div" class=""></div>
-                        <!-- Unnamed () -->
-                        <div id="u89" class="text" style="display:none; visibility: hidden">
-                            <p><span></span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Horizontal Line) -->
-                    <div id="u90" class="ax_default horizontal_line">
-                        <img id="u90_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d">
-                        <!-- Unnamed () -->
-                        <div id="u91" class="text" style="display:none; visibility: hidden">
-                            <p><span></span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Horizontal Line) -->
-                    <div id="u92" class="ax_default horizontal_line">
-                        <img id="u92_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u92.png?token=4b6175cd07a57241d3b9f5f8740c8bd3">
-                        <!-- Unnamed () -->
-                        <div id="u93" class="text" style="display:none; visibility: hidden">
-                            <p><span></span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Rectangle) -->
-                    <div id="u94" class="ax_default paragraph1" style="cursor: pointer;">
-                        <div id="u94_div" class="" tabindex="0"></div>
-                        <!-- Unnamed () -->
-                        <div id="u95" class="text">
-                            <p><span>Какой-то текст</span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Rectangle) -->
-                    <div id="u96" class="ax_default paragraph1" style="cursor: pointer;">
-                        <div id="u96_div" class="" tabindex="0"></div>
-                        <!-- Unnamed () -->
-                        <div id="u97" class="text">
-                            <p><span>Проверка баланса</span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Rectangle) -->
-                    <div id="u98" class="ax_default paragraph1" style="cursor: pointer;">
-                        <div id="u98_div" class="" tabindex="0"></div>
-                        <!-- Unnamed () -->
-                        <div id="u99" class="text">
-                            <p><span>Курс токена</span></p>
-                        </div>
-                    </div>
-
-                    <!-- Unnamed (Rectangle) -->
-                    <div id="u100" class="ax_default paragraph1" style="cursor: pointer;">
-                        <div id="u100_div" class="" tabindex="0"></div>
-                        <!-- Unnamed () -->
-                        <div id="u101" class="text">
-                            <p><span>Купля / Продажа</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- линия верха страницы (Horizontal Line) -->
-                <div id="u102" class="ax_default line" data-label="линия верха страницы">
-                    <img id="u102_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u102.png?token=1154e5f1d674312c1440f3e50731ad8c">
-                    <!-- Unnamed () -->
-                    <div id="u103" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
-                </div>
-            </div>
-        </div><div id="u67_state0" class="panel_state" data-label="State1" style="visibility: inherit; position: relative;">
-        <div id="u67_state0_content" class="panel_state_content">
+      <!-- меню (Dynamic Panel) -->
+      <div id="u67" class="ax_default" data-label="меню">
+        <div id="u67_state0" class="panel_state" data-label="State1" style="">
+          <div id="u67_state0_content" class="panel_state_content">
 
             <!-- Unnamed (Group) -->
             <div id="u68" class="ax_default" data-left="0" data-top="-11" data-width="1533" data-height="200">
 
-                <!-- Unnamed (Rectangle) -->
-                <div id="u69" class="ax_default shape1">
-                    <div id="u69_div" class=""></div>
-                    <!-- Unnamed () -->
-                    <div id="u70" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
+              <!-- Unnamed (Rectangle) -->
+              <div id="u69" class="ax_default shape1">
+                <div id="u69_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u70" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Horizontal Line) -->
-                <div id="u71" class="ax_default horizontal_line">
-                    <img id="u71_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d">
-                    <!-- Unnamed () -->
-                    <div id="u72" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
+              <!-- Unnamed (Horizontal Line) -->
+              <div id="u71" class="ax_default horizontal_line">
+                <img id="u71_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
+                <!-- Unnamed () -->
+                <div id="u72" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Horizontal Line) -->
-                <div id="u73" class="ax_default horizontal_line">
-                    <img id="u73_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u73.png?token=4876b699eec07e3e3e7f2e5a3e95a93b">
-                    <!-- Unnamed () -->
-                    <div id="u74" class="text" style="display:none; visibility: hidden">
-                        <p><span></span></p>
-                    </div>
+              <!-- Unnamed (Horizontal Line) -->
+              <div id="u73" class="ax_default horizontal_line">
+                <img id="u73_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u73.png?token=4876b699eec07e3e3e7f2e5a3e95a93b"/>
+                <!-- Unnamed () -->
+                <div id="u74" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Rectangle) -->
-                <div id="u75" class="ax_default paragraph1" style="cursor: pointer;">
-                    <div id="u75_div" class="" tabindex="0"></div>
-                    <!-- Unnamed () -->
-                    <div id="u76" class="text">
-                        <p><span>Какой-то текст</span></p>
-                    </div>
+              <!-- Unnamed (Rectangle) -->
+              <div id="u75" class="ax_default paragraph1">
+                <div id="u75_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u76" class="text">
+                  <p><span>Какой-то текст</span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Rectangle) -->
-                <div id="u77" class="ax_default paragraph1" style="cursor: pointer;">
-                    <div id="u77_div" class="" tabindex="0"></div>
-                    <!-- Unnamed () -->
-                    <div id="u78" class="text">
-                        <p><span>Проверка баланса</span></p>
-                    </div>
+              <!-- Unnamed (Rectangle) -->
+              <div id="u77" class="ax_default paragraph1">
+                <div id="u77_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u78" class="text">
+                  <p><span>Проверка баланса</span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Rectangle) -->
-                <div id="u79" class="ax_default paragraph1" style="cursor: pointer;">
-                    <div id="u79_div" class="" tabindex="0"></div>
-                    <!-- Unnamed () -->
-                    <div id="u80" class="text">
-                        <p><span>Курс токена</span></p>
-                    </div>
+              <!-- Unnamed (Rectangle) -->
+              <div id="u79" class="ax_default paragraph1">
+                <div id="u79_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u80" class="text">
+                  <p><span>Курс токена</span></p>
                 </div>
+              </div>
 
-                <!-- Unnamed (Rectangle) -->
-                <div id="u81" class="ax_default paragraph1" style="cursor: pointer;">
-                    <div id="u81_div" class="" tabindex="0"></div>
-                    <!-- Unnamed () -->
-                    <div id="u82" class="text">
-                        <p><span>Купля / Продажа</span></p>
-                    </div>
+              <!-- Unnamed (Rectangle) -->
+              <div id="u81" class="ax_default paragraph1">
+                <div id="u81_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u82" class="text">
+                  <p><span>Купля / Продажа</span></p>
                 </div>
+              </div>
             </div>
 
             <!-- линия верха страницы (Horizontal Line) -->
             <div id="u83" class="ax_default line" data-label="линия верха страницы">
-                <img id="u83_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u83.png?token=2a923858c7d310d8caddd5e91c5951e3">
-                <!-- Unnamed () -->
-                <div id="u84" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                </div>
+              <img id="u83_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u83.png?token=2a923858c7d310d8caddd5e91c5951e3"/>
+              <!-- Unnamed () -->
+              <div id="u84" class="text" style="display:none; visibility: hidden">
+                <p><span></span></p>
+              </div>
             </div>
 
             <!-- Unnamed (Rectangle) -->
             <div id="u85" class="ax_default label">
-                <div id="u85_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u86" class="text">
-                    <p><span>Заголовок страницы</span></p>
-                </div>
+              <div id="u85_div" class=""></div>
+              <!-- Unnamed () -->
+              <div id="u86" class="text">
+                <p><span>Заголовок страницы</span></p>
+              </div>
             </div>
+          </div>
         </div>
-    </div></div>
+        <div id="u67_state1" class="panel_state" data-label="State2" style="visibility: hidden;">
+          <div id="u67_state1_content" class="panel_state_content">
 
-    <!-- текст (Group) -->
-    <div id="u104" class="ax_default" data-label="текст" data-left="4" data-top="200" data-width="1524" data-height="238">
+            <!-- Unnamed (Group) -->
+            <div id="u87" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="46">
+
+              <!-- Unnamed (Rectangle) -->
+              <div id="u88" class="ax_default shape1">
+                <div id="u88_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u89" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Horizontal Line) -->
+              <div id="u90" class="ax_default horizontal_line">
+                <img id="u90_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
+                <!-- Unnamed () -->
+                <div id="u91" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Horizontal Line) -->
+              <div id="u92" class="ax_default horizontal_line">
+                <img id="u92_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u92.png?token=4b6175cd07a57241d3b9f5f8740c8bd3"/>
+                <!-- Unnamed () -->
+                <div id="u93" class="text" style="display:none; visibility: hidden">
+                  <p><span></span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Rectangle) -->
+              <div id="u94" class="ax_default paragraph1">
+                <div id="u94_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u95" class="text">
+                  <p><span>Какой-то текст</span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Rectangle) -->
+              <div id="u96" class="ax_default paragraph1">
+                <div id="u96_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u97" class="text">
+                  <p><span>Проверка баланса</span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Rectangle) -->
+              <div id="u98" class="ax_default paragraph1">
+                <div id="u98_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u99" class="text">
+                  <p><span>Курс токена</span></p>
+                </div>
+              </div>
+
+              <!-- Unnamed (Rectangle) -->
+              <div id="u100" class="ax_default paragraph1">
+                <div id="u100_div" class=""></div>
+                <!-- Unnamed () -->
+                <div id="u101" class="text">
+                  <p><span>Купля / Продажа</span></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- линия верха страницы (Horizontal Line) -->
+            <div id="u102" class="ax_default line" data-label="линия верха страницы">
+              <img id="u102_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u102.png?token=1154e5f1d674312c1440f3e50731ad8c"/>
+              <!-- Unnamed () -->
+              <div id="u103" class="text" style="display:none; visibility: hidden">
+                <p><span></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- текст (Group) -->
+      <div id="u104" class="ax_default" data-label="текст" data-left="4" data-top="200" data-width="1524" data-height="238">
 
         <!-- Rectangle (Rectangle) -->
         <div id="u105" class="ax_default shape" data-label="Rectangle">
-            <div id="u105_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u106" class="text" style="top: 10px; transform-origin: 747px 10px 0px;">
-                <p><span>Текст</span></p>
-            </div>
+          <div id="u105_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u106" class="text">
+            <p><span>Текст</span></p>
+          </div>
         </div>
 
         <!-- Rectangle (Rectangle) -->
         <div id="u107" class="ax_default shape" data-label="Rectangle">
-            <div id="u107_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u108" class="text" style="top: 45px; transform-origin: 747px 54px 0px;">
-                <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p>
-            </div>
+          <div id="u107_div" class=""></div>
+          <!-- Unnamed () -->
+          <div id="u108" class="text">
+            <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- блок купить (Group) -->
-    <div id="u109" class="ax_default" data-label="блок купить" data-left="4" data-top="1298" data-width="1524" data-height="238">
+      <!-- блок купить (Group) -->
+      <div id="u109" class="ax_default" data-label="блок купить" data-left="4" data-top="1298" data-width="1524" data-height="238">
 
         <!-- текст (Group) -->
         <div id="u110" class="ax_default" data-label="текст" data-left="4" data-top="1298" data-width="1524" data-height="238">
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u111" class="ax_default shape" data-label="Rectangle">
-                <div id="u111_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u112" class="text" style="top: 10px; transform-origin: 747px 10px 0px;">
-                    <p><span>Купить / продать</span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u111" class="ax_default shape" data-label="Rectangle">
+            <div id="u111_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u112" class="text">
+              <p><span>Купить / продать</span></p>
             </div>
+          </div>
 
-            <!-- Rectangle (Rectangle) -->
-            <div id="u113" class="ax_default shape" data-label="Rectangle">
-                <div id="u113_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u114" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                </div>
+          <!-- Rectangle (Rectangle) -->
+          <div id="u113" class="ax_default shape" data-label="Rectangle">
+            <div id="u113_div" class=""></div>
+            <!-- Unnamed () -->
+            <div id="u114" class="text" style="display:none; visibility: hidden">
+              <p><span></span></p>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Unnamed (Image) -->
-    <div id="u115" class="ax_default image" style="cursor: pointer;">
-        <img id="u115_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u115.png?token=ee819d58110c9edbfa5dccc3dd983c42" tabindex="0">
+      <!-- Unnamed (Image) -->
+      <div id="u115" class="ax_default image">
+        <img id="u115_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u115.png?token=ee819d58110c9edbfa5dccc3dd983c42"/>
         <!-- Unnamed () -->
         <div id="u116" class="text" style="display:none; visibility: hidden">
-            <p><span></span></p>
+          <p><span></span></p>
         </div>
-    </div>
+      </div>
 
-    <!-- Unnamed (Image) -->
-    <div id="u117" class="ax_default image" style="cursor: pointer;">
-        <img id="u117_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u117.png?token=b421219f23bfad64dca1dad4b16d2876" tabindex="0">
+      <!-- Unnamed (Image) -->
+      <div id="u117" class="ax_default image">
+        <img id="u117_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u117.png?token=b421219f23bfad64dca1dad4b16d2876"/>
         <!-- Unnamed () -->
         <div id="u118" class="text" style="display:none; visibility: hidden">
-            <p><span></span></p>
+          <p><span></span></p>
         </div>
+      </div>
     </div>
-</div>
-
-
-</body>
-
-<!--
-<header aria-label="header">
-    <section class="bg-gradient header-branding">
-        <section class="container">
-            <a class="brand" href="/" aria-label="Go to homepage">
-                <img src="images/ae_logo.png" height="44px" width="auto" alt="ae"/><h4
-                    style="position:relative; display:inline; top:5px;">&nbsp;&nbsp;Contribution Wallet</h4></a>
-            <div class="tagline">
-                <span style="max-width: 395px">contribute to æternity development</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="dropdown">
-                    <a tabindex="0" aria-haspopup="true"
-                       aria-label="change node. current node {{curNode.name}} node by {{curNode.service}}"
-                       class="dropdown-toggle"> {{curNode.name}} <small>({{curNode.service}})</small></a>
-                </span>
-            </div>
-        </section>
-    </section>
-</header>
-
-<br/>
-
-<section class="container" style="min-height: 75vh" ng-controller='viewCtrl'>
-
-    <div class="tab-content">
-
-        <main class="tab-pane active" ng-if="globalService.currentTab==globalService.tabs.start.id" ng-cloak
-              ng-controller="countdownCtrl as cdc">
-
-            <div ng-controller="contributionsCtrl as ctc">
-                <div class="container mt-5 mb-5" ng-controller="contributionsCtrl as ctc"
-                     ng-show="cdc.currentPhase >= 1" id="balanceCheck">
-
-                    <hr>
-
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <h1>AE Balance Check</h1>
-                            <h4>Contributed already? Check your AE balance here:</h4>
-
-                            <div class="row mb-5">
-                                <div class="col-md-12 mt-3">
-                                    Works with your ETH or BTC address. Please do not insert your private key here.
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input id="balance-id" type="text" ng-model="ctc.fromAddress" class="form-control"
-                                               style="height: 55px;"/>
-                                        <span class="input-group-btn">
-              <div id="balance-check-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;"
-                   ng-click="ctc.loadAddressContributions()">Check</div>
-            </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p id="balance-container">Your tokens: <span id="balance-tokens"></span>
-                                ETH: <span id="balance-eth"></span>, BTC: <span id="balance-btc"></span>
-                                <div id="tokens-history-template" style="display:none;">
-                                    <span id="tokens-history-op-time"></span>
-                                    <span id="tokens-history-op-name"></span>
-                                    <span id="tokens-history-op-count"></span>
-                                    <span id="tokens-history-op-price"></span>
-                                </div>
-                                <div id="tokens-history-container"></div>
-                            </p>
-                            <p id="balance-wait">
-                                <b>Depending on your contribution method you might not be able to see your current AE
-                                    token balance immediately. This will be updated shorty. If your transaction has been
-                                    confirmed on the blockchain you're all set.</b>
-                            </p>
-                            <p id="balance-error"></p>
-
-                        </div>
-
-                    </div>
-
-                    <hr>
-
-                    <div class="row">
-
-                        <div class="col-md-12">
-                            <h1>AE Wallet add</h1>
-                            <div class="row mb-5">
-                                <div class="col-md-12 mt-3">
-                                    By private key:
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input id="add-wallet-private-key" type="text" class="form-control" style="height: 55px;"/>
-                                        <span class="input-group-btn">
-                                            <div id="add-wallet-private-key-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-5">
-                                <div class="col-md-12 mt-3">
-                                    By file:
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input id="add-wallet-file" type="file" class="form-control" style="height: 55px;"/>
-                                        <input id="add-wallet-file-password" type="text" class="form-control" style="height: 55px;"/>
-                                        <span class="input-group-btn">
-                                            <div id="add-wallet-file-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <hr>
-
-                    <div id="wallet-ops" class="row">
-
-                        <div class="col-md-12">
-                            <h1>Buy tokens with wallet <span id="wallet-address"></span></h1>
-                            <div class="row mb-5">
-                                <div class="col-md-12 mt-3">
-                                    Count:
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group">
-                                        <input id="buy-tokens-count" type="text" class="form-control" style="height: 55px;"/>
-                                        <span class="input-group-btn">
-                                            <div id="buy-tokens-button" class="btn btn-primary" style="margin-top: 3px; padding-top: 15px;">Add</div>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </main>
-    </div>
-</section>
-
-<canvas id="myChart" width="100" height="30"></canvas>
-
-<footer role="contentinfo" aria-label="ae-footer" ng-controller='footerCtrl'>
-
-    <div class="container">
-        <div class="row py-5">
-            <div class="col-md-12 text-center">
-                aeternity.com – <a role="link" tabindex="0" data-toggle="modal" data-target="#disclaimerModal">Imprint
-                (legal)</a>
-            </div>
-        </div>
-    </div>
-
-    <article class="modal fade" id="disclaimerModal" tabindex="-1">
-        <section class="modal-dialog">
-            <section class="modal-content">
-
-                <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-                    <h2 class="modal-title text-info" translate="FOOTER_4">Disclaimer</h2>
-
-
-                    <p class="small"><strong>Always backup your keys: </strong> wallet.aeternity.com is not a "web
-                        wallet". You do not create an account or give us your AE or Ether to hold onto. All data never
-                        leaves your computer/your browser. We make it easy for you to create, save, and access your
-                        information and interact with the blockchain.</p>
-
-                    <p class="small"><strong>MIT License</strong> Copyright &copy; 2017 Aeternity Anstalt</p>
-
-                    <p class="small">Permission is hereby granted, free of charge, to any person obtaining a copy of
-                        this software and associated documentation files (the "Software"), to deal in the Software
-                        without restriction, including without limitation the rights to use, copy, modify, merge,
-                        publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to
-                        whom the Software is furnished to do so, subject to the following conditions:</p>
-
-                    <p class="small">The above copyright notice and this permission notice shall be included in all
-                        copies or substantial portions of the Software.</p>
-
-                    <p class="small"><strong>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-                        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-                        PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-                        LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-                        OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-                        IN THE SOFTWARE.</strong></p>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal">Okay</button>
-                </div>
-
-            </section>
-        </section>
-    </article>
-
-
-</footer>
--->
-
+  </body>
 </html>
