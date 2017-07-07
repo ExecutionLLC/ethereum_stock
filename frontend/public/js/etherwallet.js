@@ -43,6 +43,14 @@ const Page = {
                 FILE: 'add-wallet-file',
                 PASWORD: 'add-wallet-file-password',
                 BUTTON: 'add-wallet-file-button'
+            },
+            OPERATIONS: {
+                CONTAINER: 'wallet-ops',
+                WALLET_ADDRESS: 'wallet-address',
+                BUY: {
+                    COUNT: 'buy-tokens-count',
+                    BUTTON: 'buy-tokens-button'
+                }
             }
         }
     },
@@ -102,11 +110,11 @@ const Page = {
         $error.text(error);
     },
     showCurrentWallet(wallet) {
-        $('#wallet-ops').toggle(!!wallet);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
         if (!wallet) {
             return;
         }
-        $('#wallet-address').text(wallet.address);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
     }
 };
 
@@ -272,8 +280,8 @@ function onload() {
         });
     });
 
-    $('#buy-tokens-button').click(() => {
-        const count = +$('#buy-tokens-count').val();
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
+        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
         MyContract.buy({value: wei, gasLimit: 80000});
