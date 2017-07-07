@@ -45,6 +45,36 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
+    showTokensHistory(res) {
+        const $tmpl = $('#tokens-history-template');
+
+        function addElementIdKey($el, key) {
+            const newId = $el[0].id + '-' + key;
+            $el.prop('id', newId);
+        }
+
+        function setElementContent($el, key, text) {
+            addElementIdKey($el, key);
+            $el.text(text);
+        }
+
+        function setElementIdContent($parent, elId, key, text) {
+            const $el = $parent.find(elId);
+            setElementContent($el, key, text);
+        }
+
+        const $rows = res.map((item, index) => {
+            const $el = $tmpl.clone().show();
+            addElementIdKey($el, index);
+            setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
+            setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
+            setElementIdContent($el, '#tokens-history-op-count', index, item.count);
+            setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
+            return $el;
+        });
+        $('#tokens-history-container').empty().append($rows);
+
+    },
     showError(error) {
         $error = $('#balance-error');
         $error.toggle(error != null);
@@ -188,33 +218,7 @@ function onload() {
             } else {
                 Ether.getPriceData(walletId, contract, (err, res) => {
                     Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                    const $tmpl = $('#tokens-history-template');
-
-                    function addElementIdKey($el, key) {
-                        const newId = $el[0].id + '-' + key;
-                        $el.prop('id', newId);
-                    }
-
-                    function setElementContent($el, key, text) {
-                        addElementIdKey($el, key);
-                        $el.text(text);
-                    }
-
-                    function setElementIdContent($parent, elId, key, text) {
-                        const $el = $parent.find(elId);
-                        setElementContent($el, key, text);
-                    }
-
-                    const $rows = res.map((item, index) => {
-                        const $el = $tmpl.clone().show();
-                        addElementIdKey($el, index);
-                        setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
-                        setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
-                        setElementIdContent($el, '#tokens-history-op-count', index, item.count);
-                        setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
-                        return $el;
-                    });
-                    $('#tokens-history-container').empty().append($rows);
+                    Page.showTokensHistory(res);
                 });
             }
         });
