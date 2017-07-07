@@ -30,7 +30,8 @@ const Page = {
                 NAME: 'tokens-history-op-name',
                 COUNT: 'tokens-history-op-count',
                 PRICE: 'tokens-history-op-price'
-            }
+            },
+            CONTAINER: 'tokens-history-container'
         },
         CHART: 'myChart'
     },
@@ -81,7 +82,7 @@ const Page = {
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.PRICE, index, item.tokenPrice);
             return $el;
         });
-        $('#tokens-history-container').empty().append($rows);
+        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
     },
     showError(error) {
