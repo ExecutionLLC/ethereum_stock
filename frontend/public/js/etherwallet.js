@@ -23,6 +23,15 @@ const Page = {
             ETH: 'balance-eth',
             BTC: 'balance-btc'
         },
+        TOKENS_HISTORY: {
+            TEMPLATE: 'tokens-history-template',
+            OPERATION: {
+                TIME: 'tokens-history-op-time',
+                NAME: 'tokens-history-op-name',
+                COUNT: 'tokens-history-op-count',
+                PRICE: 'tokens-history-op-price'
+            }
+        },
         CHART: 'myChart'
     },
     $id(id) {
@@ -46,7 +55,7 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
     showTokensHistory(res) {
-        const $tmpl = $('#tokens-history-template');
+        const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
             const newId = $el[0].id + '-' + key;
@@ -59,17 +68,17 @@ const Page = {
         }
 
         function setElementIdContent($parent, elId, key, text) {
-            const $el = $parent.find(elId);
+            const $el = $parent.find(`#${elId}`);
             setElementContent($el, key, text);
         }
 
         const $rows = res.map((item, index) => {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
-            setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
-            setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
-            setElementIdContent($el, '#tokens-history-op-count', index, item.count);
-            setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, item.timestamp);
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, item.isAsquired ? 'buy' : 'sell');
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.PRICE, index, item.tokenPrice);
             return $el;
         });
         $('#tokens-history-container').empty().append($rows);
