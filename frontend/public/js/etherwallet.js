@@ -234,7 +234,17 @@ function onload() {
         const count = +$('#buy-tokens-count').val();
         const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        MyContract.buy({value: wei, gasLimit: 80000});
+        MyContract.buy({value: wei, gasLimit: 80000})
+            .then((res) => {
+                console.log(res);
+                return res.hash;
+            })
+            .then((transactionHash) => {
+                currentWallet.provider.once(transactionHash,(transaction) => {
+                    console.log('Transaction Minded: ' + transaction.hash);
+                    console.log(transaction);
+                });
+            });
     });
 
     Ether.getData(
