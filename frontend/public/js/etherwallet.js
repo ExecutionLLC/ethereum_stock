@@ -206,7 +206,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = $('#add-wallet-private-key').val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const wallet = new Wallet(privateKey0x);
+        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
@@ -228,9 +228,9 @@ function onload() {
 
     $('#buy-tokens-button').click(() => {
         const count = +$('#buy-tokens-count').val();
-        const MyContract = web3.eth.contract(CONTRACT.ABI);
-        const myContractInstance = MyContract.at(CONTRACT.ID);
-        myContractInstance.buy({address: currentWallet.address, value: count});
+        const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
+        const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
+        MyContract.buy({value: wei, gasLimit: 80000});
     });
 
     Ether.getData(
