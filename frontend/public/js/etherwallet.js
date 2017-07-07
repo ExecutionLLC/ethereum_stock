@@ -33,7 +33,18 @@ const Page = {
             },
             CONTAINER: 'tokens-history-container'
         },
-        CHART: 'myChart'
+        CHART: 'myChart',
+        ALTER_WALLET: {
+            PRIVATE_KEY: {
+                KEY: 'add-wallet-private-key',
+                BUTTON: 'add-wallet-private-key-button'
+            },
+            FILE: {
+                FILE: 'add-wallet-file',
+                PASWORD: 'add-wallet-file-password',
+                BUTTON: 'add-wallet-file-button'
+            }
+        }
     },
     $id(id) {
         return $(`#${id}`);
@@ -234,24 +245,24 @@ function onload() {
         });
     });
 
-    $('#add-wallet-private-key-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
-        const privateKey = $('#add-wallet-private-key').val();
+        const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
 
-    $('#add-wallet-file-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
-        const file = $('#add-wallet-file')[0].files[0];
+        const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
         readFileContent(file, (content) => {
-            const password = $('#add-wallet-file-password').val();
+            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
                     wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
