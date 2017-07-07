@@ -45,8 +45,8 @@ const Ether = {
         let tokens;
         let tokenPrice;
         try {
-            tokens = contract.clientTokens(walletId).c[0];
-            tokenPrice = contract.tokenPrice().c[0];
+            tokens = new BigNumber(contract.clientTokens(walletId)).toNumber();
+            tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
         } catch(e) {
             callback(e);
             return;
@@ -77,12 +77,13 @@ const Ether = {
             } else {
                 async.map(logs, (log, callback) => {
                     web3.eth.getBlock(log.blockNumber, (error, block) => {
-                        const {transactionIndex, args: {_newPrice: {c}}} = log;
+                        const {transactionIndex, args: {_newPrice}} = log;
+                        const ethPrice = new BigNumber(web3.fromWei(_newPrice, 'ether')).toNumber();
                         const {timestamp} = block;
                         callback(null, {
                             timestamp,
                             transactionIndex,
-                            price: c[0]
+                            price: ethPrice
                         });
                     });
                 }, callback);
@@ -101,9 +102,9 @@ const Ether = {
                         const {timestamp} = block;
                         callback(null, {
                             timestamp,
-                            tokenPrice: _currentTokenPrice.c[0],
+                            tokenPrice: new BigNumber(web3.fromWei(_currentTokenPrice, 'ether')).toNumber(),
                             isAsquired: _isAcquired,
-                            count: _n.c[0]
+                            count: new BigNumber(_n).toNumber()
                         });
                     });
                 }, callback);
@@ -257,7 +258,7 @@ function onload() {
                 y: log.price
             }));
 
-            const tss = data.map(d => d.x);
+            const tss = data.map(d => Math.floor(d.x));
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
                 const data2 = data.map((d, i) => ({
                     x: d.x,
