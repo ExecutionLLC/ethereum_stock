@@ -405,10 +405,11 @@ function onload() {
             }
             const timeParts = res.reduce(
                 (parts, log) => {
-                    const time = log.timestamp;
-                    const index = log.transactionIndex;
-                    const indexes = parts[time] > index + 1 ? parts[time] : index + 1;
-                    parts[time] = indexes;
+                    const {transactionIndex, timestamp} = log;
+                    const transactionsForTimestamp = parts[timestamp];
+                    const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                        parts[timestamp] = atLeastTransactionsForTimestamp;
                     return parts;
                 },
                 {}
