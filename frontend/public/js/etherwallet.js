@@ -166,7 +166,10 @@ TokenPriceChart = {
             options: {
                 scales: {
                     xAxes: [{
-                        type: 'time'
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'll HH:mm'
+                        }
                     }]
                 },
                 responsive: false
