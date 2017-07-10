@@ -35,7 +35,11 @@ const Page = {
             CONTAINER: 'tokens-history-container'
         },
         CHART: {
-            ID: 'myChart'
+            ID: 'myChart',
+            BUTTONS: {
+                WHOLE: 'u13',
+                MONTH: 'u11'
+            }
         },
         ALTER_WALLET: {
             PRIVATE_KEY: {
@@ -387,6 +391,9 @@ function onload() {
                 });
             });
     });
+
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => console.log('show chart for whole time'));
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => console.log(`show chart since ${+moment().subtract(1, 'month')}`));
 
     Ether.getData(
         web3,
