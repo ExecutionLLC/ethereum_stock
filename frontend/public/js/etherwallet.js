@@ -427,14 +427,29 @@ function onload() {
                 x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
                 y: log.price
             }));
+            const steppedDataRes = data.reduce(
+                (res, item) => {
+                    if (res.prev && res.prev.x !== item.x) {
+                        res.newData.push({
+                            x: item.x,
+                            y: res.prev.y
+                        });
+                    }
+                    res.newData.push(item);
+                    res.prev = item;
+                    return res;
+                },
+                {newData: [], prev: null}
+            );
+            const steppedData = steppedDataRes.newData;
 
-            const tss = data.map(d => Math.floor(d.x));
+            const tss = steppedData.map(d => Math.floor(d.x));
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
-                const data2 = data.map((d, i) => ({
+                const data2 = steppedData.map((d, i) => ({
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                Page.showTokenPriceChart({data, data2});
+                Page.showTokenPriceChart({data: steppedData, data2});
             });
         }
     );
