@@ -168,7 +168,8 @@ TokenPriceChart = {
                     xAxes: [{
                         type: 'time'
                     }]
-                }
+                },
+                responsive: false
             }
         });
     }
@@ -414,7 +415,15 @@ function onload() {
                 },
                 {}
             );
-            const data = res.map(log => ({
+            const lastTimestamp = Math.floor(+new Date() / 1000);
+            const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+            transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+            const logWNow = res.concat({
+                transactionIndex: transactionsInLastTimestamp,
+                timestamp: lastTimestamp,
+                price: res[res.length - 1].price
+            });
+            const data = logWNow.map(log => ({
                 x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
                 y: log.price
             }));
