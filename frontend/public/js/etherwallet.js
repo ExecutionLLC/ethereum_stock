@@ -34,7 +34,9 @@ const Page = {
             },
             CONTAINER: 'tokens-history-container'
         },
-        CHART: 'myChart',
+        CHART: {
+            ID: 'myChart'
+        },
         ALTER_WALLET: {
             PRIVATE_KEY: {
                 KEY: 'add-wallet-private-key',
@@ -134,7 +136,7 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
     showTokenPriceChart(data) {
-        const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
+        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
         TokenPriceChart.show(ctx, data);
     }
 };
