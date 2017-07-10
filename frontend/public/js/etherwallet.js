@@ -132,6 +132,39 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
+    },
+    showTokenPriceChart(data) {
+        const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
+        TokenPriceChart.show(ctx, data);
+    }
+};
+
+TokenPriceChart = {
+    show(ctx, data) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'ETH',
+                        lineTension: 0,
+                        data: data.data
+                    },
+                    {
+                        label: 'BTC',
+                        lineTension: 0,
+                        data: data.data2
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'time'
+                    }]
+                }
+            }
+        });
     }
 };
 
@@ -383,31 +416,7 @@ function onload() {
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: 'ETH',
-                                lineTension: 0,
-                                data: data
-                            },
-                            {
-                                label: 'BTC',
-                                lineTension: 0,
-                                data: data2
-                            },
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time'
-                            }]
-                        }
-                    }
-                });
+                Page.showTokenPriceChart({data, data2});
             });
         }
     );
