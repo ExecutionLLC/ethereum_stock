@@ -153,12 +153,18 @@ TokenPriceChart = {
                 datasets: [
                     {
                         label: 'ETH',
+                        backgroundColor: 'transparent',
+                        borderColor: 'red',
                         lineTension: 0,
+                        yAxisID: "y-axis-1",
                         data: data.data
                     },
                     {
                         label: 'BTC',
+                        backgroundColor: 'transparent',
+                        borderColor: 'blue',
                         lineTension: 0,
+                        yAxisID: "y-axis-2",
                         data: data.data2
                     },
                 ]
@@ -169,6 +175,20 @@ TokenPriceChart = {
                         type: 'time',
                         time: {
                             tooltipFormat: 'll HH:mm'
+                        }
+                    }],
+                    yAxes: [{
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "left",
+                        id: "y-axis-1",
+                    }, {
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "right",
+                        id: "y-axis-2",
+                        gridLines: {
+                            drawOnChartArea: false
                         }
                     }]
                 },
