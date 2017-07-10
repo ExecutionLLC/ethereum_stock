@@ -14,8 +14,58 @@ const CONTRACT = {
 let currentWallet = null;
 
 const Page = {
+    ELEMENT_ID: {
+        BALANCE: {
+            WALLET_INPUT: 'u40_input',
+            CHECK_BUTTON: 'u42',
+            CONTAINER: 'u21',
+            TOKENS: 'balance-tokens',
+            ETH: 'balance-eth',
+            BTC: 'balance-btc',
+            WAIT: 'u36-1'
+        },
+        TOKENS_HISTORY: {
+            TEMPLATE: 'tokens-history-template',
+            OPERATION: {
+                TIME: 'tokens-history-op-time',
+                NAME: 'tokens-history-op-name',
+                COUNT: 'tokens-history-op-count',
+                PRICE: 'tokens-history-op-price'
+            },
+            CONTAINER: 'tokens-history-container'
+        },
+        CHART: 'myChart',
+        ALTER_WALLET: {
+            PRIVATE_KEY: {
+                KEY: 'add-wallet-private-key',
+                BUTTON: 'add-wallet-private-key-button'
+            },
+            FILE: {
+                FILE: 'add-wallet-file',
+                PASWORD: 'add-wallet-file-password',
+                BUTTON: 'add-wallet-file-button'
+            },
+            OPERATIONS: {
+                CONTAINER: 'wallet-ops',
+                WALLET_ADDRESS: 'wallet-address',
+                BUY: {
+                    COUNT: 'buy-tokens-count',
+                    BUTTON: 'buy-tokens-button',
+                    WAIT: 'buy-tokens-wait'
+                },
+                SELL: {
+                    COUNT: 'sell-tokens-count',
+                    BUTTON: 'sell-tokens-button',
+                    WAIT: 'sell-tokens-wait'
+                }
+            }
+        }
+    },
+    $id(id) {
+        return $(`#${id}`);
+    },
     showBalanceWait(show) {
-        $('#balance-wait').toggle(show);
+        Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
     },
     showBalance(tokens, eth, btc) {
 
@@ -23,10 +73,43 @@ const Page = {
             return s == null ? '...' : s;
         }
 
-        $('#balance-container').toggle(tokens != null);
-        $('#balance-tokens').text(strNull(tokens));
-        $('#balance-eth').text(strNull(eth));
-        $('#balance-btc').text(strNull(btc));
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
+            .removeClass('ax_default_hidden')
+            .attr('style', '')
+            .toggle(tokens != null);
+        Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
+        Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
+        Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
+    },
+    showTokensHistory(res) {
+        const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
+
+        function addElementIdKey($el, key) {
+            const newId = $el[0].id + '-' + key;
+            $el.prop('id', newId);
+        }
+
+        function setElementContent($el, key, text) {
+            addElementIdKey($el, key);
+            $el.text(text);
+        }
+
+        function setElementIdContent($parent, elId, key, text) {
+            const $el = $parent.find(`#${elId}`);
+            setElementContent($el, key, text);
+        }
+
+        const $rows = res.map((item, index) => {
+            const $el = $tmpl.clone().show();
+            addElementIdKey($el, index);
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, item.isAsquired ? 'buy' : 'sell');
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.PRICE, index, item.tokenPrice);
+            return $el;
+        });
+        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
+
     },
     showError(error) {
         $error = $('#balance-error');
@@ -34,11 +117,21 @@ const Page = {
         $error.text(error);
     },
     showCurrentWallet(wallet) {
-        $('#wallet-ops').toggle(!!wallet);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
         if (!wallet) {
             return;
         }
-        $('#wallet-address').text(wallet.address);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
+    },
+    toggleBuyWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(show);
+    },
+    toggleSellWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     }
 };
 
@@ -158,69 +251,45 @@ function onload() {
     currentWallet = null;
     Page.showCurrentWallet();
 
-    $('#balance-check-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
         Page.showError();
-        const walletId = $('#balance-id').val();
+        const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         Ether.getBalance(contract, walletId, (err, balance) => {
             if (err) {
+                Page.showBalanceWait(false);
                 Page.showError(err);
             } else {
                 Ether.getPriceData(walletId, contract, (err, res) => {
+                    Page.showBalanceWait(false);
                     Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                    const $tmpl = $('#tokens-history-template');
-
-                    function addElementIdKey($el, key) {
-                        const newId = $el[0].id + '-' + key;
-                        $el.prop('id', newId);
-                    }
-
-                    function setElementContent($el, key, text) {
-                        addElementIdKey($el, key);
-                        $el.text(text);
-                    }
-
-                    function setElementIdContent($parent, elId, key, text) {
-                        const $el = $parent.find(elId);
-                        setElementContent($el, key, text);
-                    }
-
-                    const $rows = res.map((item, index) => {
-                        const $el = $tmpl.clone().show();
-                        addElementIdKey($el, index);
-                        setElementIdContent($el, '#tokens-history-op-time', index, item.timestamp);
-                        setElementIdContent($el, '#tokens-history-op-name', index, item.isAsquired ? 'buy' : 'sell');
-                        setElementIdContent($el, '#tokens-history-op-count', index, item.count);
-                        setElementIdContent($el, '#tokens-history-op-price', index, item.tokenPrice);
-                        return $el;
-                    });
-                    $('#tokens-history-container').empty().append($rows);
+                    Page.showTokensHistory(res);
                 });
             }
         });
     });
 
-    $('#add-wallet-private-key-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
-        const privateKey = $('#add-wallet-private-key').val();
+        const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
 
-    $('#add-wallet-file-button').click(() => {
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
         const Wallet = ethers.Wallet;
-        const file = $('#add-wallet-file')[0].files[0];
+        const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
         readFileContent(file, (content) => {
-            const password = $('#add-wallet-file-password').val();
+            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
                     wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
@@ -230,19 +299,56 @@ function onload() {
         });
     });
 
-    $('#buy-tokens-button').click(() => {
-        const count = +$('#buy-tokens-count').val();
-        const wei = '0x' +new BigNumber(web3.toWei(count, "ether")).toString(16);
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
+        Page.toggleBuyWait(true);
+        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
+        const contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const tokenPrice = contract.tokenPrice();
+        const wei = tokenPrice.times(count);
+        const weiStr = `0x${wei.toString(16)}`;
         const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        MyContract.buy({value: wei, gasLimit: 80000})
+        MyContract.buy({value: weiStr, gasLimit: 80000})
             .then((res) => {
                 console.log(res);
                 return res.hash;
             })
             .then((transactionHash) => {
                 currentWallet.provider.once(transactionHash,(transaction) => {
-                    console.log('Transaction Minded: ' + transaction.hash);
+                    console.log('Transaction buy Minded: ' + transaction.hash);
                     console.log(transaction);
+                    Page.toggleBuyWait(false);
+                });
+            });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
+        Page.toggleSellWait(true);
+        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
+        console.log('sell tokens', count);
+        const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
+        MyContract.returnToken(count)
+            .then((res) => {
+                console.log(res);
+                return res.hash;
+            })
+            .then((transactionHash) => {
+                currentWallet.provider.once(transactionHash,(transaction) => {
+                    console.log('Transaction sell Minded: ' + transaction.hash);
+                    console.log(transaction);
+                    MyContract.withdraw()
+                        .then((res) => {
+                            console.log(res);
+                            return res.hash;
+                        })
+                        .then((transactionHash) => {
+                            currentWallet.provider.once(transactionHash,(transaction) => {
+                                console.log('Transaction back maney Minded: ' + transaction.hash);
+                                console.log(transaction);
+                                Page.toggleSellWait(false);
+                            });
+                        });
                 });
             });
     });
@@ -267,7 +373,7 @@ function onload() {
                 {}
             );
             const data = res.map(log => ({
-                x: log.timestamp + log.transactionIndex / timeParts[log.timestamp],
+                x: 1000 * (log.timestamp + log.transactionIndex / timeParts[log.timestamp]),
                 y: log.price
             }));
 
@@ -277,7 +383,7 @@ function onload() {
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                const ctx = document.getElementById("myChart");
+                const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
                 new Chart(ctx, {
                     type: 'line',
                     data: {
