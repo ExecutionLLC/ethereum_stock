@@ -408,9 +408,8 @@ function onload() {
                     const time = log.timestamp;
                     const index = log.transactionIndex;
                     const indexes = parts[time] > index + 1 ? parts[time] : index + 1;
-                    return Object.assign({}, parts, {
-                        [time]: indexes
-                    });
+                    parts[time] = indexes;
+                    return parts;
                 },
                 {}
             );
