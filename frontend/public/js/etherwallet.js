@@ -403,7 +403,7 @@ function onload() {
             if (err) {
                 throw err;
             }
-            const timeParts = res.reduce(
+            const transactionsForTimestamps = res.reduce(
                 (parts, log) => {
                     const {transactionIndex, timestamp} = log;
                     const transactionsForTimestamp = parts[timestamp];
@@ -415,7 +415,7 @@ function onload() {
                 {}
             );
             const data = res.map(log => ({
-                x: 1000 * (log.timestamp + log.transactionIndex / timeParts[log.timestamp]),
+                x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
                 y: log.price
             }));
 
