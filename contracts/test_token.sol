@@ -22,16 +22,16 @@ contract TestToken is ERC20BaseToken, SafeMath {
     function () {
         throw;
     }
-    
-    modifier only_founder() {
+
+    modifier onlyFounder() {
         // Only founder is allowed to do this action.
-        require(msg.sender != founder);
+        require(msg.sender == founder);
         _;
     }
     
-    modifier only_minter() {
+    modifier onlyMinter() {
         // Only minter is allowed to do this action.
-        require(msg.sender != minter);
+        require(msg.sender == minter);
         _;
     }
 
@@ -39,7 +39,7 @@ contract TestToken is ERC20BaseToken, SafeMath {
     /// @param _recipient Address of receiver.
     /// @param _value Number of tokens to issue.
     function issueTokens(address _recipient, uint _value) 
-        only_minter
+        onlyMinter
         returns (bool o_success)
     {
         if (_value == 0) {
@@ -56,7 +56,7 @@ contract TestToken is ERC20BaseToken, SafeMath {
     /// @param _newMinter Address of new emission contract.
     function changeMinter(address _newMinter)
         public
-        only_founder
+        onlyFounder
         returns (bool o_success)
     {   
         minter = _newMinter;
@@ -67,7 +67,7 @@ contract TestToken is ERC20BaseToken, SafeMath {
     /// @param _newFounder Address of new founder.
     function changeFounder(address _newFounder)
         public
-        only_founder
+        onlyFounder
         returns (bool o_success)
     {   
         founder = _newFounder;
