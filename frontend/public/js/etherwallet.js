@@ -139,55 +139,30 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
-    showTokenPriceChart(fromDate) {
-        Ether.getData(
+    initTokenPriceChart(callback) {
+        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
+        Ether.getPriceHistoryData(
             web3,
             CONTRACT.ABI,
             CONTRACT.ID,
             (err, res) => {
-                if (err) {
-                    throw err;
+                if (!err) {
+                    TokenPriceChart.createChart(ctx, res);
                 }
-                const transactionsForTimestamps = res.reduce(
-                    (parts, log) => {
-                        const {transactionIndex, timestamp} = log;
-                        const transactionsForTimestamp = parts[timestamp];
-                        const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                        if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
-                            parts[timestamp] = atLeastTransactionsForTimestamp;
-                        return parts;
-                    },
-                    {}
-                );
-                const lastTimestamp = Math.floor(+new Date() / 1000);
-                const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
-                transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-                const data1 = res.map(log => ({
-                    x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
-                    y: log.price
-                }));
-                const data = XYData.setRange(data1, fromDate, +new Date());
-                const steppedData = XYData.makeStepped(data);
-                const steppedDataMarks = XYData.makeLastInX(steppedData);
-                const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
-                const tss = steppedData.map(d => Math.floor(d.x));
-                API.getBtcFromEthHistoryArray(xs.map(xy => xy.x), (err, btc) => {
-                    const dataBtc = xs.map((d, i) => ({
-                        x: d.x,
-                        y: d.y * btc[i].ETH.BTC
-                    }));
-                    //Page.showTokenPriceChart({eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-                    const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
-                    TokenPriceChart.show(ctx, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-                });
+                callback(err, res);
             }
         );
+    },
+    showTokenPriceChart(fromDate) {
+        TokenPriceChart.show(fromDate);
     }
 };
 
 TokenPriceChart = {
     chart: null,
-    createChart(ctx) {
+    data: null,
+    createChart(ctx, data) {
+        TokenPriceChart.data = data;
         TokenPriceChart.chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -247,13 +222,14 @@ TokenPriceChart = {
             }
         });
     },
-    show(ctx, data) {
-        if (!TokenPriceChart.chart) {
-            TokenPriceChart.createChart(ctx);
-        }
-        TokenPriceChart.chart.data.datasets[0].data = data.eth;
-        TokenPriceChart.chart.data.datasets[1].data = data.ethDots;
-        TokenPriceChart.chart.data.datasets[2].data = data.btc;
+    show(fromDate) {
+        const newEth = XYData.setRange(TokenPriceChart.data.eth, fromDate, +new Date());
+        const newEthDots = XYData.setRange(TokenPriceChart.data.ethDots, fromDate, +new Date());
+        const newBtc = XYData.setRange(TokenPriceChart.data.btc, fromDate, +new Date());
+
+        TokenPriceChart.chart.data.datasets[0].data = newEth;
+        TokenPriceChart.chart.data.datasets[1].data = newEthDots;
+        TokenPriceChart.chart.data.datasets[2].data = newBtc;
         TokenPriceChart.chart.update();
     }
 };
@@ -307,6 +283,53 @@ const Ether = {
                 }, callback);
             }
         });
+    },
+    getPriceHistoryData(web3, abiArray, address, callback) {
+
+        function transactionsToXY(transactions) {
+            const transactionsForTimestamps = transactions.reduce(
+                (parts, trx) => {
+                    const {transactionIndex, timestamp} = trx;
+                    const transactionsForTimestamp = parts[timestamp];
+                    const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                        parts[timestamp] = atLeastTransactionsForTimestamp;
+                    return parts;
+                },
+                {}
+            );
+            const lastTimestamp = Math.floor(+new Date() / 1000);
+            const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+            transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+            return transactions.map(trx => ({
+                x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                y: trx.price
+            }));
+        }
+
+        Ether.getData(
+            web3,
+            abiArray,
+            address,
+            (err, res) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                const transactionsXY = transactionsToXY(res);
+                const data = XYData.setRange(transactionsXY, 0, +new Date());
+                const steppedData = XYData.makeStepped(data);
+                const steppedDataMarks = XYData.makeLastInX(steppedData);
+                const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
+                API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
+                    const dataBtc = steppedDataWIntermediate.map((d, i) => ({
+                        x: d.x,
+                        y: d.y * btc[i].ETH.BTC
+                    }));
+                    callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                });
+            }
+        );
     },
     getPriceData(client, contract, callback){
         const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
@@ -433,7 +456,6 @@ const XYData = {
     setRange(data, min, max) {
 
         function findDataInterval(data, x, iMin, iMax) {
-            //console.log('findDataInterval', x, iMin, iMax);
             if (iMin == null) {
                 return findDataInterval(data, x, 0, iMax);
             }
@@ -603,9 +625,11 @@ function onload() {
         Page.showTokenPriceChart(0);
     });
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
-        Page.showTokenPriceChart(+moment().subtract(4, 'day'));
+        Page.showTokenPriceChart(+moment().subtract(6, 'day'));
     });
-    Page.showTokenPriceChart(0);
+    Page.initTokenPriceChart((err, res) => {
+        Page.showTokenPriceChart(0);
+    });
 }
 
 $(onload);
