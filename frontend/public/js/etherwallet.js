@@ -1,9 +1,24 @@
 const Web3 = Web3_require('web3');
-const web3 = new Web3();
+var web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-web3.setProvider(new web3.providers.HttpProvider('http://192.168.1.101:8111/'));
+var Nodes = {
+    Node1: {
+        name: 'igor1',
+        url: 'http://localhost:9111/',
+        chainId: 15
+    },
+    Node2: {
+        name: 'igor2',
+        url: 'http://localhost:8113/',
+        chainId: 15
+    },
+};
+
+
+var currentNode = Nodes.Node1;
+web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
@@ -58,11 +73,22 @@ const Page = {
                     BUTTON: 'sell-tokens-button',
                     WAIT: 'sell-tokens-wait'
                 }
+            },
+            SELECT_NODE: {
+                NODE: 'select-node'
             }
         }
     },
     $id(id) {
         return $(`#${id}`);
+    },
+    updateNodes(){
+        $.each(Nodes, function(key, value) {
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
+                .append($("<option></option>")
+                    .attr("value",key)
+                    .text(value.name));
+        });
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
@@ -250,6 +276,14 @@ function onload() {
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
+    Page.updateNodes();
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
+        console.log('on_change', Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val());
+        curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        currentNode = Nodes[curNodeName];
+        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+    });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
@@ -278,7 +312,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
+        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
@@ -292,7 +326,7 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
+                    wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
                 });
