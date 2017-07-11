@@ -3,7 +3,28 @@ const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-web3.setProvider(new web3.providers.HttpProvider('http://192.168.1.101:8111/'));
+if (!localStorage['Nodes']) {
+    var Nodes = {
+        Node1: {
+            name: 'igor',
+            url: 'http://192.168.1.101:8111/',
+            chainId: 15
+        },
+        Node2: {
+            name: 'dima',
+            url: 'http://192.168.1.104:8111/',
+            chainId: 15
+        },
+    };
+    localStorage.setItem('Nodes', JSON.stringify(Nodes));
+}
+
+if (!localStorage['selectedNodeValue']) {
+    localStorage.setItem('selectedNodeValue', 'Node1');
+}
+
+var currentNode = JSON.parse(localStorage['Nodes']).Node1;
+web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
@@ -64,11 +85,30 @@ const Page = {
                     BUTTON: 'sell-tokens-button',
                     WAIT: 'sell-tokens-wait'
                 }
+            },
+            SELECT_NODE: {
+                NODE: 'select-node',
+                NAME: 'select-node-name',
+                URL: 'select-node-url',
+                CHAIN_ID: 'select-node-chain-id',
+                ADD: 'select-node-add'
             }
         }
     },
     $id(id) {
         return $(`#${id}`);
+    },
+    updateNodes() {
+        $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
+            Page.appendNode(key, value.name);
+        });
+        Page.selectNode(localStorage['selectedNodeValue']);
+    },
+    appendNode(value, name) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
+            .append($('<option></option>')
+                .attr("value", value)
+                .text(name));
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
@@ -116,6 +156,14 @@ const Page = {
         });
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
+    },
+    selectNode(valueToSelect) {
+        var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
+        element.value = valueToSelect;
+    },
+    getCurrentNode() {
+        var curNodeName = localStorage['selectedNodeValue'];
+        return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
     showError(error) {
         $error = $('#balance-error');
@@ -241,7 +289,7 @@ const Ether = {
         try {
             tokens = new BigNumber(contract.clientTokens(walletId)).toNumber();
             tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
-        } catch(e) {
+        } catch (e) {
             callback(e);
             return;
         }
@@ -331,7 +379,7 @@ const Ether = {
             }
         );
     },
-    getPriceData(client, contract, callback){
+    getPriceData(client, contract, callback) {
         const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
@@ -356,20 +404,20 @@ const Ether = {
 
 const API = {
     getBtcFromEtH(callback) {
-        $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/price', {fsym: 'ETH', tsyms: 'BTC'})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
     getBtcFromEthHistory(ts, callback) {
-        $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/pricehistorical', {fsym: 'ETH', tsyms: 'BTC', ts: ts})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
@@ -518,6 +566,14 @@ function onload() {
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
+    Page.updateNodes();
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
+         var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
+        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+        localStorage.setItem('selectedNodeValue', curNodeName);
+    });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
@@ -546,7 +602,8 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
+        var currentNode = Page.getCurrentNode();
+        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
@@ -560,7 +617,8 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
+                    var currentNode = Page.getCurrentNode();
+                    wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
                 });
@@ -583,12 +641,33 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction buy Minded: ' + transaction.hash);
                     console.log(transaction);
                     Page.toggleBuyWait(false);
                 });
             });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
+        var name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        var url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
+        var chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
+        if (name && url && chainId) {
+            //todo: generate uuid
+            const id = Object.keys(localStorage[Node]).length;
+            const Nodes = JSON.parse(localStorage['Nodes']);
+
+            Nodes[id] = {
+                name,
+                url,
+                chainId
+            };
+            localStorage.setItem('Nodes', JSON.stringify(Nodes));
+            Page.appendNode(id, name);
+        } else {
+            //todo: log error
+        }
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
@@ -602,7 +681,7 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction sell Minded: ' + transaction.hash);
                     console.log(transaction);
                     MyContract.withdraw()
@@ -611,7 +690,7 @@ function onload() {
                             return res.hash;
                         })
                         .then((transactionHash) => {
-                            currentWallet.provider.once(transactionHash,(transaction) => {
+                            currentWallet.provider.once(transactionHash, (transaction) => {
                                 console.log('Transaction back maney Minded: ' + transaction.hash);
                                 console.log(transaction);
                                 Page.toggleSellWait(false);
