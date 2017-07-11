@@ -336,6 +336,30 @@ const XYData = {
     },
     makeLastInX(data) {
         return data.filter((item, i) => i === data.length - 1 || item.x !== data[i + 1].x);
+    },
+    addIntermediatePoints(data, maxInterval) {
+        return data.reduce(
+            (res, xy, index) => {
+                if (index >= data.length - 1) {
+                    res.push(xy);
+                    return res;
+                }
+                const intervalLength = data[index + 1].x - xy.x;
+                if (intervalLength <= maxInterval) {
+                    res.push(xy);
+                    return res;
+                }
+                const newPointsCount = Math.floor(intervalLength / maxInterval);
+                const newXs = new Array(newPointsCount)
+                    .fill(null)
+                    .map((_, i) => ({
+                        x: xy.x + Math.floor((i + 1) * intervalLength / (newPointsCount + 1)),
+                        y: xy.y
+                    }));
+                return res.concat([xy]).concat(newXs);
+            },
+            []
+        );
     }
 };
 
@@ -484,10 +508,10 @@ function onload() {
             }));
             const steppedData = XYData.makeStepped(data);
             const steppedDataMarks = XYData.makeLastInX(steppedData);
-
+            const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
             const tss = steppedData.map(d => Math.floor(d.x));
-            API.getBtcFromEthHistoryArray(tss, (err, btc) => {
-                const dataBtc = steppedData.map((d, i) => ({
+            API.getBtcFromEthHistoryArray(xs, (err, btc) => {
+                const dataBtc = xs.map((d, i) => ({
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
