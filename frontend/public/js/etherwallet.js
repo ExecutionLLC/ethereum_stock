@@ -303,7 +303,7 @@ const API = {
     getBtcFromEthHistoryArray(timestamps, callback) {
         async.map(
             timestamps,
-            (ts, callback) => API.getBtcFromEthHistory(ts, callback),
+            (ts, callback) => API.getBtcFromEthHistory(ts.x, callback),
             callback
         );
     }
@@ -360,6 +360,64 @@ const XYData = {
             },
             []
         );
+    },
+    setRange(data, min, max) {
+
+        function findDataInterval(data, x, iMin, iMax) {
+            //console.log('findDataInterval', x, iMin, iMax);
+            if (iMin == null) {
+                return findDataInterval(data, x, 0, iMax);
+            }
+            if (iMax == null) {
+                return findDataInterval(data, x, iMin, data.length - 1);
+            }
+            if (x < data[iMin].x) {
+                return iMin - 1;
+            }
+            if (x >= data[iMax].x) {
+                return iMax;
+            }
+            const range = iMax - iMin;
+            if (range <= 1) {
+                return iMin;
+            }
+            const iMid = iMin + Math.floor(range / 2);
+            if (x < data[iMid].x) {
+                return findDataInterval(data, x, iMin, iMid);
+            } else {
+                return findDataInterval(data, x, iMid, iMax);
+            }
+        }
+
+        function rangeMin(data, min) {
+            const minIndex = findDataInterval(data, min);
+            if (minIndex < 0) {
+                return data;
+            } else {
+                if (data[minIndex].x === min) {
+                    return data.slice(minIndex);
+                } else {
+                    return [{x: min, y: data[minIndex].y}].concat(data.slice(minIndex + 1));
+                }
+            }
+        }
+
+        function rangeMax(data, max) {
+            const maxIndex = findDataInterval(data, max);
+            if (maxIndex < 0) {
+                return [];
+            } else {
+                if (data[maxIndex].x === max) {
+                    return data.slice(0, maxIndex + 1);
+                } else {
+                    return data.slice(0, maxIndex + 1).concat([{x: max, y: data[maxIndex].y}]);
+                }
+            }
+        }
+
+        const dataRangeMin = rangeMin(data, min);
+        const dataRangeMinMax = rangeMax(dataRangeMin, max);
+        return dataRangeMinMax;
     }
 };
 
@@ -497,15 +555,11 @@ function onload() {
             const lastTimestamp = Math.floor(+new Date() / 1000);
             const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
             transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-            const logWNow = res.concat({
-                transactionIndex: transactionsInLastTimestamp,
-                timestamp: lastTimestamp,
-                price: res[res.length - 1].price
-            });
-            const data = logWNow.map(log => ({
+            const data1 = res.map(log => ({
                 x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
                 y: log.price
             }));
+            const data = XYData.setRange(data1, +new Date('07/06/2017'), +new Date());
             const steppedData = XYData.makeStepped(data);
             const steppedDataMarks = XYData.makeLastInX(steppedData);
             const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
