@@ -40,13 +40,13 @@ contract TestToken is ERC20BaseToken, SafeMath {
     /// @param _value Number of tokens to issue.
     function issueTokens(address _recipient, uint _value) 
         onlyMinter
-        returns (bool o_success)
+        returns (bool success)
     {
         if (_value == 0) {
             return false;
         }
         
-        totalSupply = add(totalSupply, _value);
+        _totalSupply = add(_totalSupply, _value);
         balances[_recipient] = add(balances[_recipient], _value);
         Issuance(_recipient, _value);
         return true;
@@ -57,7 +57,7 @@ contract TestToken is ERC20BaseToken, SafeMath {
     function changeMinter(address _newMinter)
         public
         onlyFounder
-        returns (bool o_success)
+        returns (bool success)
     {   
         minter = _newMinter;
         return true;
@@ -68,7 +68,7 @@ contract TestToken is ERC20BaseToken, SafeMath {
     function changeFounder(address _newFounder)
         public
         onlyFounder
-        returns (bool o_success)
+        returns (bool success)
     {   
         founder = _newFounder;
         return true;

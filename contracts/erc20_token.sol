@@ -16,7 +16,7 @@ contract ERC20Interface {
 contract ERC20BaseToken is ERC20Interface {
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
-    uint256 public totalSupply;
+    uint256 _totalSupply;
     
     modifier whenCanTransfer(address _from, uint256 _value) {
         if (balances[_from] >= _value) { 
@@ -36,13 +36,17 @@ contract ERC20BaseToken is ERC20Interface {
         }
     }
 
+    function totalSupply() constant returns (uint totalSupply) {
+        totalSupply = _totalSupply;
+    }
+    
     /// @dev Transfers sender's tokens to a given address. Returns success.
     /// @param _recipient Address of token receiver.
     /// @param _value Number of tokens to transfer.
     function transfer(address _recipient, uint256 _value)
         whenCanTransfer(msg.sender, _value)
         whenCanReceive(_recipient, _value)
-        returns (bool o_success)
+        returns (bool success)
     {
         balances[msg.sender] -= _value;
         balances[_recipient] += _value;
@@ -58,7 +62,7 @@ contract ERC20BaseToken is ERC20Interface {
         whenCanTransfer(_from, _value)
         whenCanReceive(_recipient, _value)
         whenIsAllowed(_from, msg.sender, _value)
-        returns (bool o_success)
+        returns (bool success)
     {
         allowed[_from][msg.sender] -= _value;
         balances[_from] -= _value;
@@ -76,7 +80,7 @@ contract ERC20BaseToken is ERC20Interface {
     /// @dev Sets approved amount of tokens for spender. Returns success.
     /// @param _spender Address of allowed account.
     /// @param _value Number of approved tokens.
-    function approve(address _spender, uint256 _value) returns (bool o_success) {
+    function approve(address _spender, uint256 _value) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -85,7 +89,7 @@ contract ERC20BaseToken is ERC20Interface {
     /// @dev Returns number of allowed tokens for given address.
     /// @param _owner Address of token owner.
     /// @param _spender Address of token spender
-    function allowance(address _owner, address _spender) constant returns (uint256 o_remaining) {
+    function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
         return allowed[_owner][_spender];
     }
 }
