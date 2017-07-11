@@ -171,7 +171,7 @@ const Page = {
                 const steppedDataMarks = XYData.makeLastInX(steppedData);
                 const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
                 const tss = steppedData.map(d => Math.floor(d.x));
-                API.getBtcFromEthHistoryArray(xs, (err, btc) => {
+                API.getBtcFromEthHistoryArray(xs.map(xy => xy.x), (err, btc) => {
                     const dataBtc = xs.map((d, i) => ({
                         x: d.x,
                         y: d.y * btc[i].ETH.BTC
@@ -351,10 +351,29 @@ const API = {
             });
     },
     getBtcFromEthHistoryArray(timestamps, callback) {
+        const uniqueTimestamps = timestamps.reduce(
+            (obj, ts) => {
+                obj[ts] = ts;
+                return obj;
+            },
+            Object.create(null)
+        );
         async.map(
-            timestamps,
-            (ts, callback) => API.getBtcFromEthHistory(ts.x, callback),
-            callback
+            uniqueTimestamps,
+            (ts, callback) => {
+                API.getBtcFromEthHistory(ts, (err, res) => {
+                    if (!err)
+                        uniqueTimestamps[ts] = res;
+                    callback(err, res);
+                });
+            },
+            (err) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                callback(null, timestamps.map(ts => uniqueTimestamps[ts]));
+            }
         );
     }
 };
