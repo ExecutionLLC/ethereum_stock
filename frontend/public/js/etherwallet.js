@@ -157,7 +157,7 @@ TokenPriceChart = {
                         borderColor: 'red',
                         lineTension: 0,
                         yAxisID: "y-axis-1",
-                        data: data.data
+                        data: data.eth
                     },
                     {
                         label: 'BTC',
@@ -165,7 +165,7 @@ TokenPriceChart = {
                         borderColor: 'blue',
                         lineTension: 0,
                         yAxisID: "y-axis-2",
-                        data: data.data2
+                        data: data.btc
                     },
                 ]
             },
@@ -468,11 +468,11 @@ function onload() {
 
             const tss = steppedData.map(d => Math.floor(d.x));
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
-                const data2 = steppedData.map((d, i) => ({
+                const dataBtc = steppedData.map((d, i) => ({
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                Page.showTokenPriceChart({data: steppedData, data2});
+                Page.showTokenPriceChart({eth: steppedData, btc: dataBtc});
             });
         }
     );
