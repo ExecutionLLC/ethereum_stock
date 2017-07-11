@@ -186,8 +186,9 @@ const Page = {
 };
 
 TokenPriceChart = {
-    show(ctx, data) {
-        new Chart(ctx, {
+    chart: null,
+    createChart(ctx) {
+        TokenPriceChart.chart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [
@@ -197,7 +198,7 @@ TokenPriceChart = {
                         borderColor: 'red',
                         lineTension: 0,
                         yAxisID: "y-axis-1",
-                        data: data.eth,
+                        data: [],//data.eth,
                         pointRadius: 0
                     },
                     {
@@ -207,7 +208,7 @@ TokenPriceChart = {
                         borderDash: [0, 1],
                         lineTension: 0,
                         yAxisID: "y-axis-1",
-                        data: data.ethDots
+                        data: [],//data.ethDots
                     },
                     {
                         label: 'BTC',
@@ -215,7 +216,7 @@ TokenPriceChart = {
                         borderColor: 'blue',
                         lineTension: 0,
                         yAxisID: "y-axis-2",
-                        data: data.btc
+                        data: [],//data.btc
                     },
                 ]
             },
@@ -245,6 +246,15 @@ TokenPriceChart = {
                 responsive: false
             }
         });
+    },
+    show(ctx, data) {
+        if (!TokenPriceChart.chart) {
+            TokenPriceChart.createChart(ctx);
+        }
+        TokenPriceChart.chart.data.datasets[0].data = data.eth;
+        TokenPriceChart.chart.data.datasets[1].data = data.ethDots;
+        TokenPriceChart.chart.data.datasets[2].data = data.btc;
+        TokenPriceChart.chart.update();
     }
 };
 
