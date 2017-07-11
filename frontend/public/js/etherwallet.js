@@ -1,5 +1,5 @@
 const Web3 = Web3_require('web3');
-var web3 = new Web3();
+const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
@@ -96,11 +96,11 @@ const Page = {
         $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
             Page.appendNode(key, value.name);
         });
-        Page.selectNode(localStorage['selectedNodeValue'])
+        Page.selectNode(localStorage['selectedNodeValue']);
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
-            .append($("<option></option>")
+            .append($('<option></option>')
                 .attr("value", value)
                 .text(name));
     },
@@ -301,8 +301,7 @@ function onload() {
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
-        console.log('on_change', Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val());
-        var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+         var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
         currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
         localStorage.setItem('selectedNodeValue', curNodeName);
@@ -386,11 +385,10 @@ function onload() {
         var name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
         var url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
         var chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
-        console.log(name, url, chainId);
         if (name && url && chainId) {
             //todo: generate uuid
-            var id = (Object.keys(localStorage[Node]).length);
-            var Nodes = JSON.parse(localStorage['Nodes']);
+            const id = Object.keys(localStorage[Node]).length;
+            const Nodes = JSON.parse(localStorage['Nodes']);
 
             Nodes[id] = {
                 name,
@@ -399,9 +397,8 @@ function onload() {
             };
             localStorage.setItem('Nodes', JSON.stringify(Nodes));
             Page.appendNode(id, name);
-            console.log('Node was added', name, url, chainId);
         } else {
-            console.log('Invalid params', name, url, chainId);
+            //todo: log error
         }
     });
 
