@@ -157,7 +157,17 @@ TokenPriceChart = {
                         borderColor: 'red',
                         lineTension: 0,
                         yAxisID: "y-axis-1",
-                        data: data.eth
+                        data: data.eth,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ETH-dots',
+                        backgroundColor: 'transparent',
+                        borderColor: 'red',
+                        borderDash: [0, 1],
+                        lineTension: 0,
+                        yAxisID: "y-axis-1",
+                        data: data.ethDots
                     },
                     {
                         label: 'BTC',
@@ -323,6 +333,9 @@ const XYData = {
             },
             {newData: [], prev: null}
         ).newData;
+    },
+    makeLastInX(data) {
+        return data.filter((item, i) => i === data.length - 1 || item.x !== data[i + 1].x);
     }
 };
 
@@ -470,6 +483,7 @@ function onload() {
                 y: log.price
             }));
             const steppedData = XYData.makeStepped(data);
+            const steppedDataMarks = XYData.makeLastInX(steppedData);
 
             const tss = steppedData.map(d => Math.floor(d.x));
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
@@ -477,7 +491,7 @@ function onload() {
                     x: d.x,
                     y: d.y * btc[i].ETH.BTC
                 }));
-                Page.showTokenPriceChart({eth: steppedData, btc: dataBtc});
+                Page.showTokenPriceChart({eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
             });
         }
     );
