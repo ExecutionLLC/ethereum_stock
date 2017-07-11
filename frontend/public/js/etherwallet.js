@@ -3,7 +3,8 @@ var web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-var Nodes = {
+if (!localStorage['Nodes']) {
+    var Nodes = {
     Node1: {
         name: 'igor',
         url: 'http://192.168.1.101:8111/',
@@ -15,9 +16,14 @@ var Nodes = {
         chainId: 15
     },
 };
+    localStorage.setItem('Nodes',JSON.stringify(Nodes));
+}
 
+if (!localStorage['selectedNodeValue']) {
+    localStorage.setItem('selectedNodeValue', 'Node1');
+}
 
-var currentNode = Nodes.Node1;
+var currentNode = JSON.parse(localStorage['Nodes']).Node1;
 web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
@@ -87,9 +93,10 @@ const Page = {
         return $(`#${id}`);
     },
     updateNodes(){
-        $.each(Nodes, function(key, value) {
+        $.each(JSON.parse(localStorage['Nodes']), function(key, value) {
             Page.appendNode(key, value.name);
         });
+        Page.selectNode(localStorage['selectedNodeValue'])
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
@@ -143,6 +150,11 @@ const Page = {
         });
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
+    },
+    selectNode(valueToSelect)
+    {
+        var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
+        element.value = valueToSelect;
     },
     showError(error) {
         $error = $('#balance-error');
@@ -287,9 +299,10 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
         console.log('on_change', Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val());
-        curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        currentNode = Nodes[curNodeName];
+        var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+        localStorage.setItem('selectedNodeValue', curNodeName);
     });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
@@ -371,12 +384,16 @@ function onload() {
         console.log(name, url, chainId);
         if (name && url && chainId) {
             //todo: generate uuid
-            var id = (Object.keys(Nodes).length);
-            Nodes[id]  = {
+            var id = (Object.keys(localStorage[Node]).length);
+            var Nodes = JSON.parse(localStorage['Nodes']);
+
+            Nodes[id]= {
                 name,
                 url,
                 chainId
             };
+            localStorage.setItem('Nodes',JSON.stringify(Nodes));
+            console.log(localStorage[Node]);
             Page.appendNode(id, name);
             console.log('Node was added', name, url, chainId);
         } else {
