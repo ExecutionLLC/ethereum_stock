@@ -307,6 +307,25 @@ function readFileContent(file, callback) {
     fr.readAsText(file);
 }
 
+const XYData = {
+    makeStepped(data) {
+        return data.reduce(
+            (res, item) => {
+                if (res.prev && res.prev.x !== item.x) {
+                    res.newData.push({
+                        x: item.x,
+                        y: res.prev.y
+                    });
+                }
+                res.newData.push(item);
+                res.prev = item;
+                return res;
+            },
+            {newData: [], prev: null}
+        ).newData;
+    }
+};
+
 function onload() {
     Page.showError();
     Page.showBalance();
@@ -450,21 +469,7 @@ function onload() {
                 x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
                 y: log.price
             }));
-            const steppedDataRes = data.reduce(
-                (res, item) => {
-                    if (res.prev && res.prev.x !== item.x) {
-                        res.newData.push({
-                            x: item.x,
-                            y: res.prev.y
-                        });
-                    }
-                    res.newData.push(item);
-                    res.prev = item;
-                    return res;
-                },
-                {newData: [], prev: null}
-            );
-            const steppedData = steppedDataRes.newData;
+            const steppedData = XYData.makeStepped(data);
 
             const tss = steppedData.map(d => Math.floor(d.x));
             API.getBtcFromEthHistoryArray(tss, (err, btc) => {
