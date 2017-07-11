@@ -5,18 +5,18 @@ const BigNumber = Web3_require('bignumber.js');
 
 if (!localStorage['Nodes']) {
     var Nodes = {
-    Node1: {
-        name: 'igor',
-        url: 'http://192.168.1.101:8111/',
-        chainId: 15
-    },
-    Node2: {
-        name: 'dima',
-        url: 'http://192.168.1.104:8111/',
-        chainId: 15
-    },
-};
-    localStorage.setItem('Nodes',JSON.stringify(Nodes));
+        Node1: {
+            name: 'igor',
+            url: 'http://192.168.1.101:8111/',
+            chainId: 15
+        },
+        Node2: {
+            name: 'dima',
+            url: 'http://192.168.1.104:8111/',
+            chainId: 15
+        },
+    };
+    localStorage.setItem('Nodes', JSON.stringify(Nodes));
 }
 
 if (!localStorage['selectedNodeValue']) {
@@ -92,8 +92,8 @@ const Page = {
     $id(id) {
         return $(`#${id}`);
     },
-    updateNodes(){
-        $.each(JSON.parse(localStorage['Nodes']), function(key, value) {
+    updateNodes() {
+        $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
             Page.appendNode(key, value.name);
         });
         Page.selectNode(localStorage['selectedNodeValue'])
@@ -151,14 +151,13 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
     },
-    selectNode(valueToSelect)
-    {
+    selectNode(valueToSelect) {
         var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
         element.value = valueToSelect;
     },
-    getCurrentNode(){
+    getCurrentNode() {
         var curNodeName = localStorage['selectedNodeValue'];
-        return  JSON.parse(localStorage['Nodes'])[curNodeName];
+        return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
     showError(error) {
         $error = $('#balance-error');
@@ -191,7 +190,7 @@ const Ether = {
         try {
             tokens = new BigNumber(contract.clientTokens(walletId)).toNumber();
             tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
-        } catch(e) {
+        } catch (e) {
             callback(e);
             return;
         }
@@ -234,7 +233,7 @@ const Ether = {
             }
         });
     },
-    getPriceData(client, contract, callback){
+    getPriceData(client, contract, callback) {
         const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
@@ -259,20 +258,20 @@ const Ether = {
 
 const API = {
     getBtcFromEtH(callback) {
-        $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/price', {fsym: 'ETH', tsyms: 'BTC'})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
     getBtcFromEthHistory(ts, callback) {
-        $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/pricehistorical', {fsym: 'ETH', tsyms: 'BTC', ts: ts})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
@@ -375,7 +374,7 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction buy Minded: ' + transaction.hash);
                     console.log(transaction);
                     Page.toggleBuyWait(false);
@@ -393,12 +392,12 @@ function onload() {
             var id = (Object.keys(localStorage[Node]).length);
             var Nodes = JSON.parse(localStorage['Nodes']);
 
-            Nodes[id]= {
+            Nodes[id] = {
                 name,
                 url,
                 chainId
             };
-            localStorage.setItem('Nodes',JSON.stringify(Nodes));
+            localStorage.setItem('Nodes', JSON.stringify(Nodes));
             Page.appendNode(id, name);
             console.log('Node was added', name, url, chainId);
         } else {
@@ -417,7 +416,7 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction sell Minded: ' + transaction.hash);
                     console.log(transaction);
                     MyContract.withdraw()
@@ -426,7 +425,7 @@ function onload() {
                             return res.hash;
                         })
                         .then((transactionHash) => {
-                            currentWallet.provider.once(transactionHash,(transaction) => {
+                            currentWallet.provider.once(transactionHash, (transaction) => {
                                 console.log('Transaction back maney Minded: ' + transaction.hash);
                                 console.log(transaction);
                                 Page.toggleSellWait(false);
