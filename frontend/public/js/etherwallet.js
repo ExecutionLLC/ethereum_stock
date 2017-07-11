@@ -139,9 +139,49 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
-    showTokenPriceChart(data) {
-        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
-        TokenPriceChart.show(ctx, data);
+    showTokenPriceChart(fromDate) {
+        Ether.getData(
+            web3,
+            CONTRACT.ABI,
+            CONTRACT.ID,
+            (err, res) => {
+                if (err) {
+                    throw err;
+                }
+                const transactionsForTimestamps = res.reduce(
+                    (parts, log) => {
+                        const {transactionIndex, timestamp} = log;
+                        const transactionsForTimestamp = parts[timestamp];
+                        const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                        if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                            parts[timestamp] = atLeastTransactionsForTimestamp;
+                        return parts;
+                    },
+                    {}
+                );
+                const lastTimestamp = Math.floor(+new Date() / 1000);
+                const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+                transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+                const data1 = res.map(log => ({
+                    x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
+                    y: log.price
+                }));
+                const data = XYData.setRange(data1, fromDate, +new Date());
+                const steppedData = XYData.makeStepped(data);
+                const steppedDataMarks = XYData.makeLastInX(steppedData);
+                const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
+                const tss = steppedData.map(d => Math.floor(d.x));
+                API.getBtcFromEthHistoryArray(xs, (err, btc) => {
+                    const dataBtc = xs.map((d, i) => ({
+                        x: d.x,
+                        y: d.y * btc[i].ETH.BTC
+                    }));
+                    //Page.showTokenPriceChart({eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                    const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
+                    TokenPriceChart.show(ctx, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                });
+            }
+        );
     }
 };
 
@@ -530,49 +570,13 @@ function onload() {
             });
     });
 
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => console.log('show chart for whole time'));
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => console.log(`show chart since ${+moment().subtract(1, 'month')}`));
-
-    Ether.getData(
-        web3,
-        CONTRACT.ABI,
-        CONTRACT.ID,
-        (err, res) => {
-            if (err) {
-                throw err;
-            }
-            const transactionsForTimestamps = res.reduce(
-                (parts, log) => {
-                    const {transactionIndex, timestamp} = log;
-                    const transactionsForTimestamp = parts[timestamp];
-                    const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
-                        parts[timestamp] = atLeastTransactionsForTimestamp;
-                    return parts;
-                },
-                {}
-            );
-            const lastTimestamp = Math.floor(+new Date() / 1000);
-            const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
-            transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-            const data1 = res.map(log => ({
-                x: 1000 * (log.timestamp + log.transactionIndex / transactionsForTimestamps[log.timestamp]),
-                y: log.price
-            }));
-            const data = XYData.setRange(data1, +new Date('07/06/2017'), +new Date());
-            const steppedData = XYData.makeStepped(data);
-            const steppedDataMarks = XYData.makeLastInX(steppedData);
-            const xs = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
-            const tss = steppedData.map(d => Math.floor(d.x));
-            API.getBtcFromEthHistoryArray(xs, (err, btc) => {
-                const dataBtc = xs.map((d, i) => ({
-                    x: d.x,
-                    y: d.y * btc[i].ETH.BTC
-                }));
-                Page.showTokenPriceChart({eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-            });
-        }
-    );
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+        Page.showTokenPriceChart(0);
+    });
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+        Page.showTokenPriceChart(+moment().subtract(4, 'day'));
+    });
+    Page.showTokenPriceChart(0);
 }
 
 $(onload);
