@@ -5,13 +5,13 @@ const BigNumber = Web3_require('bignumber.js');
 
 var Nodes = {
     Node1: {
-        name: 'igor1',
-        url: 'http://localhost:9111/',
+        name: 'igor',
+        url: 'http://192.168.1.101:8111/',
         chainId: 15
     },
     Node2: {
-        name: 'igor2',
-        url: 'http://localhost:8113/',
+        name: 'dima',
+        url: 'http://192.168.1.104:8111/',
         chainId: 15
     },
 };
@@ -75,7 +75,11 @@ const Page = {
                 }
             },
             SELECT_NODE: {
-                NODE: 'select-node'
+                NODE: 'select-node',
+                NAME: 'select-node-name',
+                URL: 'select-node-url',
+                CHAIN_ID: 'select-node-chain-id',
+                ADD: 'select-node-add'
             }
         }
     },
@@ -84,11 +88,14 @@ const Page = {
     },
     updateNodes(){
         $.each(Nodes, function(key, value) {
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
-                .append($("<option></option>")
-                    .attr("value",key)
-                    .text(value.name));
+            Page.appendNode(key, value.name);
         });
+    },
+    appendNode(value, name) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
+            .append($("<option></option>")
+                .attr("value", value)
+                .text(name));
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
@@ -355,6 +362,26 @@ function onload() {
                     Page.toggleBuyWait(false);
                 });
             });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
+        var name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        var url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
+        var chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
+        console.log(name, url, chainId);
+        if (name && url && chainId) {
+            //todo: generate uuid
+            var id = (Object.keys(Nodes).length);
+            Nodes[id]  = {
+                name,
+                url,
+                chainId
+            };
+            Page.appendNode(id, name);
+            console.log('Node was added', name, url, chainId);
+        } else {
+            console.log('Invalid params', name, url, chainId);
+        }
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
