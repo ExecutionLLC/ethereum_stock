@@ -156,6 +156,10 @@ const Page = {
         var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
         element.value = valueToSelect;
     },
+    getCurrentNode(){
+        var curNodeName = localStorage['selectedNodeValue'];
+        return  JSON.parse(localStorage['Nodes'])[curNodeName];
+    },
     showError(error) {
         $error = $('#balance-error');
         $error.toggle(error != null);
@@ -332,6 +336,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
+        var currentNode = Page.getCurrentNode();
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
@@ -346,6 +351,7 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
+                    var currentNode = Page.getCurrentNode();
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
@@ -393,7 +399,6 @@ function onload() {
                 chainId
             };
             localStorage.setItem('Nodes',JSON.stringify(Nodes));
-            console.log(localStorage[Node]);
             Page.appendNode(id, name);
             console.log('Node was added', name, url, chainId);
         } else {
