@@ -63,6 +63,7 @@
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
             <form>
                 <div class="form-group form-inline">
+                    <label class="control-label">Current node</label>
                     <select id="select-node" class="form-control"></select>
                 </div>
                 <div class="form-group form-inline">
@@ -81,15 +82,45 @@
             <h3 class="panel-title">Проверьте баланс вашего кошелька</h3>
         </div>
         <div class="panel-body">
-            <form>
-                <div class="form-group">
-                    <label class="control-label">Введите адрес кошелька:</label>
+            <div class="container-fluid">
+                <div class="row show-grid">
+                    <div class="col-sm-5">
+                        <form>
+                            <div class="form-group">
+                                <label class="control-label">Введите адрес кошелька:</label>
+                            </div>
+                            <div class="form-group form-inline">
+                                <input id="wallet-input" class="form-control" placeholder="Адрес кошелька..." />
+                                <button id="wallet-button" class="btn btn-default">Проверить</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="balance-container">
+                        <div class="col-sm-2">
+                            На вашем счету:
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="container-fluid">
+                                <div class="row show-grid">
+                                    <div id="balance-tokens" class="col-sm-1"></div>
+                                    <div class="col-sm-1">Tokens</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-btc" class="col-sm-1"></div>
+                                    <div class="col-sm-1">BTC</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-eth" class="col-sm-1"></div>
+                                    <div class="col-sm-1">ETH</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <!-- history will be there -->
+                    </div>
                 </div>
-                <div class="form-group form-inline">
-                    <input type="text" class="form-control" placeholder="Адрес кошелька..." />
-                    <button type="submit" class="btn btn-default">Проверить</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
     <a name="currency"></a>

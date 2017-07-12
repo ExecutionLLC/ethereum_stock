@@ -37,13 +37,13 @@ let currentWallet = null;
 const Page = {
     ELEMENT_ID: {
         BALANCE: {
-            WALLET_INPUT: 'u40_input',
-            CHECK_BUTTON: 'u42',
-            CONTAINER: 'u21',
+            WALLET_INPUT: 'wallet-input',
+            CHECK_BUTTON: 'wallet-button',
+            CONTAINER: 'balance-container',
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc',
-            WAIT: 'u36-1'
+            WAIT: 'balance-wait'
         },
         TOKENS_HISTORY: {
             TEMPLATE: 'tokens-history-template',
@@ -113,10 +113,7 @@ const Page = {
             return s == null ? '...' : s;
         }
 
-        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
-            .removeClass('ax_default_hidden')
-            .attr('style', '')
-            .toggle(tokens != null);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER).css('visibility', tokens == null ? 'hidden' : 'visible');
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
@@ -326,6 +323,7 @@ function onload() {
                 });
             }
         });
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
