@@ -156,17 +156,32 @@
                     <label class="control-label">По приватному ключу:</label>
                 </div>
                 <div class="form-group form-inline">
-                    <input type="text" class="form-control" placeholder="Приватный ключ..." />
-                    <button type="submit" class="btn btn-default">Задать кошелёк</button>
+                    <input id="add-wallet-private-key" class="form-control" placeholder="Приватный ключ..." />
+                    <button id="add-wallet-private-key-button" class="btn btn-default">Задать кошелёк</button>
                 </div>
                 <div class="form-group">
                     <label class="control-label">По файлу:</label>
                 </div>
                 <div class="form-group form-inline">
-                    <input type="file" class="form-control"/>
+                    <input id="add-wallet-file" type="file" class="form-control"/>
                     <label class="control-label">пароль:</label>
-                    <input type="password" class="form-control" />
-                    <button type="submit" class="btn btn-default">Задать кошелёк</button>
+                    <input id="add-wallet-file-password" type="password" class="form-control" />
+                    <button id="add-wallet-file-button" class="btn btn-default">Задать кошелёк</button>
+                </div>
+                <div id="wallet-ops">
+                    <div class="form-group">
+                        <label class="control-label">Операции с кошельком <span id="wallet-address"></span></label>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="control-label">Купить</label>
+                        <input id="buy-tokens-count" class="form-control"/>
+                        <button id="buy-tokens-button" class="btn btn-default">Купить</button>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="control-label">Продать</label>
+                        <input id="sell-tokens-count" class="form-control"/>
+                        <button id="sell-tokens-button" class="btn btn-default">Продать</button>
+                    </div>
                 </div>
             </form>
         </div>
