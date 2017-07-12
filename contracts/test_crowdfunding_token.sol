@@ -64,7 +64,7 @@ contract TestCrowdfundingToken is ERC20BaseToken, Owned {
         msg.sender.transfer(change);
     }
     
-    function progress() returns(uint _goal, uint _bought) {
+    function progress() constant returns(uint _goal, uint _bought) {
         return (maxSupply, _totalSupply);
     }
 }
