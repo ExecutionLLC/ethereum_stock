@@ -55,7 +55,7 @@ const Page = {
             },
             CONTAINER: 'tokens-history-container'
         },
-        CHART: 'myChart',
+        CHART: 'chart',
         ALTER_WALLET: {
             PRIVATE_KEY: {
                 KEY: 'add-wallet-private-key',
