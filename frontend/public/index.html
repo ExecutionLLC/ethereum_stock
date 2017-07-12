@@ -25,7 +25,7 @@
         delete require;
     </script>
     <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
-    <!--<script type="text/javascript" src="js/etherwallet.js"></script>-->
+    <script type="text/javascript" src="js/etherwallet.js"></script>
 
 </head>
 <body>
@@ -61,6 +61,18 @@
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
+            <form>
+                <div class="form-group form-inline">
+                    <select id="select-node" class="form-control"></select>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="control-label">Add new Node</label>
+                    <input id="select-node-name" class="form-control" />
+                    <input id="select-node-url" class="form-control" />
+                    <input id="select-node-chain-id" class="form-control" />
+                    <button id="select-node-add" class="btn btn-default">Add Node</button>
+                </div>
+            </form>
         </div>
     </div>
     <a name="balance"></a>
