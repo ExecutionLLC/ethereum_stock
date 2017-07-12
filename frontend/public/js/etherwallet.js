@@ -167,6 +167,8 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
+        Page.toggleBuyWait(false);
+        Page.toggleSellWait(false);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);

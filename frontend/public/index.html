@@ -92,6 +92,7 @@
                             <div class="form-group form-inline">
                                 <input id="wallet-input" class="form-control" placeholder="Адрес кошелька..." />
                                 <button id="wallet-button" class="btn btn-default">Проверить</button>
+                                <span id="balance-wait" class="glyphicon glyphicon-refresh rotating"></span>
                             </div>
                         </form>
                     </div>
@@ -176,11 +177,13 @@
                         <label class="control-label">Купить</label>
                         <input id="buy-tokens-count" class="form-control"/>
                         <button id="buy-tokens-button" class="btn btn-default">Купить</button>
+                        <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
                     </div>
                     <div class="form-group form-inline">
                         <label class="control-label">Продать</label>
                         <input id="sell-tokens-count" class="form-control"/>
                         <button id="sell-tokens-button" class="btn btn-default">Продать</button>
+                        <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
                     </div>
                 </div>
             </form>

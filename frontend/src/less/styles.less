@@ -12,3 +12,16 @@ body.hide-header {
 body.hide-header .hideable-header {
   display: none;
 }
+
+.rotating {
+  animation: rotating 2s infinite linear;
+}
+
+@keyframes rotating {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
