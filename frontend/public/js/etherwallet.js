@@ -4,7 +4,7 @@ const web3 = new Web3();
 const BigNumber = Web3_require('bignumber.js');
 
 if (!localStorage['Nodes']) {
-    var Nodes = {
+    const Nodes = {
         Node1: {
             name: 'igor',
             url: 'http://192.168.1.101:8111/',
@@ -23,13 +23,179 @@ if (!localStorage['selectedNodeValue']) {
     localStorage.setItem('selectedNodeValue', 'Node1');
 }
 
-var currentNode = JSON.parse(localStorage['Nodes']).Node1;
+const currentNode = JSON.parse(localStorage['Nodes']).Node1;
 web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
-    ID: '0x68487936c94e1c8fe0fc7d5cc79c5d6b1f330a2a',
-    ABI: [{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_isAcquired","type":"bool"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquiredOrReturned","type":"event"}]
+    ID: '0x92d0800cab47f4e5e4457ffd63035d8ee3668713',
+    ABI: [{
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{"name": "", "type": "string"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
+        "name": "approve",
+        "outputs": [{"name": "success", "type": "bool"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{"name": "totalSupply", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [{"name": "_from", "type": "address"}, {"name": "_recipient", "type": "address"}, {
+            "name": "_value",
+            "type": "uint256"
+        }],
+        "name": "transferFrom",
+        "outputs": [{"name": "success", "type": "bool"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [{"name": "", "type": "address"}],
+        "name": "changeBalances",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [],
+        "name": "progress",
+        "outputs": [{"name": "_goal", "type": "uint256"}, {"name": "_bought", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [{"name": "_recipient", "type": "address"}],
+        "name": "buyFor",
+        "outputs": [],
+        "payable": true,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [{"name": "_owner", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"name": "balance", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "availableSupply",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "tokenPrice",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{"name": "", "type": "address"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{"name": "", "type": "string"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [],
+        "name": "withdrawChange",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [{"name": "_recipient", "type": "address"}, {"name": "_value", "type": "uint256"}],
+        "name": "transfer",
+        "outputs": [{"name": "success", "type": "bool"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
+        "inputs": [{"name": "_owner", "type": "address"}, {"name": "_spender", "type": "address"}],
+        "name": "allowance",
+        "outputs": [{"name": "remaining", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": false,
+        "inputs": [{"name": "_newOwner", "type": "address"}],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "type": "function"
+    }, {
+        "inputs": [{"name": "_tokenPrice", "type": "uint256"}, {"name": "_tokenSupply", "type": "uint256"}],
+        "payable": false,
+        "type": "constructor"
+    }, {"payable": true, "type": "fallback"}, {
+        "anonymous": false,
+        "inputs": [{"indexed": true, "name": "_buyer", "type": "address"}, {
+            "indexed": true,
+            "name": "_recipient",
+            "type": "address"
+        }, {"indexed": false, "name": "_change", "type": "uint256"}, {
+            "indexed": false,
+            "name": "_tokens",
+            "type": "uint256"
+        }, {"indexed": false, "name": "_availableSupply", "type": "uint256"}],
+        "name": "TokensBought",
+        "type": "event"
+    }, {
+        "anonymous": false,
+        "inputs": [{"indexed": true, "name": "_from", "type": "address"}, {
+            "indexed": true,
+            "name": "_to",
+            "type": "address"
+        }],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    }, {
+        "anonymous": false,
+        "inputs": [{"indexed": true, "name": "_from", "type": "address"}, {
+            "indexed": true,
+            "name": "_to",
+            "type": "address"
+        }, {"indexed": false, "name": "_value", "type": "uint256"}],
+        "name": "Transfer",
+        "type": "event"
+    }, {
+        "anonymous": false,
+        "inputs": [{"indexed": true, "name": "_owner", "type": "address"}, {
+            "indexed": true,
+            "name": "_spender",
+            "type": "address"
+        }, {"indexed": false, "name": "_value", "type": "uint256"}],
+        "name": "Approval",
+        "type": "event"
+    }]
 };
 
 let currentWallet = null;
@@ -116,13 +282,13 @@ const Page = {
     showBalance(tokens, eth, btc) {
 
         function strNull(s) {
-            return s == null ? '...' : s;
+            return s === null ? '...' : s;
         }
 
         Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
             .removeClass('ax_default_hidden')
             .attr('style', '')
-            .toggle(tokens != null);
+            .toggle(tokens !== null);
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
@@ -158,16 +324,16 @@ const Page = {
 
     },
     selectNode(valueToSelect) {
-        var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
+        const element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
         element.value = valueToSelect;
     },
     getCurrentNode() {
-        var curNodeName = localStorage['selectedNodeValue'];
+        const curNodeName = localStorage['selectedNodeValue'];
         return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
     showError(error) {
         $error = $('#balance-error');
-        $error.toggle(error != null);
+        $error.toggle(error !== null);
         $error.text(error);
     },
     showCurrentWallet(wallet) {
@@ -504,10 +670,10 @@ const XYData = {
     setRange(data, min, max) {
 
         function findDataInterval(data, x, iMin, iMax) {
-            if (iMin == null) {
+            if (iMin === null) {
                 return findDataInterval(data, x, 0, iMax);
             }
-            if (iMax == null) {
+            if (iMax === null) {
                 return findDataInterval(data, x, iMin, data.length - 1);
             }
             if (x < data[iMin].x) {
@@ -555,8 +721,7 @@ const XYData = {
         }
 
         const dataRangeMin = rangeMin(data, min);
-        const dataRangeMinMax = rangeMax(dataRangeMin, max);
-        return dataRangeMinMax;
+        return rangeMax(dataRangeMin, max);
     }
 };
 
@@ -569,8 +734,8 @@ function onload() {
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
-         var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
+        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
         localStorage.setItem('selectedNodeValue', curNodeName);
     });
@@ -602,7 +767,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        var currentNode = Page.getCurrentNode();
+        const currentNode = Page.getCurrentNode();
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
@@ -617,7 +782,7 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    var currentNode = Page.getCurrentNode();
+                    const currentNode = Page.getCurrentNode();
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
@@ -650,11 +815,11 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
-        var name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
-        var url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
-        var chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
+        const name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        const url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
+        const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
         if (name && url && chainId) {
-            //todo: generate uuid
+            // maybe generate uuid
             const id = Object.keys(localStorage[Node]).length;
             const Nodes = JSON.parse(localStorage['Nodes']);
 
@@ -666,7 +831,7 @@ function onload() {
             localStorage.setItem('Nodes', JSON.stringify(Nodes));
             Page.appendNode(id, name);
         } else {
-            //todo: log error
+            //log error
         }
     });
 
@@ -706,7 +871,7 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
         Page.showTokenPriceChart(+moment().subtract(6, 'day'));
     });
-    Page.initTokenPriceChart((err, res) => {
+    Page.initTokenPriceChart(() => {
         Page.showTokenPriceChart(0);
     });
 }
