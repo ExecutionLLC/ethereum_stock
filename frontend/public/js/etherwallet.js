@@ -3,7 +3,28 @@ const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-web3.setProvider(new web3.providers.HttpProvider('http://192.168.1.101:8111/'));
+if (!localStorage['Nodes']) {
+    var Nodes = {
+        Node1: {
+            name: 'igor',
+            url: 'http://192.168.1.101:8111/',
+            chainId: 15
+        },
+        Node2: {
+            name: 'dima',
+            url: 'http://192.168.1.104:8111/',
+            chainId: 15
+        },
+    };
+    localStorage.setItem('Nodes', JSON.stringify(Nodes));
+}
+
+if (!localStorage['selectedNodeValue']) {
+    localStorage.setItem('selectedNodeValue', 'Node1');
+}
+
+var currentNode = JSON.parse(localStorage['Nodes']).Node1;
+web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
@@ -34,7 +55,13 @@ const Page = {
             },
             CONTAINER: 'tokens-history-container'
         },
-        CHART: 'myChart',
+        CHART: {
+            ID: 'myChart',
+            BUTTONS: {
+                WHOLE: 'u13',
+                MONTH: 'u11'
+            }
+        },
         ALTER_WALLET: {
             PRIVATE_KEY: {
                 KEY: 'add-wallet-private-key',
@@ -58,11 +85,30 @@ const Page = {
                     BUTTON: 'sell-tokens-button',
                     WAIT: 'sell-tokens-wait'
                 }
+            },
+            SELECT_NODE: {
+                NODE: 'select-node',
+                NAME: 'select-node-name',
+                URL: 'select-node-url',
+                CHAIN_ID: 'select-node-chain-id',
+                ADD: 'select-node-add'
             }
         }
     },
     $id(id) {
         return $(`#${id}`);
+    },
+    updateNodes() {
+        $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
+            Page.appendNode(key, value.name);
+        });
+        Page.selectNode(localStorage['selectedNodeValue']);
+    },
+    appendNode(value, name) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
+            .append($('<option></option>')
+                .attr("value", value)
+                .text(name));
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
@@ -111,6 +157,14 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
     },
+    selectNode(valueToSelect) {
+        var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
+        element.value = valueToSelect;
+    },
+    getCurrentNode() {
+        var curNodeName = localStorage['selectedNodeValue'];
+        return JSON.parse(localStorage['Nodes'])[curNodeName];
+    },
     showError(error) {
         $error = $('#balance-error');
         $error.toggle(error != null);
@@ -132,6 +186,99 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
+    },
+    initTokenPriceChart(callback) {
+        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
+        Ether.getPriceHistoryData(
+            web3,
+            CONTRACT.ABI,
+            CONTRACT.ID,
+            (err, res) => {
+                if (!err) {
+                    TokenPriceChart.createChart(ctx, res);
+                }
+                callback(err, res);
+            }
+        );
+    },
+    showTokenPriceChart(fromDate) {
+        TokenPriceChart.show(fromDate);
+    }
+};
+
+TokenPriceChart = {
+    chart: null,
+    data: null,
+    createChart(ctx, data) {
+        TokenPriceChart.data = data;
+        TokenPriceChart.chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'ETH',
+                        backgroundColor: 'transparent',
+                        borderColor: 'red',
+                        lineTension: 0,
+                        yAxisID: "y-axis-1",
+                        data: [],//data.eth,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'ETH-dots',
+                        backgroundColor: 'transparent',
+                        borderColor: 'red',
+                        borderDash: [0, 1],
+                        lineTension: 0,
+                        yAxisID: "y-axis-1",
+                        data: [],//data.ethDots
+                    },
+                    {
+                        label: 'BTC',
+                        backgroundColor: 'transparent',
+                        borderColor: 'blue',
+                        lineTension: 0,
+                        yAxisID: "y-axis-2",
+                        data: [],//data.btc
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'll HH:mm'
+                        }
+                    }],
+                    yAxes: [{
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "left",
+                        id: "y-axis-1",
+                    }, {
+                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                        display: true,
+                        position: "right",
+                        id: "y-axis-2",
+                        gridLines: {
+                            drawOnChartArea: false
+                        }
+                    }]
+                },
+                responsive: false
+            }
+        });
+    },
+    show(fromDate) {
+        const newEth = XYData.setRange(TokenPriceChart.data.eth, fromDate, +new Date());
+        const newEthDots = XYData.setRange(TokenPriceChart.data.ethDots, fromDate, +new Date());
+        const newBtc = XYData.setRange(TokenPriceChart.data.btc, fromDate, +new Date());
+
+        TokenPriceChart.chart.data.datasets[0].data = newEth;
+        TokenPriceChart.chart.data.datasets[1].data = newEthDots;
+        TokenPriceChart.chart.data.datasets[2].data = newBtc;
+        TokenPriceChart.chart.update();
     }
 };
 
@@ -142,7 +289,7 @@ const Ether = {
         try {
             tokens = new BigNumber(contract.clientTokens(walletId)).toNumber();
             tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
-        } catch(e) {
+        } catch (e) {
             callback(e);
             return;
         }
@@ -185,7 +332,54 @@ const Ether = {
             }
         });
     },
-    getPriceData(client, contract, callback){
+    getPriceHistoryData(web3, abiArray, address, callback) {
+
+        function transactionsToXY(transactions) {
+            const transactionsForTimestamps = transactions.reduce(
+                (parts, trx) => {
+                    const {transactionIndex, timestamp} = trx;
+                    const transactionsForTimestamp = parts[timestamp];
+                    const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                        parts[timestamp] = atLeastTransactionsForTimestamp;
+                    return parts;
+                },
+                {}
+            );
+            const lastTimestamp = Math.floor(+new Date() / 1000);
+            const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+            transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+            return transactions.map(trx => ({
+                x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                y: trx.price
+            }));
+        }
+
+        Ether.getData(
+            web3,
+            abiArray,
+            address,
+            (err, res) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                const transactionsXY = transactionsToXY(res);
+                const data = XYData.setRange(transactionsXY, 0, +new Date());
+                const steppedData = XYData.makeStepped(data);
+                const steppedDataMarks = XYData.makeLastInX(steppedData);
+                const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
+                API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
+                    const dataBtc = steppedDataWIntermediate.map((d, i) => ({
+                        x: d.x,
+                        y: d.y * btc[i].ETH.BTC
+                    }));
+                    callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                });
+            }
+        );
+    },
+    getPriceData(client, contract, callback) {
         const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
@@ -210,28 +404,47 @@ const Ether = {
 
 const API = {
     getBtcFromEtH(callback) {
-        $.get('https://min-api.cryptocompare.com/data/price', { fsym: 'ETH', tsyms: 'BTC' } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/price', {fsym: 'ETH', tsyms: 'BTC'})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
     getBtcFromEthHistory(ts, callback) {
-        $.get('https://min-api.cryptocompare.com/data/pricehistorical', { fsym: 'ETH', tsyms: 'BTC', ts: ts } )
-            .done(function( data ) {
+        $.get('https://min-api.cryptocompare.com/data/pricehistorical', {fsym: 'ETH', tsyms: 'BTC', ts: ts})
+            .done(function (data) {
                 callback(null, data);
             })
-            .fail(function(error) {
+            .fail(function (error) {
                 callback(error);
             });
     },
     getBtcFromEthHistoryArray(timestamps, callback) {
+        const uniqueTimestamps = timestamps.reduce(
+            (obj, ts) => {
+                obj[ts] = ts;
+                return obj;
+            },
+            Object.create(null)
+        );
         async.map(
-            timestamps,
-            (ts, callback) => API.getBtcFromEthHistory(ts, callback),
-            callback
+            uniqueTimestamps,
+            (ts, callback) => {
+                API.getBtcFromEthHistory(ts, (err, res) => {
+                    if (!err)
+                        uniqueTimestamps[ts] = res;
+                    callback(err, res);
+                });
+            },
+            (err) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                callback(null, timestamps.map(ts => uniqueTimestamps[ts]));
+            }
         );
     }
 };
@@ -244,12 +457,123 @@ function readFileContent(file, callback) {
     fr.readAsText(file);
 }
 
+const XYData = {
+    makeStepped(data) {
+        return data.reduce(
+            (res, item) => {
+                if (res.prev && res.prev.x !== item.x) {
+                    res.newData.push({
+                        x: item.x,
+                        y: res.prev.y
+                    });
+                }
+                res.newData.push(item);
+                res.prev = item;
+                return res;
+            },
+            {newData: [], prev: null}
+        ).newData;
+    },
+    makeLastInX(data) {
+        return data.filter((item, i) => i === data.length - 1 || item.x !== data[i + 1].x);
+    },
+    addIntermediatePoints(data, maxInterval) {
+        return data.reduce(
+            (res, xy, index) => {
+                if (index >= data.length - 1) {
+                    res.push(xy);
+                    return res;
+                }
+                const intervalLength = data[index + 1].x - xy.x;
+                if (intervalLength <= maxInterval) {
+                    res.push(xy);
+                    return res;
+                }
+                const newPointsCount = Math.floor(intervalLength / maxInterval);
+                const newXs = new Array(newPointsCount)
+                    .fill(null)
+                    .map((_, i) => ({
+                        x: xy.x + Math.floor((i + 1) * intervalLength / (newPointsCount + 1)),
+                        y: xy.y
+                    }));
+                return res.concat([xy]).concat(newXs);
+            },
+            []
+        );
+    },
+    setRange(data, min, max) {
+
+        function findDataInterval(data, x, iMin, iMax) {
+            if (iMin == null) {
+                return findDataInterval(data, x, 0, iMax);
+            }
+            if (iMax == null) {
+                return findDataInterval(data, x, iMin, data.length - 1);
+            }
+            if (x < data[iMin].x) {
+                return iMin - 1;
+            }
+            if (x >= data[iMax].x) {
+                return iMax;
+            }
+            const range = iMax - iMin;
+            if (range <= 1) {
+                return iMin;
+            }
+            const iMid = iMin + Math.floor(range / 2);
+            if (x < data[iMid].x) {
+                return findDataInterval(data, x, iMin, iMid);
+            } else {
+                return findDataInterval(data, x, iMid, iMax);
+            }
+        }
+
+        function rangeMin(data, min) {
+            const minIndex = findDataInterval(data, min);
+            if (minIndex < 0) {
+                return data;
+            } else {
+                if (data[minIndex].x === min) {
+                    return data.slice(minIndex);
+                } else {
+                    return [{x: min, y: data[minIndex].y}].concat(data.slice(minIndex + 1));
+                }
+            }
+        }
+
+        function rangeMax(data, max) {
+            const maxIndex = findDataInterval(data, max);
+            if (maxIndex < 0) {
+                return [];
+            } else {
+                if (data[maxIndex].x === max) {
+                    return data.slice(0, maxIndex + 1);
+                } else {
+                    return data.slice(0, maxIndex + 1).concat([{x: max, y: data[maxIndex].y}]);
+                }
+            }
+        }
+
+        const dataRangeMin = rangeMin(data, min);
+        const dataRangeMinMax = rangeMax(dataRangeMin, max);
+        return dataRangeMinMax;
+    }
+};
+
 function onload() {
     Page.showError();
     Page.showBalance();
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
+    Page.updateNodes();
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
+         var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
+        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+        localStorage.setItem('selectedNodeValue', curNodeName);
+    });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
@@ -278,7 +602,8 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15));
+        var currentNode = Page.getCurrentNode();
+        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
     });
@@ -292,7 +617,8 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    wallet.provider = new ethers.providers.JsonRpcProvider('http://192.168.1.101:8111', false, 15);
+                    var currentNode = Page.getCurrentNode();
+                    wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
                 });
@@ -315,12 +641,33 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction buy Minded: ' + transaction.hash);
                     console.log(transaction);
                     Page.toggleBuyWait(false);
                 });
             });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
+        var name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        var url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
+        var chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
+        if (name && url && chainId) {
+            //todo: generate uuid
+            const id = Object.keys(localStorage[Node]).length;
+            const Nodes = JSON.parse(localStorage['Nodes']);
+
+            Nodes[id] = {
+                name,
+                url,
+                chainId
+            };
+            localStorage.setItem('Nodes', JSON.stringify(Nodes));
+            Page.appendNode(id, name);
+        } else {
+            //todo: log error
+        }
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
@@ -334,7 +681,7 @@ function onload() {
                 return res.hash;
             })
             .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash,(transaction) => {
+                currentWallet.provider.once(transactionHash, (transaction) => {
                     console.log('Transaction sell Minded: ' + transaction.hash);
                     console.log(transaction);
                     MyContract.withdraw()
@@ -343,7 +690,7 @@ function onload() {
                             return res.hash;
                         })
                         .then((transactionHash) => {
-                            currentWallet.provider.once(transactionHash,(transaction) => {
+                            currentWallet.provider.once(transactionHash, (transaction) => {
                                 console.log('Transaction back maney Minded: ' + transaction.hash);
                                 console.log(transaction);
                                 Page.toggleSellWait(false);
@@ -353,64 +700,15 @@ function onload() {
             });
     });
 
-    Ether.getData(
-        web3,
-        CONTRACT.ABI,
-        CONTRACT.ID,
-        (err, res) => {
-            if (err) {
-                throw err;
-            }
-            const timeParts = res.reduce(
-                (parts, log) => {
-                    const time = log.timestamp;
-                    const index = log.transactionIndex;
-                    const indexes = parts[time] > index + 1 ? parts[time] : index + 1;
-                    return Object.assign({}, parts, {
-                        [time]: indexes
-                    });
-                },
-                {}
-            );
-            const data = res.map(log => ({
-                x: 1000 * (log.timestamp + log.transactionIndex / timeParts[log.timestamp]),
-                y: log.price
-            }));
-
-            const tss = data.map(d => Math.floor(d.x));
-            API.getBtcFromEthHistoryArray(tss, (err, btc) => {
-                const data2 = data.map((d, i) => ({
-                    x: d.x,
-                    y: d.y * btc[i].ETH.BTC
-                }));
-                const ctx = Page.$id(Page.ELEMENT_ID.CHART)[0];
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                label: 'ETH',
-                                lineTension: 0,
-                                data: data
-                            },
-                            {
-                                label: 'BTC',
-                                lineTension: 0,
-                                data: data2
-                            },
-                        ]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time'
-                            }]
-                        }
-                    }
-                });
-            });
-        }
-    );
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+        Page.showTokenPriceChart(0);
+    });
+    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+        Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+    });
+    Page.initTokenPriceChart((err, res) => {
+        Page.showTokenPriceChart(0);
+    });
 }
 
 $(onload);
