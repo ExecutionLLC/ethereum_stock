@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.11;
 
 // https://github.com/ethereum/EIPs/issues/20
 contract ERC20Interface {
