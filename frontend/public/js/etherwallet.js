@@ -739,7 +739,7 @@ function onload() {
                 Page.showTokenPriceChart(0);
             });
             Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
-                Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+                Page.showTokenPriceChart(+moment().subtract(7, 'day'));
             });
             Page.showTokenPriceChart(0);
         }
