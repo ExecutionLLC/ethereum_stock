@@ -28,7 +28,7 @@ web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
-    ID: '0x92d0800cab47f4e5e4457ffd63035d8ee3668713',
+    ID: '0x3f0bb3ede10ad2caed900e2f4f70e1b2ad5631b9',
     ABI: [{
         "constant": true,
         "inputs": [],
@@ -62,20 +62,13 @@ const CONTRACT = {
         "type": "function"
     }, {
         "constant": true,
-        "inputs": [{"name": "", "type": "address"}],
-        "name": "changeBalances",
-        "outputs": [{"name": "", "type": "uint256"}],
-        "payable": false,
-        "type": "function"
-    }, {
-        "constant": true,
         "inputs": [],
         "name": "decimals",
         "outputs": [{"name": "", "type": "uint8"}],
         "payable": false,
         "type": "function"
     }, {
-        "constant": false,
+        "constant": true,
         "inputs": [],
         "name": "progress",
         "outputs": [{"name": "_goal", "type": "uint256"}, {"name": "_bought", "type": "uint256"}],
@@ -93,13 +86,6 @@ const CONTRACT = {
         "inputs": [{"name": "_owner", "type": "address"}],
         "name": "balanceOf",
         "outputs": [{"name": "balance", "type": "uint256"}],
-        "payable": false,
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [],
-        "name": "availableSupply",
-        "outputs": [{"name": "", "type": "uint256"}],
         "payable": false,
         "type": "function"
     }, {
@@ -139,6 +125,13 @@ const CONTRACT = {
         "type": "function"
     }, {
         "constant": true,
+        "inputs": [],
+        "name": "maxSupply",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "constant": true,
         "inputs": [{"name": "_owner", "type": "address"}, {"name": "_spender", "type": "address"}],
         "name": "allowance",
         "outputs": [{"name": "remaining", "type": "uint256"}],
@@ -152,7 +145,14 @@ const CONTRACT = {
         "payable": false,
         "type": "function"
     }, {
-        "inputs": [{"name": "_tokenPrice", "type": "uint256"}, {"name": "_tokenSupply", "type": "uint256"}],
+        "constant": true,
+        "inputs": [{"name": "", "type": "address"}],
+        "name": "pendingWithdrawals",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "type": "function"
+    }, {
+        "inputs": [{"name": "_tokenPrice", "type": "uint256"}, {"name": "_maxSupply", "type": "uint256"}],
         "payable": false,
         "type": "constructor"
     }, {"payable": true, "type": "fallback"}, {
@@ -248,6 +248,7 @@ const Page = {
                 },
                 SELL: {
                     COUNT: 'sell-tokens-count',
+                    WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
                     WAIT: 'sell-tokens-wait'
                 }
@@ -285,12 +286,15 @@ const Page = {
             return s === null ? '...' : s;
         }
 
-        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER).css('visibility', tokens == null ? 'hidden' : 'visible');
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
+            .removeClass('ax_default_hidden')
+            .attr('style', '')
+            .toggle(tokens !== null);
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
-    showTokensHistory(res) {
+    showTokensHistory(walletId, res) {
         const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
@@ -312,9 +316,8 @@ const Page = {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
-            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, item.isAsquired ? 'buy' : 'sell');
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, walletId.toLowerCase() === item.to ? 'buy' : 'sell');
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
-            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.PRICE, index, item.tokenPrice);
             return $el;
         });
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
@@ -339,8 +342,6 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
-        Page.toggleBuyWait(false);
-        Page.toggleSellWait(false);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
@@ -452,7 +453,7 @@ const Ether = {
         let tokens;
         let tokenPrice;
         try {
-            tokens = new BigNumber(contract.clientTokens(walletId)).toNumber();
+            tokens = new BigNumber(contract.balanceOf(walletId)).toNumber();
             tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
         } catch (e) {
             callback(e);
@@ -545,25 +546,61 @@ const Ether = {
         );
     },
     getPriceData(client, contract, callback) {
-        const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
+        const myEvent = contract.Transfer({_client: client}, {fromBlock: 0, toBlock: 'latest'});
         myEvent.get((error, logs) => {
             if (error) {
                 callback(error);
             } else {
                 async.map(logs.slice(-5), (log, callback) => {
                     web3.eth.getBlock(log.blockNumber, (error, block) => {
-                        const {args: {_currentTokenPrice, _isAcquired, _n}} = log;
+                        const {args: {_from, _to, _value}} = log;
                         const {timestamp} = block;
                         callback(null, {
                             timestamp,
-                            tokenPrice: new BigNumber(web3.fromWei(_currentTokenPrice, 'ether')).toNumber(),
-                            isAsquired: _isAcquired,
-                            count: new BigNumber(_n).toNumber()
+                            from: _from,
+                            to: _to,
+                            count: new BigNumber(_value).toNumber()
                         });
                     });
                 }, callback);
             }
         });
+    },
+    buyTokens(wallet, contractAddress, value) {
+        const provider = wallet.provider;
+        const gasPricePromise = provider.getGasPrice();
+        const transactionCountPromise = provider.getTransactionCount(wallet.address);
+        const estmateGas = provider.estimateGas();
+
+        return Promise.all([
+            gasPricePromise,
+            transactionCountPromise,
+            estmateGas
+        ])
+            .then((result) => {
+                const gasPrice = result[0];
+                const transactionCount = result[1];
+                const transaction = {
+                    to: contractAddress,
+                    gasPrice,
+                    value: value,
+                    gasLimit: result[2],
+                    nonce: transactionCount,
+                    chainId: provider.chainId
+                };
+                const signedTransaction = wallet.sign(transaction);
+                return signedTransaction;
+            })
+            .then((transaction) => {
+                console.log(transaction);
+                return provider.sendTransaction(transaction)
+            })
+            .then((hash) => {
+                console.log(hash);
+                return provider.waitForTransaction(hash)
+            })
+            .then((transaction) => console.log("The transaction was mined: Block " + transaction.hash));
+
     }
 };
 
@@ -754,11 +791,10 @@ function onload() {
                 Ether.getPriceData(walletId, contract, (err, res) => {
                     Page.showBalanceWait(false);
                     Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                    Page.showTokensHistory(res);
+                    Page.showTokensHistory(walletId, res);
                 });
             }
         });
-        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
@@ -799,18 +835,9 @@ function onload() {
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        MyContract.buy({value: weiStr, gasLimit: 80000})
-            .then((res) => {
-                console.log(res);
-                return res.hash;
-            })
-            .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash, (transaction) => {
-                    console.log('Transaction buy Minded: ' + transaction.hash);
-                    console.log(transaction);
-                    Page.toggleBuyWait(false);
-                });
+        Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr)
+            .then(() => {
+                Page.toggleBuyWait(false)
             });
     });
 
@@ -838,44 +865,37 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
         Page.toggleSellWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
+        const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
         console.log('sell tokens', count);
-        const MyContract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        MyContract.returnToken(count)
-            .then((res) => {
-                console.log(res);
-                return res.hash;
-            })
-            .then((transactionHash) => {
-                currentWallet.provider.once(transactionHash, (transaction) => {
-                    console.log('Transaction sell Minded: ' + transaction.hash);
-                    console.log(transaction);
-                    MyContract.withdraw()
-                        .then((res) => {
-                            console.log(res);
-                            return res.hash;
-                        })
-                        .then((transactionHash) => {
-                            currentWallet.provider.once(transactionHash, (transaction) => {
-                                console.log('Transaction back maney Minded: ' + transaction.hash);
-                                console.log(transaction);
-                                Page.toggleSellWait(false);
-                            });
+        const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
+        contract.tokenPrice()
+            .then((tokenPrice) => {
+                const wei = new BigNumber(tokenPrice[0]).times(count);
+                const weiStr = `0x${wei.toString(16)}`;
+                contract.buyFor(walletId, {value: weiStr})
+                    .then((res) => {
+                        console.log(res);
+                        return res.hash;
+                    })
+                    .then((transactionHash) => {
+                        currentWallet.provider.once(transactionHash, (transaction) => {
+                            console.log('Transaction sell Minded: ' + transaction.hash);
+                            console.log(transaction);
                         });
-                });
+                    });
             });
     });
 
+
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
         Page.showTokenPriceChart(0);
-        return false;
     });
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
         Page.showTokenPriceChart(+moment().subtract(6, 'day'));
-        return false;
     });
-    Page.initTokenPriceChart(() => {
-        Page.showTokenPriceChart(0);
-    });
+    // Page.initTokenPriceChart(() => {
+    //     Page.showTokenPriceChart(0);
+    // });
 }
 
 $(onload);
