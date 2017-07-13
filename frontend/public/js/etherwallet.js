@@ -203,13 +203,13 @@ let currentWallet = null;
 const Page = {
     ELEMENT_ID: {
         BALANCE: {
-            WALLET_INPUT: 'u40_input',
-            CHECK_BUTTON: 'u42',
-            CONTAINER: 'u21',
+            WALLET_INPUT: 'wallet-input',
+            CHECK_BUTTON: 'wallet-button',
+            CONTAINER: 'balance-container',
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc',
-            WAIT: 'u36-1'
+            WAIT: 'balance-wait'
         },
         TOKENS_HISTORY: {
             TEMPLATE: 'tokens-history-template',
@@ -222,10 +222,10 @@ const Page = {
             CONTAINER: 'tokens-history-container'
         },
         CHART: {
-            ID: 'myChart',
+            ID: 'chart',
             BUTTONS: {
-                WHOLE: 'u13',
-                MONTH: 'u11'
+                WHOLE: 'chart-whole',
+                MONTH: 'chart-month'
             }
         },
         ALTER_WALLET: {
@@ -285,10 +285,7 @@ const Page = {
             return s === null ? '...' : s;
         }
 
-        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
-            .removeClass('ax_default_hidden')
-            .attr('style', '')
-            .toggle(tokens !== null);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER).css('visibility', tokens == null ? 'hidden' : 'visible');
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
@@ -342,6 +339,8 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
+        Page.toggleBuyWait(false);
+        Page.toggleSellWait(false);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
@@ -759,6 +758,7 @@ function onload() {
                 });
             }
         });
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
@@ -867,9 +867,11 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
         Page.showTokenPriceChart(0);
+        return false;
     });
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
         Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+        return false;
     });
     Page.initTokenPriceChart(() => {
         Page.showTokenPriceChart(0);

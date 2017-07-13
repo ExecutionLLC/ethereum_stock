@@ -3,12 +3,15 @@
   "description": "Etherium stock project",
   "version": "1.0.0",
   "license": "ISC",
-  "scripts": {},
+  "scripts": {
+    "makecss": "lessc src/less/styles.less > public/resources/css/etherwallet.css"
+  },
   "dependencies": {
     "async": "^2.5.0",
+    "bootstrap": "^3.3.7",
     "chart.js": "^2.6.0",
     "ethers": "^2.1.1",
-    "jquery": "^3.2.1",
+    "jquery": "^1.12.4",
     "moment": "^2.18.1",
     "web3": "^0.19.1"
   }
