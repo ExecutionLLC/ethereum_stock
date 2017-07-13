@@ -189,6 +189,10 @@ const Page = {
     },
     initTokenPriceChart(callback) {
         const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
+        if (!ctx) {
+            callback('No canvas element');
+            return;
+        }
         Ether.getPriceHistoryData(
             web3,
             CONTRACT.ABI,
