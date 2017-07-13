@@ -28,8 +28,8 @@ web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
 const CONTRACT = {
-    ID: '0x68487936c94e1c8fe0fc7d5cc79c5d6b1f330a2a',
-    ABI: [{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_isAcquired","type":"bool"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquiredOrReturned","type":"event"}]
+    ID: '0x3f0bb3ede10ad2caed900e2f4f70e1b2ad5631b9',//'0x68487936c94e1c8fe0fc7d5cc79c5d6b1f330a2a',
+    ABI: [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"totalSupply","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_recipient","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"progress","outputs":[{"name":"_goal","type":"uint256"},{"name":"_bought","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_recipient","type":"address"}],"name":"buyFor","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdrawChange","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_recipient","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"maxSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"pendingWithdrawals","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_tokenPrice","type":"uint256"},{"name":"_maxSupply","type":"uint256"}],"payable":false,"type":"constructor"},{"payable":true,"type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_buyer","type":"address"},{"indexed":true,"name":"_recipient","type":"address"},{"indexed":false,"name":"_change","type":"uint256"},{"indexed":false,"name":"_tokens","type":"uint256"},{"indexed":false,"name":"_availableSupply","type":"uint256"}],"name":"TokensBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}]//[{"constant":false,"inputs":[],"name":"returnAllTokens","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"destruct","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"returnToken","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"availableTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"tokenPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_price","type":"uint256"}],"name":"setPrice","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"buy","outputs":[],"payable":true,"type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_n","type":"uint256"}],"name":"emitTokens","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"clientTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_n","type":"uint256"},{"name":"_price","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_newPrice","type":"uint256"}],"name":"priceChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_availableTokens","type":"uint256"}],"name":"availableTokensChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_client","type":"address"},{"indexed":false,"name":"_isAcquired","type":"bool"},{"indexed":false,"name":"_n","type":"uint256"},{"indexed":false,"name":"_currentTokenPrice","type":"uint256"}],"name":"tokenAcquiredOrReturned","type":"event"}]
 };
 
 let currentWallet = null;
@@ -309,7 +309,7 @@ const Ether = {
         });
 
     },
-    getData(web3, abiArray, address, callback) {
+    _getData(web3, abiArray, address, callback) {
         const MyContract = web3.eth.contract(abiArray);
         const myContractInstance = MyContract.at(address);
         const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest'});
@@ -355,29 +355,34 @@ const Ether = {
             }));
         }
 
-        Ether.getData(
-            web3,
-            abiArray,
-            address,
-            (err, res) => {
-                if (err) {
-                    callback(err);
-                    return;
+        try {
+            Ether._getData(
+                web3,
+                abiArray,
+                address,
+                (err, res) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    const transactionsXY = transactionsToXY(res);
+                    const data = XYData.setRange(transactionsXY, 0, +new Date());
+                    const steppedData = XYData.makeStepped(data);
+                    const steppedDataMarks = XYData.makeLastInX(steppedData);
+                    const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
+                    API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
+                        const dataBtc = steppedDataWIntermediate.map((d, i) => ({
+                            x: d.x,
+                            y: d.y * btc[i].ETH.BTC
+                        }));
+                        callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                    });
                 }
-                const transactionsXY = transactionsToXY(res);
-                const data = XYData.setRange(transactionsXY, 0, +new Date());
-                const steppedData = XYData.makeStepped(data);
-                const steppedDataMarks = XYData.makeLastInX(steppedData);
-                const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
-                API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
-                    const dataBtc = steppedDataWIntermediate.map((d, i) => ({
-                        x: d.x,
-                        y: d.y * btc[i].ETH.BTC
-                    }));
-                    callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-                });
-            }
-        );
+            );
+        }
+        catch (e) {
+            callback(e);
+        }
     },
     getPriceData(client, contract, callback) {
         const myEvent = contract.tokenAcquiredOrReturned({_client: client}, {fromBlock: 0, toBlock: 'latest'});
@@ -700,14 +705,18 @@ function onload() {
             });
     });
 
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
-        Page.showTokenPriceChart(0);
-    });
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
-        Page.showTokenPriceChart(+moment().subtract(6, 'day'));
-    });
-    Page.initTokenPriceChart((err, res) => {
-        Page.showTokenPriceChart(0);
+    Page.initTokenPriceChart((err) => {
+        if (err) {
+            console.log('Init token chart error', err);
+        } else {
+            Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+                Page.showTokenPriceChart(0);
+            });
+            Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+                Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+            });
+            Page.showTokenPriceChart(0);
+        }
     });
 }
 
