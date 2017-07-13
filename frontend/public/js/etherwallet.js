@@ -374,7 +374,10 @@ const Ether = {
                     const data = XYData.setRange(transactionsXY, 0, +new Date());
                     const steppedData = XYData.makeStepped(data);
                     const steppedDataMarks = XYData.makeLastInX(steppedData);
-                    const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
+                    const dataRange = XYData.getRange(steppedData);
+                    const BTCCurrencyInterval = 1000 * 60 * 60 * 6;
+                    const currencyIntervalsCountEstimate = dataRange / BTCCurrencyInterval;
+                    const steppedDataWIntermediate = currencyIntervalsCountEstimate > 1000 ? steppedData : XYData.addIntermediatePoints(steppedData, BTCCurrencyInterval);
                     API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
                         const dataBtc = steppedDataWIntermediate.map((d, i) => ({
                             x: d.x,
@@ -520,6 +523,15 @@ const XYData = {
             if (iMax == null) {
                 return findDataInterval(data, x, iMin, data.length - 1);
             }
+            if (iMin >= data.length) {
+                return -1;
+            }
+            if (iMax < 0) {
+                return -1;
+            }
+            if (iMin > iMax) {
+                return -1;
+            }
             if (x < data[iMin].x) {
                 return iMin - 1;
             }
@@ -543,6 +555,9 @@ const XYData = {
             if (minIndex < 0) {
                 return data;
             } else {
+                if (data.length < 1) {
+                    return data;
+                }
                 if (data[minIndex].x === min) {
                     return data.slice(minIndex);
                 } else {
@@ -567,6 +582,12 @@ const XYData = {
         const dataRangeMin = rangeMin(data, min);
         const dataRangeMinMax = rangeMax(dataRangeMin, max);
         return dataRangeMinMax;
+    },
+    getRange(data) {
+        if (data.length < 2) {
+            return 0;
+        }
+        return data[data.length - 1].x - data[0].x;
     }
 };
 
