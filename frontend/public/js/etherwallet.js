@@ -58,8 +58,8 @@ const Page = {
         CHART: {
             ID: 'chart',
             BUTTONS: {
-                WHOLE: 'u13',
-                MONTH: 'u11'
+                WHOLE: 'chart-whole',
+                MONTH: 'chart-month'
             }
         },
         ALTER_WALLET: {
@@ -702,9 +702,11 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
         Page.showTokenPriceChart(0);
+        return false;
     });
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
         Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+        return false;
     });
     Page.initTokenPriceChart((err, res) => {
         Page.showTokenPriceChart(0);
