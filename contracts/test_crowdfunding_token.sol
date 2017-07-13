@@ -9,9 +9,9 @@ contract TestCrowdfundingToken is ERC20BaseToken, Owned {
     uint8 constant public decimals = 0;
     
     uint public tokenPrice;
-    uint public availableSupply;
+    uint public maxSupply;
     
-    mapping (address => uint) public changeBalances;
+    mapping (address => uint) public pendingWithdrawals;
     
     event TokensBought(
         address indexed _buyer,
@@ -21,13 +21,12 @@ contract TestCrowdfundingToken is ERC20BaseToken, Owned {
         uint _availableSupply
     );
     
-    // our crowdfunding goal is _tokenPrice*_tokenSupply
-    function TestCrowdfundingToken(uint _tokenPrice, uint _tokenSupply)
+    // our crowdfunding goal is _tokenPrice*_maxSupply
+    function TestCrowdfundingToken(uint _tokenPrice, uint _maxSupply)
     {
-        require(_tokenPrice > 0 && _tokenSupply > 0);
+        require(_tokenPrice > 0 && _maxSupply > 0);
         tokenPrice = _tokenPrice;
-        _totalSupply = _tokenSupply;
-        availableSupply = _tokenSupply;
+        maxSupply = _maxSupply;
     }
 
     function () payable {
@@ -35,34 +34,37 @@ contract TestCrowdfundingToken is ERC20BaseToken, Owned {
     }
     
     function buyFor(address _recipient) payable {
-        require(availableSupply > 0);
+        require(_totalSupply < maxSupply);
         require(msg.value >= tokenPrice);
+        
         uint n = msg.value/tokenPrice;
-        if (n > availableSupply) {
-            n = availableSupply;
+        if (_totalSupply + n > maxSupply) {
+            n = maxSupply - _totalSupply;
         }
 
         uint donated = tokenPrice*n;
         uint change = msg.value - donated;
-        availableSupply -= n;
+        
+        _totalSupply += n;
         balances[_recipient] += n;
-        changeBalances[msg.sender] += change;
+        pendingWithdrawals[msg.sender] += change;
         
         owner.transfer(donated);
         
-        TokensBought(msg.sender, _recipient, change, n, availableSupply);
+        Transfer(0x0, _recipient, n);
+        TokensBought(msg.sender, _recipient, change, n, maxSupply - _totalSupply);
     }
     
     function withdrawChange() {
-        require(changeBalances[msg.sender] > 0);
+        require(pendingWithdrawals[msg.sender] > 0);
         
-        uint change = changeBalances[msg.sender];
-        changeBalances[msg.sender] = 0;
+        uint change = pendingWithdrawals[msg.sender];
+        pendingWithdrawals[msg.sender] = 0;
         
         msg.sender.transfer(change);
     }
     
-    function progress() returns(uint _goal, uint _bought) {
-        return (_totalSupply, _totalSupply - availableSupply);
+    function progress() constant returns(uint _goal, uint _bought) {
+        return (maxSupply, _totalSupply);
     }
 }
