@@ -338,10 +338,11 @@ const Ether = {
             const transactionsForTimestamps = transactions.reduce(
                 (parts, trx) => {
                     const {transactionIndex, timestamp} = trx;
-                    const transactionsForTimestamp = parts[timestamp];
+                    const transactionsForTimestamp = parts[timestamp] || 0;
                     const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                    if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
                         parts[timestamp] = atLeastTransactionsForTimestamp;
+                    }
                     return parts;
                 },
                 {}
