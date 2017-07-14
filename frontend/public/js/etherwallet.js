@@ -609,19 +609,22 @@ const Ether = {
                     from: wallet.address,
                     value: value
                 };
-                const gasLimit =  web3.eth.estimateGas(transactionParams);
-                transactionParams.gasLimit = gasLimit;
-                const transaction = {
-                    to: contractAddress,
-                    from: wallet.address,
-                    gasPrice,
-                    gasLimit,
-                    value: value,
-                    nonce: transactionCount,
-                    chainId: provider.chainId
-                };
-                const signedTransaction = wallet.sign(transaction);
-                return provider.sendTransaction(signedTransaction)
+                return provider.estimateGas(transactionParams)
+                    .then((gasLimit) => {
+                        transactionParams.gasLimit = gasLimit;
+                        const transaction = {
+                            to: contractAddress,
+                            from: wallet.address,
+                            gasPrice,
+                            gasLimit,
+                            value: value,
+                            nonce: transactionCount,
+                            chainId: provider.chainId
+                        };
+                        const signedTransaction = wallet.sign(transaction);
+                        return provider.sendTransaction(signedTransaction)
+                    });
+
             })
             .then((hash) => {
                 console.log(hash);
