@@ -695,6 +695,7 @@ function onload() {
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
         currentWallet = wallet;
         Page.showCurrentWallet(wallet);
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
@@ -712,6 +713,7 @@ function onload() {
                     Page.showCurrentWallet(wallet);
                 });
         });
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
@@ -736,6 +738,7 @@ function onload() {
                     Page.toggleBuyWait(false);
                 });
             });
+        return false;
     });
 
     Page.showAddNodeValid(false);
