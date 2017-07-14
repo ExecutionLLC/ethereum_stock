@@ -596,21 +596,27 @@ const Ether = {
         const provider = wallet.provider;
         const gasPricePromise = provider.getGasPrice();
         const transactionCountPromise = provider.getTransactionCount(wallet.address);
-        const estmateGas = provider.estimateGas();
 
         return Promise.all([
             gasPricePromise,
             transactionCountPromise,
-            estmateGas
         ])
             .then((result) => {
                 const gasPrice = result[0];
                 const transactionCount = result[1];
+                const transactionParams = {
+                    to: contractAddress,
+                    from: wallet.address,
+                    value: value
+                };
+                const gasLimit =  web3.eth.estimateGas(transactionParams);
+                transactionParams.gasLimit = gasLimit;
                 const transaction = {
                     to: contractAddress,
+                    from: wallet.address,
                     gasPrice,
+                    gasLimit,
                     value: value,
-                    gasLimit: result[2],
                     nonce: transactionCount,
                     chainId: provider.chainId
                 };
@@ -895,16 +901,19 @@ function onload() {
             .then((tokenPrice) => {
                 const wei = new BigNumber(tokenPrice[0]).times(count);
                 const weiStr = `0x${wei.toString(16)}`;
-                contract.buyFor(walletId, {value: weiStr})
-                    .then((res) => {
-                        console.log(res);
-                        return res.hash;
-                    })
-                    .then((transactionHash) => {
-                        currentWallet.provider.once(transactionHash, (transaction) => {
-                            console.log('Transaction sell Minded: ' + transaction.hash);
-                            console.log(transaction);
-                        });
+                contract.estimate.buyFor(walletId, {value: weiStr})
+                    .then((gasCost) => {
+                        contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
+                            .then((res) => {
+                                console.log(res);
+                                return res.hash;
+                            })
+                            .then((transactionHash) => {
+                                currentWallet.provider.once(transactionHash, (transaction) => {
+                                    console.log('Transaction sell Minded: ' + transaction.hash);
+                                    console.log(transaction);
+                                });
+                            });
                     });
             });
     });
