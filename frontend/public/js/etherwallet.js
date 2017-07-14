@@ -216,8 +216,7 @@ const Page = {
             OPERATION: {
                 TIME: 'tokens-history-op-time',
                 NAME: 'tokens-history-op-name',
-                COUNT: 'tokens-history-op-count',
-                PRICE: 'tokens-history-op-price'
+                COUNT: 'tokens-history-op-count'
             },
             CONTAINER: 'tokens-history-container'
         },
@@ -283,13 +282,10 @@ const Page = {
     showBalance(tokens, eth, btc) {
 
         function strNull(s) {
-            return s === null ? '...' : s;
+            return s == null ? '...' : s;
         }
 
-        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER)
-            .removeClass('ax_default_hidden')
-            .attr('style', '')
-            .toggle(tokens !== null);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CONTAINER).css('visibility', tokens == null ? 'hidden' : 'visible');
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
@@ -316,7 +312,7 @@ const Page = {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
-            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, walletId.toLowerCase() === item.to ? 'buy' : 'sell');
+            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, walletId.toLowerCase() === item.to.toLowerCase() ? 'buy' : 'sell');
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
             return $el;
         });
@@ -333,7 +329,7 @@ const Page = {
     },
     showError(error) {
         $error = $('#balance-error');
-        $error.toggle(error !== null);
+        $error.toggle(error != null);
         $error.text(error);
     },
     showCurrentWallet(wallet) {
@@ -342,6 +338,8 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
+        Page.toggleBuyWait(false);
+        Page.toggleSellWait(false);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
@@ -730,10 +728,10 @@ const XYData = {
     setRange(data, min, max) {
 
         function findDataInterval(data, x, iMin, iMax) {
-            if (iMin === null) {
+            if (iMin == null) {
                 return findDataInterval(data, x, 0, iMax);
             }
-            if (iMax === null) {
+            if (iMax == null) {
                 return findDataInterval(data, x, iMin, data.length - 1);
             }
             if (x < data[iMin].x) {
@@ -819,6 +817,7 @@ function onload() {
                 });
             }
         });
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
@@ -913,9 +912,11 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
         Page.showTokenPriceChart(0);
+        return false;
     });
     Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
         Page.showTokenPriceChart(+moment().subtract(6, 'day'));
+        return false;
     });
     // Page.initTokenPriceChart(() => {
     //     Page.showTokenPriceChart(0);
