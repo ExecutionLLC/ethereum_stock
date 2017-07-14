@@ -44,7 +44,8 @@ const Page = {
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc',
-            WAIT: 'balance-wait'
+            WAIT: 'balance-wait',
+            ERROR: 'balance-error'
         },
         TOKENS_HISTORY: {
             TEMPLATE: 'tokens-history-template',
@@ -150,7 +151,7 @@ const Page = {
             setElementContent($el, key, text);
         }
 
-        const $rows = res.map((item, index) => {
+        const $rows = res && res.map((item, index) => {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
@@ -159,8 +160,10 @@ const Page = {
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.PRICE, index, item.tokenPrice);
             return $el;
         });
-        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
-
+        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty();
+        if ($rows) {
+            $container.append($rows);
+        }
     },
     showAddNodeValid(nameValid, urlValid, chainIdValid) {
         const allValid = nameValid && urlValid && chainIdValid;
@@ -178,10 +181,10 @@ const Page = {
         var curNodeName = localStorage['selectedNodeValue'];
         return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
-    showError(error) {
-        $error = $('#balance-error');
-        $error.toggle(error != null);
-        $error.text(error);
+    showBalanceError(error) {
+        Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
+            .text(error)
+            .toggle(error != null);
     },
     showAlterWalletValid(keyValid, fileValid, filePasswordValid) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.GROUP).toggleClass('has-error', !keyValid);
@@ -641,8 +644,9 @@ const Validator = {
 };
 
 function onload() {
-    Page.showError();
+    Page.showBalanceError();
     Page.showBalance();
+    Page.showTokensHistory();
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
@@ -663,7 +667,7 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
-        Page.showError();
+        Page.showBalanceError();
         const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -671,12 +675,20 @@ function onload() {
         Ether.getBalance(contract, walletId, (err, balance) => {
             if (err) {
                 Page.showBalanceWait(false);
-                Page.showError(err);
+                Page.showBalanceError(err);
+                Page.showBalance();
+                Page.showTokensHistory();
             } else {
                 Ether.getPriceData(walletId, contract, (err, res) => {
                     Page.showBalanceWait(false);
-                    Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                    Page.showTokensHistory(res);
+                    if (err) {
+                        Page.showBalanceError(err);
+                        Page.showBalance();
+                        Page.showTokensHistory();
+                    } else {
+                        Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                        Page.showTokensHistory(res);
+                    }
                 });
             }
         });
