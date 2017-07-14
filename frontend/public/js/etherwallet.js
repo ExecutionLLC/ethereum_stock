@@ -89,6 +89,7 @@ const Page = {
             },
             SELECT_NODE: {
                 NODE: 'select-node',
+                ADD_NODE_GROUP: 'add-node-group',
                 NAME: 'select-node-name',
                 URL: 'select-node-url',
                 CHAIN_ID: 'select-node-chain-id',
@@ -158,6 +159,11 @@ const Page = {
         });
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
 
+    },
+    showAddNodeValid(nameValid, urlValid, chainIdValid) {
+        const allValid = nameValid && urlValid && chainIdValid;
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_GROUP).toggleClass('has-error', !allValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).prop('disabled', !allValid);
     },
     selectNode(valueToSelect) {
         var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
@@ -729,16 +735,24 @@ function onload() {
             });
     });
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).on('input', (evt) => {
-        console.log(!!evt.target.value);
+    Page.showAddNodeValid(false);
+    function calcAndShowAddNodeValid() {
+        const nameValid = !!Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        const urlValid = Validator.url(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val());
+        const chainIdValid = Validator.chainId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val());
+        Page.showAddNodeValid(nameValid, urlValid, chainIdValid);
+    }
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).on('input', () => {
+        calcAndShowAddNodeValid();
     });
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).on('input', (evt) => {
-        console.log(Validator.url(evt.target.value));
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).on('input', () => {
+        calcAndShowAddNodeValid();
     });
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).on('input', (evt) => {
-        console.log(Validator.chainId(evt.target.value));
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).on('input', () => {
+        calcAndShowAddNodeValid();
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
@@ -760,6 +774,7 @@ function onload() {
         } else {
             //todo: log error
         }
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
