@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta name="robots" content="noindex, nofollow"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <link href="resources/css/jquery-ui-themes.css" type="text/css" rel="stylesheet"/>
-    <link href="resources/css/axure_rp_page.css" type="text/css" rel="stylesheet"/>
-    <link href="data/styles.css" type="text/css" rel="stylesheet"/>
-    <link href="files/home/styles.css" type="text/css" rel="stylesheet"/>
-    <script type="text/javascript">
-        AXSHARE_HOST_URL = 'http://share.axure.com';
-        AXSHARE_HOST_SECURE_URL = 'https://share.axure.com';
-    </script>
-    <script src="resources/scripts/jquery-1.8.3.min.js"></script>
-    <script src="resources/scripts/jquery-ui-1.8.10.custom.min.js"></script>
-    <script src="resources/scripts/prototypePre.js"></script>
-    <script src="data/document.js"></script>
-    <script src="resources/scripts/prototypePost.js"></script>
-    <script src="files/home/data.js"></script>
-    <script type="text/javascript">
-      $axure.utils.getTransparentGifPath = function() { return 'http://d1h0x9w88ijkiq.cloudfront.net/3338/images/transparent.gif'; };
-      $axure.utils.getOtherPath = function() { return 'resources/Other.html'; };
-      $axure.utils.getReloadPath = function() { return 'resources/reload.html'; };
-    </script>
-
+    <link href="resources/css/etherwallet.css" type="text/css" rel="stylesheet"/>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="../node_modules/async/dist/async.min.js"></script>
     <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
     <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
@@ -44,578 +27,174 @@
     <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
     <script type="text/javascript" src="js/etherwallet.js"></script>
 
-  </head>
-  <body>
-    <div id="base" class="">
-
-      <!-- блок курс (Group) -->
-      <div id="u0" class="ax_default" data-label="блок курс" data-left="4" data-top="700" data-width="1524" data-height="586">
-
-        <!-- курс (Group) -->
-        <div id="u1" class="ax_default" data-label="курс" data-left="4" data-top="700" data-width="1524" data-height="586">
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u2" class="ax_default shape" data-label="Rectangle">
-            <div id="u2_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u3" class="text">
-              <p><span>Курс токена</span></p>
-            </div>
-          </div>
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u4" class="ax_default shape" data-label="Rectangle">
-            <div id="u4_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u5" class="text" style="display:none; visibility: hidden">
-              <p><span></span></p>
-            </div>
-          </div>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <h1 class="hideable-header">Заголовок страницы</h1>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Eethereum stock</a>
         </div>
-
-        <!-- Unnamed (Rectangle) -->
-        <div id="u6" class="ax_default box_2">
-          <div id="u6_div" class=""></div>
-          <!-- Unnamed () -->
-          <div id="u7" class="text" style="display:none; visibility: hidden">
-            <p><span></span></p>
-          </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#about">Какой-то текст</a></li>
+                <li><a href="#balance">Проверка баланса</a></li>
+                <li><a href="#currency">Курс токена</a></li>
+                <li><a href="#buysell">Купля / Продажа</a></li>
+            </ul>
         </div>
-
-        <!-- Unnamed (Image) -->
-        <div id="u8" class="ax_default image">
-            <canvas id="myChart" width="1474" height="259"></canvas>
-          <!-- Unnamed () -->
-          <div id="u9" class="text" style="display:none; visibility: hidden">
-            <p><span></span></p>
-          </div>
-        </div>
-
-        <!-- Unnamed (Group) -->
-        <div id="u10" class="ax_default" data-left="13" data-top="1112" data-width="221" data-height="34">
-
-          <!-- buttonSegmented2 (Rectangle) -->
-          <div id="u11" class="ax_default" data-label="buttonSegmented2" selectiongroup="ButtonSegmentedGroup">
-            <div id="u11_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u12" class="text">
-              <p><span>За месяц</span></p>
-            </div>
-          </div>
-
-          <!-- buttonSegmented1 (Rectangle) -->
-          <div id="u13" class="ax_default selected" data-label="buttonSegmented1" selectiongroup="ButtonSegmentedGroup">
-            <div id="u13_div" class="selected"></div>
-            <!-- Unnamed () -->
-            <div id="u14" class="text">
-              <p><span>За все время</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- баланс кошелька (Group) -->
-      <div id="u15" class="ax_default" data-label="баланс кошелька" data-left="4" data-top="450" data-width="1524" data-height="238">
-
-        <!-- баланс (Group) -->
-        <div id="u16" class="ax_default" data-label="баланс" data-left="4" data-top="450" data-width="1524" data-height="238">
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u17" class="ax_default shape" data-label="Rectangle">
-            <div id="u17_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u18" class="text">
-              <p><span>Проверьте баланс вашего кошелька</span></p>
-            </div>
-          </div>
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u19" class="ax_default shape" data-label="Rectangle">
-            <div id="u19_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u20" class="text" style="display:none; visibility: hidden">
-              <p><span></span></p>
-            </div>
-          </div>
-        </div>
-
-        <div id="u20-1" class="ax_default">
-          <div id="tokens-history-template" style="display:none;">
-            <span id="tokens-history-op-time"></span>
-            <span id="tokens-history-op-name"></span>
-            <span id="tokens-history-op-count"></span>
-            <span id="tokens-history-op-price"></span>
-          </div>
-          <div id="tokens-history-container" class="ax_default" style="border-width: 0px;position: absolute;left: 1189px;top: 529px;width: 343px;height: 18px;font-size: 16px;"></div>
-        </div>
-
-        <!-- деньги на счету1 (Group) -->
-        <div id="u21" class="ax_default ax_default_hidden" data-label="деньги на счету1" style="display:none; visibility: hidden" data-left="0" data-top="0" data-width="0" data-height="0">
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u22" class="ax_default label">
-            <div id="u22_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u23" class="text">
-              <p><span id="balance-tokens">1000 </span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u24" class="ax_default label">
-            <div id="u24_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u25" class="text">
-              <p><span>Tokens</span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u26" class="ax_default label">
-            <div id="u26_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u27" class="text">
-              <p><span id="balance-eth">1000 </span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u28" class="ax_default label">
-            <div id="u28_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u29" class="text">
-              <p><span>ETH</span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u30" class="ax_default label">
-            <div id="u30_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u31" class="text">
-              <p><span id="balance-btc">1000 </span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u32" class="ax_default label">
-            <div id="u32_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u33" class="text">
-              <p><span>BTC</span></p>
-            </div>
-          </div>
-
-          <!-- Unnamed (Rectangle) -->
-          <div id="u34" class="ax_default label">
-            <div id="u34_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u35" class="text">
-              <p><span>На вашем счету:</span></p>
-            </div>
-          </div>
-        </div>
-
-          <div id="u36-1" class="ax_default">
-              <div id="u36-2" class="ax_default" style="border-width: 0px;position: absolute;left: 389px;top: 565px;width: 343px;height: 18px;font-size: 16px;">
-                  wait
-              </div>
-          </div>
-
-        <!-- Unnamed (Group) -->
-        <div id="u36" class="ax_default" data-left="37" data-top="556" data-width="446" data-height="40">
-
-          <!-- Unnamed (Group) -->
-          <div id="u37" class="ax_default" data-left="37" data-top="556" data-width="330" data-height="40">
-
-            <!-- Rectangle (Rectangle) -->
-            <div id="u38" class="ax_default" data-label="Rectangle">
-              <div id="u38_div" class=""></div>
-              <!-- Unnamed () -->
-              <div id="u39" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-              </div>
-            </div>
-
-            <!-- Input Field (Text Field) -->
-            <div id="u40" class="ax_default text_field" data-label="Input Field">
-              <input id="u40_input" type="text" value="" maxlength="128"/>
-            </div>
-          </div>
-
-          <!-- Unnamed (Group) -->
-          <div id="u41" class="ax_default" data-left="367" data-top="556" data-width="116" data-height="40">
-
-            <!-- Rectangle (Rectangle) -->
-            <div id="u42" class="ax_default" data-label="Rectangle">
-              <div id="u42_div" class=""></div>
-              <!-- Unnamed () -->
-              <div id="u43" class="text">
-                <p><span>Проверить</span></p>
-              </div>
-            </div>
-
-            <!-- Line_Vertical (Vertical Line) -->
-            <div id="u44" class="ax_default" data-label="Line_Vertical">
-              <img id="u44_img" class="img " src="http://d26uhratvi024l.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/line_vertical_u44.png?token=12b829b690225760affe11641f05aff0"/>
-              <!-- Unnamed () -->
-              <div id="u45" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unnamed (Rectangle) -->
-        <div id="u46" class="ax_default label">
-          <div id="u46_div" class=""></div>
-          <!-- Unnamed () -->
-          <div id="u47" class="text">
-            <p><span>Введите адрес кошелька:</span></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Unnamed (Rectangle) -->
-      <div id="u48" class="ax_default box_2">
-        <div id="u48_div" class=""></div>
-        <!-- Unnamed () -->
-        <div id="u49" class="text">
-          <p><span>Какой-то текст</span></p>
-        </div>
-      </div>
-
-      <!-- меню2 (Dynamic Panel) -->
-      <div id="u50" class="ax_default ax_default_hidden" data-label="меню2" style="display:none; visibility: hidden">
-        <div id="u50_state0" class="panel_state" data-label="State1" style="">
-          <div id="u50_state0_content" class="panel_state_content">
-
-            <!-- меню2 (Group) -->
-            <div id="u51" class="ax_default" data-label="меню2" data-left="0" data-top="0" data-width="1533" data-height="45">
-
-              <!-- Unnamed (Group) -->
-              <div id="u52" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="45">
-
-                <!-- Unnamed (Rectangle) -->
-                <div id="u53" class="ax_default shape1">
-                  <div id="u53_div" class=""></div>
-                  <!-- Unnamed () -->
-                  <div id="u54" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Horizontal Line) -->
-                <div id="u55" class="ax_default horizontal_line">
-                  <img id="u55_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
-                  <!-- Unnamed () -->
-                  <div id="u56" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Horizontal Line) -->
-                <div id="u57" class="ax_default horizontal_line">
-                  <img id="u57_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u57.png?token=ff911dcd70f9e9d06a2f4f3db1cc7979"/>
-                  <!-- Unnamed () -->
-                  <div id="u58" class="text" style="display:none; visibility: hidden">
-                    <p><span></span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Rectangle) -->
-                <div id="u59" class="ax_default paragraph1">
-                  <div id="u59_div" class=""></div>
-                  <!-- Unnamed () -->
-                  <div id="u60" class="text">
-                    <p><span>Какой-то текст</span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Rectangle) -->
-                <div id="u61" class="ax_default paragraph1">
-                  <div id="u61_div" class=""></div>
-                  <!-- Unnamed () -->
-                  <div id="u62" class="text">
-                    <p><span>Проверка баланса</span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Rectangle) -->
-                <div id="u63" class="ax_default paragraph1">
-                  <div id="u63_div" class=""></div>
-                  <!-- Unnamed () -->
-                  <div id="u64" class="text">
-                    <p><span>Курс токена</span></p>
-                  </div>
-                </div>
-
-                <!-- Unnamed (Rectangle) -->
-                <div id="u65" class="ax_default paragraph1">
-                  <div id="u65_div" class=""></div>
-                  <!-- Unnamed () -->
-                  <div id="u66" class="text">
-                    <p><span>Купля / Продажа</span></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- меню (Dynamic Panel) -->
-      <div id="u67" class="ax_default" data-label="меню">
-        <div id="u67_state0" class="panel_state" data-label="State1" style="">
-          <div id="u67_state0_content" class="panel_state_content">
-
-            <!-- Unnamed (Group) -->
-            <div id="u68" class="ax_default" data-left="0" data-top="-11" data-width="1533" data-height="200">
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u69" class="ax_default shape1">
-                <div id="u69_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u70" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Horizontal Line) -->
-              <div id="u71" class="ax_default horizontal_line">
-                <img id="u71_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
-                <!-- Unnamed () -->
-                <div id="u72" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Horizontal Line) -->
-              <div id="u73" class="ax_default horizontal_line">
-                <img id="u73_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u73.png?token=4876b699eec07e3e3e7f2e5a3e95a93b"/>
-                <!-- Unnamed () -->
-                <div id="u74" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u75" class="ax_default paragraph1">
-                <div id="u75_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u76" class="text">
-                  <p><span>Какой-то текст</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u77" class="ax_default paragraph1">
-                <div id="u77_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u78" class="text">
-                  <p><span>Проверка баланса</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u79" class="ax_default paragraph1">
-                <div id="u79_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u80" class="text">
-                  <p><span>Курс токена</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u81" class="ax_default paragraph1">
-                <div id="u81_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u82" class="text">
-                  <p><span>Купля / Продажа</span></p>
-                </div>
-              </div>
-            </div>
-
-            <!-- линия верха страницы (Horizontal Line) -->
-            <div id="u83" class="ax_default line" data-label="линия верха страницы">
-              <img id="u83_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u83.png?token=2a923858c7d310d8caddd5e91c5951e3"/>
-              <!-- Unnamed () -->
-              <div id="u84" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-              </div>
-            </div>
-
-            <!-- Unnamed (Rectangle) -->
-            <div id="u85" class="ax_default label">
-              <div id="u85_div" class=""></div>
-              <!-- Unnamed () -->
-              <div id="u86" class="text">
-                <p><span>Заголовок страницы</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="u67_state1" class="panel_state" data-label="State2" style="visibility: hidden;">
-          <div id="u67_state1_content" class="panel_state_content">
-
-            <!-- Unnamed (Group) -->
-            <div id="u87" class="ax_default" data-left="0" data-top="0" data-width="1533" data-height="46">
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u88" class="ax_default shape1">
-                <div id="u88_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u89" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Horizontal Line) -->
-              <div id="u90" class="ax_default horizontal_line">
-                <img id="u90_img" class="img " src="http://d2t44wh9rnwl5y.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u55.png?token=458f0336bfba3a931aed3cc58c64fc1d"/>
-                <!-- Unnamed () -->
-                <div id="u91" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Horizontal Line) -->
-              <div id="u92" class="ax_default horizontal_line">
-                <img id="u92_img" class="img " src="http://dxlfb468n8ekd.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/u92.png?token=4b6175cd07a57241d3b9f5f8740c8bd3"/>
-                <!-- Unnamed () -->
-                <div id="u93" class="text" style="display:none; visibility: hidden">
-                  <p><span></span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u94" class="ax_default paragraph1">
-                <div id="u94_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u95" class="text">
-                  <p><span>Какой-то текст</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u96" class="ax_default paragraph1">
-                <div id="u96_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u97" class="text">
-                  <p><span>Проверка баланса</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u98" class="ax_default paragraph1">
-                <div id="u98_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u99" class="text">
-                  <p><span>Курс токена</span></p>
-                </div>
-              </div>
-
-              <!-- Unnamed (Rectangle) -->
-              <div id="u100" class="ax_default paragraph1">
-                <div id="u100_div" class=""></div>
-                <!-- Unnamed () -->
-                <div id="u101" class="text">
-                  <p><span>Купля / Продажа</span></p>
-                </div>
-              </div>
-            </div>
-
-            <!-- линия верха страницы (Horizontal Line) -->
-            <div id="u102" class="ax_default line" data-label="линия верха страницы">
-              <img id="u102_img" class="img " src="http://d2v8ggac1o0f6z.cloudfront.net/gsc/TA2ZMM/7b/fe/c1/7bfec1d042fd4e46b0c40233a4818e98/images/home/линия_верха_страницы_u102.png?token=1154e5f1d674312c1440f3e50731ad8c"/>
-              <!-- Unnamed () -->
-              <div id="u103" class="text" style="display:none; visibility: hidden">
-                <p><span></span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- текст (Group) -->
-      <div id="u104" class="ax_default" data-label="текст" data-left="4" data-top="200" data-width="1524" data-height="238">
-
-        <!-- Rectangle (Rectangle) -->
-        <div id="u105" class="ax_default shape" data-label="Rectangle">
-          <div id="u105_div" class=""></div>
-          <!-- Unnamed () -->
-          <div id="u106" class="text">
-            <p><span>Текст</span></p>
-          </div>
-        </div>
-
-        <!-- Rectangle (Rectangle) -->
-        <div id="u107" class="ax_default shape" data-label="Rectangle">
-          <div id="u107_div" class=""></div>
-          <!-- Unnamed () -->
-          <div id="u108" class="text">
-            <p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p><p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span></p>
-            <p>
-              <select id="select-node">
-              </select>
-            </p>
-            <p>
-              <span>
-                Add new Node
-              </span>
-              <input id="select-node-name"/>
-              <input id="select-node-url"/>
-              <input id="select-node-chain-id"/>
-              <button id="select-node-add">Add Node</button>
-            </span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- блок купить (Group) -->
-      <div id="u109" class="ax_default" data-label="блок купить" data-left="4" data-top="1298" data-width="1524" data-height="238">
-
-        <!-- текст (Group) -->
-        <div id="u110" class="ax_default" data-label="текст" data-left="4" data-top="1298" data-width="1524" data-height="238">
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u111" class="ax_default shape" data-label="Rectangle">
-            <div id="u111_div" class=""></div>
-            <!-- Unnamed () -->
-            <div id="u112" class="text">
-              <p><span>Купить / продать</span></p>
-            </div>
-          </div>
-
-          <!-- Rectangle (Rectangle) -->
-          <div id="u113" class="ax_default shape" data-label="Rectangle">
-            <div id="u113_div">
-              <div>
-                By private key: <input id="add-wallet-private-key"/><button id="add-wallet-private-key-button">set wallet</button>
-              </div>
-              <div>
-                By file: <input id="add-wallet-file" type="file"/>, password:<input id="add-wallet-file-password"/><button id="add-wallet-file-button">set wallet</button>
-              </div>
-              <div id="wallet-ops">
-                <h1>Buy/sell tokens with wallet <span id="wallet-address"></span></h1>
-                <div>
-                    Count: <input id="buy-tokens-count"/><button id="buy-tokens-button">Buy</button><span id="buy-tokens-wait" style="display: none">wait for transaction complete...</span>
-                </div>
-                <div>
-                  <div>
-                    Count: <input id="sell-tokens-count"/><button id="sell-tokens-button">Sell</button><span id="sell-tokens-wait" style="display: none">wait for transaction complete...</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Unnamed () -->
-            <div id="u114" class="text" style="display:none; visibility: hidden">
-              <p><span></span></p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </body>
+</nav>
+<div class="container">
+    <a name="about"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Текст</h3>
+        </div>
+        <div class="panel-body">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
+            <form>
+                <div class="form-group form-inline">
+                    <label class="control-label">Current node</label>
+                    <select id="select-node" class="form-control"></select>
+                </div>
+                <div class="form-group form-inline">
+                    <label class="control-label">Add new Node</label>
+                    <input id="select-node-name" class="form-control" />
+                    <input id="select-node-url" class="form-control" />
+                    <input id="select-node-chain-id" class="form-control" />
+                    <button id="select-node-add" class="btn btn-default">Add Node</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <a name="balance"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Проверьте баланс вашего кошелька</h3>
+        </div>
+        <div class="panel-body">
+            <div class="container-fluid">
+                <div class="row show-grid">
+                    <div class="col-sm-5">
+                        <form>
+                            <div class="form-group">
+                                <label class="control-label">Введите адрес кошелька:</label>
+                            </div>
+                            <div class="form-group form-inline">
+                                <input id="wallet-input" class="form-control" placeholder="Адрес кошелька..." />
+                                <button id="wallet-button" class="btn btn-default">Проверить</button>
+                                <span id="balance-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="balance-container">
+                        <div class="col-sm-2">
+                            На вашем счету:
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="container-fluid">
+                                <div class="row show-grid">
+                                    <div id="balance-tokens" class="col-sm-1"></div>
+                                    <div class="col-sm-1">Tokens</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-btc" class="col-sm-1"></div>
+                                    <div class="col-sm-1">BTC</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-eth" class="col-sm-1"></div>
+                                    <div class="col-sm-1">ETH</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 container-fluid">
+                        <div id="tokens-history-template" class="row show-grid" style="display:none;">
+                            <div id="tokens-history-op-time" class="col-sm-3"></div>
+                            <div id="tokens-history-op-name" class="col-sm-3"></div>
+                            <div id="tokens-history-op-count" class="col-sm-3"></div>
+                            <div id="tokens-history-op-price" class="col-sm-3"></div>
+                        </div>
+                        <div id="tokens-history-container">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a name="currency"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Курс токена</h3>
+        </div>
+        <div class="panel-body">
+            <canvas id="chart" width="1074" height="259"></canvas>
+            <form>
+                <div class="form-group">
+                    <button id="chart-whole" class="btn btn-default">За все время</button>
+                    <button id="chart-month" class="btn btn-default">За месяц</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <a name="buysell"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Купить / продать</h3>
+        </div>
+        <div class="panel-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label">По приватному ключу:</label>
+                </div>
+                <div class="form-group form-inline">
+                    <input id="add-wallet-private-key" class="form-control" placeholder="Приватный ключ..." />
+                    <button id="add-wallet-private-key-button" class="btn btn-default">Задать кошелёк</button>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">По файлу:</label>
+                </div>
+                <div class="form-group form-inline">
+                    <input id="add-wallet-file" type="file" class="form-control"/>
+                    <label class="control-label">пароль:</label>
+                    <input id="add-wallet-file-password" type="password" class="form-control" />
+                    <button id="add-wallet-file-button" class="btn btn-default">Задать кошелёк</button>
+                </div>
+                <div id="wallet-ops">
+                    <div class="form-group">
+                        <label class="control-label">Операции с кошельком <span id="wallet-address"></span></label>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="control-label">Купить</label>
+                        <input id="buy-tokens-count" class="form-control"/>
+                        <button id="buy-tokens-button" class="btn btn-default">Купить</button>
+                        <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="control-label">Продать</label>
+                        <input id="sell-tokens-count" class="form-control"/>
+                        <button id="sell-tokens-button" class="btn btn-default">Продать</button>
+                        <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(window).scroll(() => {
+        $('body').toggleClass('hide-header', $(this).scrollTop() > 10);
+    });
+</script>
+</body>
 </html>
