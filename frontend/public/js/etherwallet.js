@@ -111,6 +111,10 @@ const Page = {
                 .attr("value", value)
                 .text(name));
     },
+    showWalletValid(isValid) {
+        Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).prop('disabled', !isValid);
+    },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
     },
@@ -632,10 +636,10 @@ function onload() {
         localStorage.setItem('selectedNodeValue', curNodeName);
     });
 
+    Page.showWalletValid(false);
+
     Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
-        const isValid = Validator.walletId(evt.target.value);
-        Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
-        Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).prop('disabled', !isValid);
+        Page.showWalletValid(Validator.walletId(evt.target.value));
     });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
