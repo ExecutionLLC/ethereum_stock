@@ -545,13 +545,12 @@ const Ether = {
             }
         );
     },
-    getPriceData(client, contract, callback) {
-        const myEvent = contract.Transfer({_client: client}, {fromBlock: 0, toBlock: 'latest'});
-        myEvent.get((error, logs) => {
+    getHistoryData(event, count, callback) {
+        event.get((error, logs) => {
             if (error) {
                 callback(error);
             } else {
-                async.map(logs.slice(-5), (log, callback) => {
+                async.map(logs.slice(-count), (log, callback) => {
                     web3.eth.getBlock(log.blockNumber, (error, block) => {
                         const {args: {_from, _to, _value}} = log;
                         const {timestamp} = block;
@@ -562,7 +561,36 @@ const Ether = {
                             count: new BigNumber(_value).toNumber()
                         });
                     });
-                }, callback);
+                }, (error, result) => {
+                    callback(error, result);
+                });
+            }
+        });
+    },
+    getPriceData(client, web3contract, callback) {
+        const toClientEvent = web3contract.Transfer({_to: client}, {
+            fromBlock: 0,
+            toBlock: 'latest',
+            topics: ['_from: client']
+        });
+        const fromClientEvent = web3contract.Transfer({_from: client}, {
+            fromBlock: 0,
+            toBlock: 'latest',
+            topics: ['_from: client']
+        });
+        const historyCount = 5;
+        async.parallel({
+            toClientHistory: (callback) => Ether.getHistoryData(toClientEvent, historyCount, callback),
+            fromClientHistory: (callback) => Ether.getHistoryData(fromClientEvent, historyCount, callback),
+        }, (error, {toClientHistory, fromClientHistory}) => {
+            if (error) {
+                callback(error)
+            } else {
+                const allHistory = toClientHistory.concat(fromClientHistory);
+                allHistory.sort((x, y) => {
+                    return x.timestamp - y.timestamp
+                }).slice(-historyCount);
+                callback(null, allHistory);
             }
         });
     },
@@ -589,11 +617,7 @@ const Ether = {
                     chainId: provider.chainId
                 };
                 const signedTransaction = wallet.sign(transaction);
-                return signedTransaction;
-            })
-            .then((transaction) => {
-                console.log(transaction);
-                return provider.sendTransaction(transaction)
+                return provider.sendTransaction(signedTransaction)
             })
             .then((hash) => {
                 console.log(hash);
