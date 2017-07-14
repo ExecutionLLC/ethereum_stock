@@ -37,6 +37,7 @@ let currentWallet = null;
 const Page = {
     ELEMENT_ID: {
         BALANCE: {
+            WALLET_FORM_GROUP: 'wallet-form-group',
             WALLET_INPUT: 'wallet-input',
             CHECK_BUTTON: 'wallet-button',
             CONTAINER: 'balance-container',
@@ -632,7 +633,9 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
-        console.log(Validator.walletId(evt.target.value));
+        const isValid = Validator.walletId(evt.target.value);
+        Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).prop('disabled', !isValid);
     });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
