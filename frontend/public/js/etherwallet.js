@@ -591,6 +591,32 @@ const XYData = {
     }
 };
 
+const Validator = {
+    walletId(address) {
+        if (address.substring(0, 2) !== '0x') {
+            return false;
+        } else if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+    url(url) {
+        return /^https?:\/\/[^/]+/.test(url);
+    },
+    chainId(chainId) {
+        return /^\d+$/.test(chainId);
+    },
+    privateKey(key) {
+        const prefixLength = key.substring(0, 2) === '0x' ? 2 : 0;
+        const keyDigits = key.length - prefixLength;
+        return keyDigits === 64 || keyDigits ===128 || keyDigits === 132;
+    },
+    tokenCount(count) {
+        return /^\d+$/.test(count);
+    }
+};
+
 function onload() {
     Page.showError();
     Page.showBalance();
@@ -604,6 +630,10 @@ function onload() {
         currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
         localStorage.setItem('selectedNodeValue', curNodeName);
+    });
+
+    Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
+        console.log(Validator.walletId(evt.target.value));
     });
 
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
@@ -625,6 +655,18 @@ function onload() {
                 });
             }
         });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', (evt) => {
+        console.log(Validator.privateKey(evt.target.value));
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
+        console.log(Validator.tokenCount(evt.target.value));
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
+        console.log(Validator.tokenCount(evt.target.value));
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
@@ -678,6 +720,18 @@ function onload() {
                     Page.toggleBuyWait(false);
                 });
             });
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).on('input', (evt) => {
+        console.log(!!evt.target.value);
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).on('input', (evt) => {
+        console.log(Validator.url(evt.target.value));
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).on('input', (evt) => {
+        console.log(Validator.chainId(evt.target.value));
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
