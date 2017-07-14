@@ -65,10 +65,12 @@ const Page = {
         },
         ALTER_WALLET: {
             PRIVATE_KEY: {
+                GROUP: 'add-wallet-private-key-group',
                 KEY: 'add-wallet-private-key',
                 BUTTON: 'add-wallet-private-key-button'
             },
             FILE: {
+                GROUP: 'add-wallet-file-group',
                 FILE: 'add-wallet-file',
                 PASWORD: 'add-wallet-file-password',
                 BUTTON: 'add-wallet-file-button'
@@ -180,6 +182,14 @@ const Page = {
         $error = $('#balance-error');
         $error.toggle(error != null);
         $error.text(error);
+    },
+    showAlterWalletValid(keyValid, fileValid, filePasswordValid) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.GROUP).toggleClass('has-error', !keyValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).prop('disabled', !keyValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.GROUP).toggleClass('has-error', !fileValid || !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).prop('disabled', !fileValid || !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).toggleClass('alert-danger', !fileValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).toggleClass('alert-danger', !filePasswordValid);
     },
     showCurrentWallet(wallet) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
@@ -673,8 +683,20 @@ function onload() {
         return false;
     });
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', (evt) => {
-        console.log(Validator.privateKey(evt.target.value));
+    Page.showAlterWalletValid(false, false, true);
+    function showCurrentAlterWalletValid() {
+        const keyValid = Validator.privateKey(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val());
+        const fileValid = !!Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
+        Page.showAlterWalletValid(keyValid, fileValid, true);
+    }
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', () => {
+        showCurrentAlterWalletValid();
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).on('change', () => {
+        console.log('file');
+        showCurrentAlterWalletValid();
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
