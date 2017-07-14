@@ -164,6 +164,9 @@ const Page = {
         const allValid = nameValid && urlValid && chainIdValid;
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_GROUP).toggleClass('has-error', !allValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).prop('disabled', !allValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).toggleClass('alert-danger', !nameValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).toggleClass('alert-danger', !urlValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).toggleClass('alert-danger', !chainIdValid);
     },
     selectNode(valueToSelect) {
         var element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
