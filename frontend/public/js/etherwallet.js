@@ -1098,7 +1098,7 @@ function onload() {
         const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
         if (name && url && chainId) {
             // maybe generate uuid
-            const id = Object.keys(localStorage[Node]).length;
+            const id = Object.keys(localStorage['Nodes']).length;
             const Nodes = JSON.parse(localStorage['Nodes']);
 
             Nodes[id] = {
