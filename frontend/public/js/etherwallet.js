@@ -707,7 +707,6 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).on('change', () => {
-        console.log('file');
         showCurrentAlterWalletValid();
     });
 
