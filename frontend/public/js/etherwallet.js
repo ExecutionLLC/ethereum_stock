@@ -245,11 +245,13 @@ const Page = {
                 CONTAINER: 'wallet-ops',
                 WALLET_ADDRESS: 'wallet-address',
                 BUY: {
+                    GROUP: 'buy-tokens-group',
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button',
                     WAIT: 'buy-tokens-wait'
                 },
                 SELL: {
+                    GROUP: 'sell-tokens-group',
                     COUNT: 'sell-tokens-count',
                     WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
@@ -365,17 +367,76 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
-        Page.toggleBuyWait(false);
-        Page.toggleSellWait(false);
+    },
+    buyTokensState: {
+        _isValid: false,
+        _isWaiting: false,
+        _showCurrentState() {
+            Page.showBuyTokensValid(Page.buyTokensState._isValid);
+            Page.toggleBuyWait(Page.buyTokensState._isWaiting);
+            Page.showBuyButtonEnable(Page.buyTokensState._isValid && !Page.buyTokensState._isWaiting);
+        },
+        init() {
+            Page.buyTokensState._isValid = false;
+            Page.buyTokensState._isWaiting = false;
+            Page.buyTokensState._showCurrentState();
+        },
+        toggleWait(isWait) {
+            Page.buyTokensState._isWaiting = isWait;
+            Page.buyTokensState._showCurrentState();
+        },
+        toggleValid(isValid) {
+            Page.buyTokensState._isValid = isValid;
+            Page.buyTokensState._showCurrentState();
+        }
+    },
+    sellTokensState: {
+        _isCountValid: false,
+        _isRecipientValid: false,
+        _isWaiting: false,
+        _showCurrentState() {
+            Page.showSellTokensValid(Page.sellTokensState._isCountValid, Page.sellTokensState._isRecipientValid);
+            Page.toggleSellWait(Page.sellTokensState._isWaiting);
+            Page.showSellButtonEnable(Page.sellTokensState._isCountValid && Page.sellTokensState._isRecipientValid && !Page.buyTokensState._isWaiting);
+        },
+        init() {
+            Page.sellTokensState._isCountValid = false;
+            Page.sellTokensState._isRecipientValid = false;
+            Page.sellTokensState._isWaiting = false;
+            Page.sellTokensState._showCurrentState();
+        },
+        toggleWait(isWait) {
+            Page.sellTokensState._isWaiting = isWait;
+            Page.sellTokensState._showCurrentState();
+        },
+        toggleValid(isCountValid, isRecipientValid) {
+            Page.sellTokensState._isCountValid = isCountValid;
+            Page.sellTokensState._isRecipientValid = isRecipientValid;
+            Page.sellTokensState._showCurrentState();
+        }
+    },
+    showBuyButtonEnable(enable) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !enable);
+    },
+    showSellButtonEnable(enable) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !enable);
+    },
+    showBuyTokensValid(isValid) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
+    },
+    showSellTokensValid(isCountValid, isRecipientValid) {
+        const isGroupValid = isCountValid && isRecipientValid;
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.GROUP).toggleClass('has-error', !isGroupValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).toggleClass('alert-danger', !isCountValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(show);
     },
     toggleSellWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
     initTokenPriceChart(callback) {
@@ -943,12 +1004,25 @@ function onload() {
         showCurrentAlterWalletValid();
     });
 
+    Page.buyTokensState.init();
+    Page.sellTokensState.init();
+
+    function showCurrentSellTokensValid() {
+        const countValid = Validator.tokenCount(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val());
+        const recipientValid = Validator.walletId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val());
+        Page.sellTokensState.toggleValid(countValid, recipientValid);
+    }
+
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
-        console.log(Validator.tokenCount(evt.target.value));
+        Page.buyTokensState.toggleValid(Validator.tokenCount(evt.target.value));
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
+        showCurrentSellTokensValid();
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
-        console.log(Validator.tokenCount(evt.target.value));
+        showCurrentSellTokensValid();
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
@@ -983,7 +1057,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
-        Page.toggleBuyWait(true);
+        Page.buyTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -993,7 +1067,7 @@ function onload() {
         const weiStr = `0x${wei.toString(16)}`;
         Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr)
             .then(() => {
-                Page.toggleBuyWait(false)
+                Page.buyTokensState.toggleWait(false);
             });
         return false;
     });
@@ -1041,7 +1115,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
-        Page.toggleSellWait(true);
+        Page.sellTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
         console.log('sell tokens', count);
@@ -1059,12 +1133,14 @@ function onload() {
                             })
                             .then((transactionHash) => {
                                 currentWallet.provider.once(transactionHash, (transaction) => {
+                                    Page.sellTokensState.toggleWait(false);
                                     console.log('Transaction sell Minded: ' + transaction.hash);
                                     console.log(transaction);
                                 });
                             });
                     });
             });
+        return false;
     });
 
     // Page.initTokenPriceChart((err) => {
