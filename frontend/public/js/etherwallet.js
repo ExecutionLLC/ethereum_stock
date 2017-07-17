@@ -250,14 +250,16 @@ const Page = {
                     GROUP: 'buy-tokens-group',
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button',
-                    WAIT: 'buy-tokens-wait'
+                    WAIT: 'buy-tokens-wait',
+                    ERROR: 'buy-tokens-error'
                 },
                 SELL: {
                     GROUP: 'sell-tokens-group',
                     COUNT: 'sell-tokens-count',
                     WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
-                    WAIT: 'sell-tokens-wait'
+                    WAIT: 'sell-tokens-wait',
+                    ERROR: 'sell-tokens-error'
                 }
             },
             SELECT_NODE: {
@@ -362,6 +364,16 @@ const Page = {
     },
     showAlterWalletFileError(error) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showBuyTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showSellTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.ERROR)
             .text(error)
             .toggle(error != null);
     },
@@ -962,6 +974,8 @@ function onload() {
     Page.showCurrentWallet();
     Page.showAlterWalletPrivateKeyError();
     Page.showAlterWalletFileError();
+    Page.showBuyTokensError();
+    Page.showSellTokensError();
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
@@ -1090,6 +1104,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
+        Page.showBuyTokensError();
         Page.buyTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const contract = web3.eth
@@ -1100,6 +1115,10 @@ function onload() {
         const weiStr = `0x${wei.toString(16)}`;
         Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr)
             .then(() => {
+                Page.buyTokensState.toggleWait(false);
+            })
+            .catch((err) => {
+                Page.showBuyTokensError(err);
                 Page.buyTokensState.toggleWait(false);
             });
         return false;
@@ -1148,6 +1167,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
+        Page.showSellTokensError();
         Page.sellTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
@@ -1170,8 +1190,20 @@ function onload() {
                                     console.log('Transaction sell Minded: ' + transaction.hash);
                                     console.log(transaction);
                                 });
+                            })
+                            .catch((err) => {
+                                Page.showSellTokensError(err);
+                                Page.sellTokensState.toggleWait(false);
                             });
+                    })
+                    .catch((err) => {
+                        Page.showSellTokensError(err);
+                        Page.sellTokensState.toggleWait(false);
                     });
+            })
+            .catch((err) => {
+                Page.showSellTokensError(err);
+                Page.sellTokensState.toggleWait(false);
             });
         return false;
     });
