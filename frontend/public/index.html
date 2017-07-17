@@ -66,7 +66,7 @@
                     <label class="control-label">Current node</label>
                     <select id="select-node" class="form-control"></select>
                 </div>
-                <div class="form-group form-inline">
+                <div id="add-node-group" class="form-group form-inline">
                     <label class="control-label">Add new Node</label>
                     <input id="select-node-name" class="form-control" />
                     <input id="select-node-url" class="form-control" />
@@ -89,10 +89,11 @@
                             <div class="form-group">
                                 <label class="control-label">Введите адрес кошелька:</label>
                             </div>
-                            <div class="form-group form-inline">
+                            <div id="wallet-form-group" class="form-group form-inline">
                                 <input id="wallet-input" class="form-control" placeholder="Адрес кошелька..." />
                                 <button id="wallet-button" class="btn btn-default">Проверить</button>
                                 <span id="balance-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="balance-error" class="help-block"></span>
                             </div>
                         </form>
                     </div>
@@ -155,36 +156,40 @@
                 <div class="form-group">
                     <label class="control-label">По приватному ключу:</label>
                 </div>
-                <div class="form-group form-inline">
+                <div id="add-wallet-private-key-group" class="form-group form-inline">
                     <input id="add-wallet-private-key" class="form-control" placeholder="Приватный ключ..." />
                     <button id="add-wallet-private-key-button" class="btn btn-default">Задать кошелёк</button>
+                    <span id="add-wallet-private-key-error" class="help-block"></span>
                 </div>
                 <div class="form-group">
                     <label class="control-label">По файлу:</label>
                 </div>
-                <div class="form-group form-inline">
+                <div id="add-wallet-file-group" class="form-group form-inline">
                     <input id="add-wallet-file" type="file" class="form-control"/>
                     <label class="control-label">пароль:</label>
                     <input id="add-wallet-file-password" type="password" class="form-control" />
                     <button id="add-wallet-file-button" class="btn btn-default">Задать кошелёк</button>
+                    <span id="add-wallet-file-error" class="help-block"></span>
                 </div>
                 <div id="wallet-ops">
                     <div class="form-group">
                         <label class="control-label">Операции с кошельком <span id="wallet-address"></span></label>
                     </div>
-                    <div class="form-group form-inline">
+                    <div id="buy-tokens-group" class="form-group form-inline">
                         <label class="control-label">Купить</label>
                         <input id="buy-tokens-count" class="form-control"/>
                         <button id="buy-tokens-button" class="btn btn-default">Купить</button>
                         <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                        <span id="buy-tokens-error" class="help-block"></span>
                     </div>
-                    <div class="form-group form-inline">
+                    <div id="sell-tokens-group" class="form-group form-inline">
                         <label class="control-label">Купить для</label>
                         <input id="sell-tokens-wallet" class="form-control"/>
                         <label class="control-label">в кол-ве</label>
                         <input id="sell-tokens-count" class="form-control"/>
                         <button id="sell-tokens-button" class="btn btn-default">Купить</button>
                         <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                        <span id="sell-tokens-error" class="help-block"></span>
                     </div>
                 </div>
             </form>

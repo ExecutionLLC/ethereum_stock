@@ -203,13 +203,15 @@ let currentWallet = null;
 const Page = {
     ELEMENT_ID: {
         BALANCE: {
+            WALLET_FORM_GROUP: 'wallet-form-group',
             WALLET_INPUT: 'wallet-input',
             CHECK_BUTTON: 'wallet-button',
             CONTAINER: 'balance-container',
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc',
-            WAIT: 'balance-wait'
+            WAIT: 'balance-wait',
+            ERROR: 'balance-error'
         },
         TOKENS_HISTORY: {
             TEMPLATE: 'tokens-history-template',
@@ -229,31 +231,40 @@ const Page = {
         },
         ALTER_WALLET: {
             PRIVATE_KEY: {
+                GROUP: 'add-wallet-private-key-group',
                 KEY: 'add-wallet-private-key',
-                BUTTON: 'add-wallet-private-key-button'
+                BUTTON: 'add-wallet-private-key-button',
+                ERROR: 'add-wallet-private-key-error'
             },
             FILE: {
+                GROUP: 'add-wallet-file-group',
                 FILE: 'add-wallet-file',
                 PASWORD: 'add-wallet-file-password',
-                BUTTON: 'add-wallet-file-button'
+                BUTTON: 'add-wallet-file-button',
+                ERROR: 'add-wallet-file-error'
             },
             OPERATIONS: {
                 CONTAINER: 'wallet-ops',
                 WALLET_ADDRESS: 'wallet-address',
                 BUY: {
+                    GROUP: 'buy-tokens-group',
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button',
-                    WAIT: 'buy-tokens-wait'
+                    WAIT: 'buy-tokens-wait',
+                    ERROR: 'buy-tokens-error'
                 },
                 SELL: {
+                    GROUP: 'sell-tokens-group',
                     COUNT: 'sell-tokens-count',
                     WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
-                    WAIT: 'sell-tokens-wait'
+                    WAIT: 'sell-tokens-wait',
+                    ERROR: 'sell-tokens-error'
                 }
             },
             SELECT_NODE: {
                 NODE: 'select-node',
+                ADD_NODE_GROUP: 'add-node-group',
                 NAME: 'select-node-name',
                 URL: 'select-node-url',
                 CHAIN_ID: 'select-node-chain-id',
@@ -275,6 +286,10 @@ const Page = {
             .append($('<option></option>')
                 .attr("value", value)
                 .text(name));
+    },
+    showWalletValid(isValid) {
+        Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
+        Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).prop('disabled', !isValid);
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
@@ -308,7 +323,7 @@ const Page = {
             setElementContent($el, key, text);
         }
 
-        const $rows = res.map((item, index) => {
+        const $rows = res && res.map((item, index) => {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
@@ -316,8 +331,18 @@ const Page = {
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
             return $el;
         });
-        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty().append($rows);
-
+        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty();
+        if ($rows) {
+            $container.append($rows);
+        }
+    },
+    showAddNodeValid(nameValid, urlValid, chainIdValid) {
+        const allValid = nameValid && urlValid && chainIdValid;
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_GROUP).toggleClass('has-error', !allValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).prop('disabled', !allValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).toggleClass('alert-danger', !nameValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).toggleClass('alert-danger', !urlValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).toggleClass('alert-danger', !chainIdValid);
     },
     selectNode(valueToSelect) {
         const element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
@@ -327,10 +352,38 @@ const Page = {
         const curNodeName = localStorage['selectedNodeValue'];
         return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
-    showError(error) {
-        $error = $('#balance-error');
-        $error.toggle(error != null);
-        $error.text(error);
+    showBalanceError(error) {
+        Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showAlterWalletPrivateKeyError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showAlterWalletFileError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showBuyTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showSellTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showAlterWalletValid(keyValid, fileValid, filePasswordValid) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.GROUP).toggleClass('has-error', !keyValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).prop('disabled', !keyValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.GROUP).toggleClass('has-error', !fileValid || !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).prop('disabled', !fileValid || !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).toggleClass('alert-danger', !fileValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).toggleClass('alert-danger', !filePasswordValid);
     },
     showCurrentWallet(wallet) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
@@ -338,21 +391,84 @@ const Page = {
             return;
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
-        Page.toggleBuyWait(false);
-        Page.toggleSellWait(false);
+    },
+    buyTokensState: {
+        _isValid: false,
+        _isWaiting: false,
+        _showCurrentState() {
+            Page.showBuyTokensValid(Page.buyTokensState._isValid);
+            Page.toggleBuyWait(Page.buyTokensState._isWaiting);
+            Page.showBuyButtonEnable(Page.buyTokensState._isValid && !Page.buyTokensState._isWaiting);
+        },
+        init() {
+            Page.buyTokensState._isValid = false;
+            Page.buyTokensState._isWaiting = false;
+            Page.buyTokensState._showCurrentState();
+        },
+        toggleWait(isWait) {
+            Page.buyTokensState._isWaiting = isWait;
+            Page.buyTokensState._showCurrentState();
+        },
+        toggleValid(isValid) {
+            Page.buyTokensState._isValid = isValid;
+            Page.buyTokensState._showCurrentState();
+        }
+    },
+    sellTokensState: {
+        _isCountValid: false,
+        _isRecipientValid: false,
+        _isWaiting: false,
+        _showCurrentState() {
+            Page.showSellTokensValid(Page.sellTokensState._isCountValid, Page.sellTokensState._isRecipientValid);
+            Page.toggleSellWait(Page.sellTokensState._isWaiting);
+            Page.showSellButtonEnable(Page.sellTokensState._isCountValid && Page.sellTokensState._isRecipientValid && !Page.buyTokensState._isWaiting);
+        },
+        init() {
+            Page.sellTokensState._isCountValid = false;
+            Page.sellTokensState._isRecipientValid = false;
+            Page.sellTokensState._isWaiting = false;
+            Page.sellTokensState._showCurrentState();
+        },
+        toggleWait(isWait) {
+            Page.sellTokensState._isWaiting = isWait;
+            Page.sellTokensState._showCurrentState();
+        },
+        toggleValid(isCountValid, isRecipientValid) {
+            Page.sellTokensState._isCountValid = isCountValid;
+            Page.sellTokensState._isRecipientValid = isRecipientValid;
+            Page.sellTokensState._showCurrentState();
+        }
+    },
+    showBuyButtonEnable(enable) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !enable);
+    },
+    showSellButtonEnable(enable) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !enable);
+    },
+    showBuyTokensValid(isValid) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
+    },
+    showSellTokensValid(isCountValid, isRecipientValid) {
+        const isGroupValid = isCountValid && isRecipientValid;
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.GROUP).toggleClass('has-error', !isGroupValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).toggleClass('alert-danger', !isCountValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
     },
     toggleBuyWait(show) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(show);
     },
     toggleSellWait(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', show);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
     initTokenPriceChart(callback) {
         const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
+        if (!ctx) {
+            callback('No canvas element');
+            return;
+        }
         Ether.getPriceHistoryData(
             web3,
             CONTRACT.ABI,
@@ -473,7 +589,7 @@ const Ether = {
         });
 
     },
-    getData(web3, abiArray, address, callback) {
+    _getData(web3, abiArray, address, callback) {
         const MyContract = web3.eth.contract(abiArray);
         const myContractInstance = MyContract.at(address);
         const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest'});
@@ -502,10 +618,11 @@ const Ether = {
             const transactionsForTimestamps = transactions.reduce(
                 (parts, trx) => {
                     const {transactionIndex, timestamp} = trx;
-                    const transactionsForTimestamp = parts[timestamp];
+                    const transactionsForTimestamp = parts[timestamp] || 0;
                     const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                    if (!(transactionsForTimestamp > atLeastTransactionsForTimestamp))
+                    if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
                         parts[timestamp] = atLeastTransactionsForTimestamp;
+                    }
                     return parts;
                 },
                 {}
@@ -519,29 +636,37 @@ const Ether = {
             }));
         }
 
-        Ether.getData(
-            web3,
-            abiArray,
-            address,
-            (err, res) => {
-                if (err) {
-                    callback(err);
-                    return;
+        try {
+            Ether._getData(
+                web3,
+                abiArray,
+                address,
+                (err, res) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    const transactionsXY = transactionsToXY(res);
+                    const data = XYData.setRange(transactionsXY, 0, +new Date());
+                    const steppedData = XYData.makeStepped(data);
+                    const steppedDataMarks = XYData.makeLastInX(steppedData);
+                    const dataRange = XYData.getRange(steppedData);
+                    const BTCCurrencyInterval = 1000 * 60 * 60 * 6;
+                    const currencyIntervalsCountEstimate = dataRange / BTCCurrencyInterval;
+                    const steppedDataWIntermediate = currencyIntervalsCountEstimate > 1000 ? steppedData : XYData.addIntermediatePoints(steppedData, BTCCurrencyInterval);
+                    API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
+                        const dataBtc = steppedDataWIntermediate.map((d, i) => ({
+                            x: d.x,
+                            y: d.y * btc[i].ETH.BTC
+                        }));
+                        callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
+                    });
                 }
-                const transactionsXY = transactionsToXY(res);
-                const data = XYData.setRange(transactionsXY, 0, +new Date());
-                const steppedData = XYData.makeStepped(data);
-                const steppedDataMarks = XYData.makeLastInX(steppedData);
-                const steppedDataWIntermediate = XYData.addIntermediatePoints(steppedData, 1000 * 60 * 60 * 6);
-                API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
-                    const dataBtc = steppedDataWIntermediate.map((d, i) => ({
-                        x: d.x,
-                        y: d.y * btc[i].ETH.BTC
-                    }));
-                    callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-                });
-            }
-        );
+            );
+        }
+        catch (e) {
+            callback(e);
+        }
     },
     getHistoryData(event, count, callback) {
         event.get((error, logs) => {
@@ -683,9 +808,13 @@ const API = {
 };
 
 function readFileContent(file, callback) {
+    if (file.size > 102400) { // 100K JSON wallet will be our limit
+        callback(`JSON file too big (${file.size} bytes)`);
+        return;
+    }
     const fr = new FileReader();
     fr.onload = function () {
-        callback(fr.result);
+        callback(null, fr.result);
     };
     fr.readAsText(file);
 }
@@ -743,6 +872,15 @@ const XYData = {
             if (iMax == null) {
                 return findDataInterval(data, x, iMin, data.length - 1);
             }
+            if (iMin >= data.length) {
+                return -1;
+            }
+            if (iMax < 0) {
+                return -1;
+            }
+            if (iMin > iMax) {
+                return -1;
+            }
             if (x < data[iMin].x) {
                 return iMin - 1;
             }
@@ -766,6 +904,9 @@ const XYData = {
             if (minIndex < 0) {
                 return data;
             } else {
+                if (data.length < 1) {
+                    return data;
+                }
                 if (data[minIndex].x === min) {
                     return data.slice(minIndex);
                 } else {
@@ -789,15 +930,52 @@ const XYData = {
 
         const dataRangeMin = rangeMin(data, min);
         return rangeMax(dataRangeMin, max);
+    },
+    getRange(data) {
+        if (data.length < 2) {
+            return 0;
+        }
+        return data[data.length - 1].x - data[0].x;
+    }
+};
+
+const Validator = {
+    walletId(address) {
+        if (address.substring(0, 2) !== '0x') {
+            return false;
+        } else if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+    url(url) {
+        return /^https?:\/\/[^/]+/.test(url);
+    },
+    chainId(chainId) {
+        return /^\d+$/.test(chainId);
+    },
+    privateKey(key) {
+        const prefixLength = key.substring(0, 2) === '0x' ? 2 : 0;
+        const keyDigits = key.length - prefixLength;
+        return keyDigits === 64 || keyDigits ===128 || keyDigits === 132;
+    },
+    tokenCount(count) {
+        return /^\d+$/.test(count);
     }
 };
 
 function onload() {
-    Page.showError();
+    Page.showBalanceError();
     Page.showBalance();
+    Page.showTokensHistory();
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
+    Page.showAlterWalletPrivateKeyError();
+    Page.showAlterWalletFileError();
+    Page.showBuyTokensError();
+    Page.showSellTokensError();
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
@@ -807,9 +985,15 @@ function onload() {
         localStorage.setItem('selectedNodeValue', curNodeName);
     });
 
+    Page.showWalletValid(false);
+
+    Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
+        Page.showWalletValid(Validator.walletId(evt.target.value));
+    });
+
     Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
         Page.showBalanceWait(true);
-        Page.showError();
+        Page.showBalanceError();
         const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -817,36 +1001,93 @@ function onload() {
         Ether.getBalance(contract, walletId, (err, balance) => {
             if (err) {
                 Page.showBalanceWait(false);
-                Page.showError(err);
+                Page.showBalanceError(err);
+                Page.showBalance();
+                Page.showTokensHistory();
             } else {
                 Ether.getPriceData(walletId, contract, (err, res) => {
                     Page.showBalanceWait(false);
-                    Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                    Page.showTokensHistory(walletId, res);
+                    if (err) {
+                        Page.showBalanceError(err);
+                        Page.showBalance();
+                        Page.showTokensHistory();
+                    } else {
+                        Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                        Page.showTokensHistory(walletId, res);
+                    }
                 });
             }
         });
         return false;
     });
 
+    Page.showAlterWalletValid(false, false, true);
+    function showCurrentAlterWalletValid() {
+        const keyValid = Validator.privateKey(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val());
+        const fileValid = !!Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
+        Page.showAlterWalletValid(keyValid, fileValid, true);
+    }
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', () => {
+        showCurrentAlterWalletValid();
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).on('change', () => {
+        showCurrentAlterWalletValid();
+    });
+
+    Page.buyTokensState.init();
+    Page.sellTokensState.init();
+
+    function showCurrentSellTokensValid() {
+        const countValid = Validator.tokenCount(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val());
+        const recipientValid = Validator.walletId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val());
+        Page.sellTokensState.toggleValid(countValid, recipientValid);
+    }
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
+        Page.buyTokensState.toggleValid(Validator.tokenCount(evt.target.value));
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
+        showCurrentSellTokensValid();
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
+        showCurrentSellTokensValid();
+    });
+
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
+        Page.showAlterWalletPrivateKeyError();
+        Page.showAlterWalletFileError();
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const currentNode = Page.getCurrentNode();
-        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-        currentWallet = wallet;
-        Page.showCurrentWallet(wallet);
+        try {
+            const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
+            currentWallet = wallet;
+            Page.showCurrentWallet(wallet);
+        } catch (e) {
+            Page.showAlterWalletPrivateKeyError(e);
+        }
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
+        Page.showAlterWalletPrivateKeyError();
+        Page.showAlterWalletFileError();
         const Wallet = ethers.Wallet;
         const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-        readFileContent(file, (content) => {
+        readFileContent(file, (err, content) => {
+            if (err) {
+                Page.showAlterWalletFileError(err);
+                return;
+            }
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
@@ -854,12 +1095,17 @@ function onload() {
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
+                })
+                .catch((err) => {
+                    Page.showAlterWalletFileError(err);
                 });
         });
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
-        Page.toggleBuyWait(true);
+        Page.showBuyTokensError();
+        Page.buyTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -869,8 +1115,33 @@ function onload() {
         const weiStr = `0x${wei.toString(16)}`;
         Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr)
             .then(() => {
-                Page.toggleBuyWait(false)
+                Page.buyTokensState.toggleWait(false);
+            })
+            .catch((err) => {
+                Page.showBuyTokensError(err);
+                Page.buyTokensState.toggleWait(false);
             });
+        return false;
+    });
+
+    Page.showAddNodeValid(false);
+    function calcAndShowAddNodeValid() {
+        const nameValid = !!Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
+        const urlValid = Validator.url(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val());
+        const chainIdValid = Validator.chainId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val());
+        Page.showAddNodeValid(nameValid, urlValid, chainIdValid);
+    }
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).on('input', () => {
+        calcAndShowAddNodeValid();
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).on('input', () => {
+        calcAndShowAddNodeValid();
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).on('input', () => {
+        calcAndShowAddNodeValid();
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
@@ -892,10 +1163,12 @@ function onload() {
         } else {
             //log error
         }
+        return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
-        Page.toggleSellWait(true);
+        Page.showSellTokensError();
+        Page.sellTokensState.toggleWait(true);
         const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
         const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
         console.log('sell tokens', count);
@@ -913,26 +1186,42 @@ function onload() {
                             })
                             .then((transactionHash) => {
                                 currentWallet.provider.once(transactionHash, (transaction) => {
-                                    Page.toggleSellWait(false);
+                                    Page.sellTokensState.toggleWait(false);
                                     console.log('Transaction sell Minded: ' + transaction.hash);
                                     console.log(transaction);
                                 });
+                            })
+                            .catch((err) => {
+                                Page.showSellTokensError(err);
+                                Page.sellTokensState.toggleWait(false);
                             });
+                    })
+                    .catch((err) => {
+                        Page.showSellTokensError(err);
+                        Page.sellTokensState.toggleWait(false);
                     });
+            })
+            .catch((err) => {
+                Page.showSellTokensError(err);
+                Page.sellTokensState.toggleWait(false);
             });
-    });
-
-
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
-        Page.showTokenPriceChart(0);
         return false;
     });
-    Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
-        Page.showTokenPriceChart(+moment().subtract(6, 'day'));
-        return false;
-    });
-    // Page.initTokenPriceChart(() => {
-    //     Page.showTokenPriceChart(0);
+
+    // Page.initTokenPriceChart((err) => {
+    //     if (err) {
+    //         console.log('Init token chart error', err);
+    //     } else {
+    //         Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+    //             Page.showTokenPriceChart(0);
+    //             return false;
+    //         });
+    //         Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+    //             Page.showTokenPriceChart(+moment().subtract(7, 'day'));
+    //             return false;
+    //         });
+    //         Page.showTokenPriceChart(0);
+    //     }
     // });
 }
 
