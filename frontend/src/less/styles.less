@@ -1,0 +1,27 @@
+@import "../../node_modules/bootstrap/less/bootstrap.less";
+@import "variables.less";
+
+body {
+  padding-top: 170px;
+}
+
+body.hide-header {
+  padding-top: 70px;
+}
+
+body.hide-header .hideable-header {
+  display: none;
+}
+
+.rotating {
+  animation: rotating 2s infinite linear;
+}
+
+@keyframes rotating {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
