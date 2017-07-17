@@ -265,10 +265,12 @@ const Page = {
             SELECT_NODE: {
                 NODE: 'select-node',
                 ADD_NODE_GROUP: 'add-node-group',
+                ADD_NODE_SHOW_BUTTON: 'add-node-button',
                 NAME: 'select-node-name',
                 URL: 'select-node-url',
                 CHAIN_ID: 'select-node-chain-id',
-                ADD: 'select-node-add'
+                ADD: 'select-node-add',
+                CANCEL: 'select-node-cancel'
             }
         }
     },
@@ -286,6 +288,10 @@ const Page = {
             .append($('<option></option>')
                 .attr("value", value)
                 .text(name));
+    },
+    toggleAddNodeGroup(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_GROUP).toggle(show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_SHOW_BUTTON).prop('disabled', show);
     },
     showWalletValid(isValid) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
@@ -966,6 +972,7 @@ const Validator = {
 };
 
 function onload() {
+    Page.toggleAddNodeGroup(false);
     Page.showBalanceError();
     Page.showBalance();
     Page.showTokensHistory();
@@ -977,6 +984,16 @@ function onload() {
     Page.showBuyTokensError();
     Page.showSellTokensError();
     Page.updateNodes();
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_SHOW_BUTTON).click(() => {
+        Page.toggleAddNodeGroup(true);
+        return false;
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CANCEL).click(() => {
+        Page.toggleAddNodeGroup(false);
+        return false;
+    });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
         const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
@@ -1145,6 +1162,7 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
+        Page.toggleAddNodeGroup(false);
         const name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
         const url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
         const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
