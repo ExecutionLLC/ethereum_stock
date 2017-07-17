@@ -653,7 +653,7 @@ function onload() {
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
-         var curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
         currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
         localStorage.setItem('selectedNodeValue', curNodeName);
