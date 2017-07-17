@@ -233,13 +233,15 @@ const Page = {
             PRIVATE_KEY: {
                 GROUP: 'add-wallet-private-key-group',
                 KEY: 'add-wallet-private-key',
-                BUTTON: 'add-wallet-private-key-button'
+                BUTTON: 'add-wallet-private-key-button',
+                ERROR: 'add-wallet-private-key-error'
             },
             FILE: {
                 GROUP: 'add-wallet-file-group',
                 FILE: 'add-wallet-file',
                 PASWORD: 'add-wallet-file-password',
-                BUTTON: 'add-wallet-file-button'
+                BUTTON: 'add-wallet-file-button',
+                ERROR: 'add-wallet-file-error'
             },
             OPERATIONS: {
                 CONTAINER: 'wallet-ops',
@@ -350,6 +352,16 @@ const Page = {
     },
     showBalanceError(error) {
         Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showAlterWalletPrivateKeyError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
+    showAlterWalletFileError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.ERROR)
             .text(error)
             .toggle(error != null);
     },
@@ -784,9 +796,13 @@ const API = {
 };
 
 function readFileContent(file, callback) {
+    if (file.size > 102400) { // 100K JSON wallet will be our limit
+        callback(`JSON file too big (${file.size} bytes)`);
+        return;
+    }
     const fr = new FileReader();
     fr.onload = function () {
-        callback(fr.result);
+        callback(null, fr.result);
     };
     fr.readAsText(file);
 }
@@ -944,6 +960,8 @@ function onload() {
     Page.showBalanceWait(false);
     currentWallet = null;
     Page.showCurrentWallet();
+    Page.showAlterWalletPrivateKeyError();
+    Page.showAlterWalletFileError();
     Page.updateNodes();
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
@@ -1028,22 +1046,34 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
+        Page.showAlterWalletPrivateKeyError();
+        Page.showAlterWalletFileError();
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const currentNode = Page.getCurrentNode();
-        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-        currentWallet = wallet;
-        Page.showCurrentWallet(wallet);
+        try {
+            const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
+            currentWallet = wallet;
+            Page.showCurrentWallet(wallet);
+        } catch (e) {
+            Page.showAlterWalletPrivateKeyError(e);
+        }
         return false;
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
         currentWallet = null;
         Page.showCurrentWallet();
+        Page.showAlterWalletPrivateKeyError();
+        Page.showAlterWalletFileError();
         const Wallet = ethers.Wallet;
         const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-        readFileContent(file, (content) => {
+        readFileContent(file, (err, content) => {
+            if (err) {
+                Page.showAlterWalletFileError(err);
+                return;
+            }
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
@@ -1051,6 +1081,9 @@ function onload() {
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
+                })
+                .catch((err) => {
+                    Page.showAlterWalletFileError(err);
                 });
         });
         return false;
