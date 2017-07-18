@@ -81,6 +81,9 @@ const Nodes = (() => {
         getCurrentNode() {
             return nodes[currentNode];
         },
+        getCurrentNodeId() {
+            return currentNode;
+        },
         setCurrentNode(id) {
             setCurrentNode(id);
             return nodes[id];

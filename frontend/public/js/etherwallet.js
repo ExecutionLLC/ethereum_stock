@@ -263,7 +263,7 @@ const Page = {
         $.each(nodesNames, (i, {id, name}) => {
             Page.appendNode(id, name);
         });
-        Page.selectNode(localStorage['selectedNodeValue']);
+        Page.selectNode(Nodes.getCurrentNodeId());
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
@@ -340,10 +340,6 @@ const Page = {
     selectNode(valueToSelect) {
         const element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
         element.value = valueToSelect;
-    },
-    getCurrentNode() {
-        const curNodeName = localStorage['selectedNodeValue'];
-        return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
     showBalanceError(error) {
         Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
@@ -1077,7 +1073,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const currentNode = Page.getCurrentNode();
+        const currentNode = Nodes.getCurrentNode();
         try {
             const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
             currentWallet = wallet;
@@ -1103,7 +1099,7 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    const currentNode = Page.getCurrentNode();
+                    const currentNode = Nodes.getCurrentNode();
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
