@@ -84,7 +84,7 @@ const Nodes = (() => {
         getCurrentNodeId() {
             return currentNode;
         },
-        setCurrentNode(id) {
+        setCurrentNodeId(id) {
             setCurrentNode(id);
             return nodes[id];
         },

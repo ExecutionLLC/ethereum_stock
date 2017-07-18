@@ -989,7 +989,7 @@ function onload() {
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
         const currentNodeId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const currentNode = Nodes.setCurrentNode(currentNodeId);
+        const currentNode = Nodes.setCurrentNodeId(currentNodeId);
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
     });
 
