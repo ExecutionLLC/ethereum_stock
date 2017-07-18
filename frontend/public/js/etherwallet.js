@@ -766,27 +766,16 @@ function onload() {
         });
     };
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
-        Page.showBuyTokensError();
-        Page.buyTokensState.toggleWait(true);
-        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
+    Page.onBuyTokensAsync = (count) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr)
-            .then(() => {
-                Page.buyTokensState.toggleWait(false);
-            })
-            .catch((err) => {
-                Page.showBuyTokensError(err);
-                Page.buyTokensState.toggleWait(false);
-            });
-        return false;
-    });
-
+        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
+    };
+    
     Page.showAddNodeValid(false);
     function calcAndShowAddNodeValid() {
         const nameValid = !!Page.$id(Page.ELEMENT_ID.NODES.NAME).val();

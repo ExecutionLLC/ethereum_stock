@@ -418,11 +418,33 @@ const Page = {
             }
             return false;
         });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
+            Page.showBuyTokensError();
+            Page.buyTokensState.toggleWait(true);
+            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
+            try {
+                Page.onBuyTokensAsync(count)
+                    .then(() => {
+                        Page.buyTokensState.toggleWait(false);
+                    })
+                    .catch((err) => {
+                        Page.showBuyTokensError(err);
+                        Page.buyTokensState.toggleWait(false);
+                    })
+            }
+            catch (e) {
+                Page.showBuyTokensError(e);
+                Page.buyTokensState.toggleWait(false);
+            }
+            return false;
+        });
     },
     onNodeAdd() {},
     onNodeRemove() {},
     onNodeChange() {},
     onBalanceCheckAsync() {},
     onAlterWalletPrivateKey() {},
-    onAlterWalletFileAsync() {}
+    onAlterWalletFileAsync() {},
+    onBuyTokensAsync() {}
 };
