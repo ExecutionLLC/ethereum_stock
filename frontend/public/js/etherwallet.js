@@ -3,29 +3,19 @@ const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-if (!localStorage['Nodes']) {
-    const Nodes = {
-        Node1: {
-            name: 'igor',
-            url: 'http://192.168.1.101:8111/',
-            chainId: 15
-        },
-        Node2: {
-            name: 'dima',
-            url: 'http://192.168.1.104:8111/',
-            chainId: 15
-        },
-    };
-    localStorage.setItem('Nodes', JSON.stringify(Nodes));
+function initNode() {
+    const currentNode = Nodes.getCurrentNode();
+    web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+    web3.eth.defaultAccount = web3.eth.coinbase;
 }
 
-if (!localStorage['selectedNodeValue']) {
-    localStorage.setItem('selectedNodeValue', 'Node1');
+try {
+    initNode();
 }
-
-const currentNode = JSON.parse(localStorage['Nodes']).Node1;
-web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
-web3.eth.defaultAccount = web3.eth.coinbase;
+catch (e)
+{
+    console.error(e);
+}
 
 const CONTRACT = {
     ID: '0x3f0bb3ede10ad2caed900e2f4f70e1b2ad5631b9',
@@ -279,10 +269,11 @@ const Page = {
         return $(`#${id}`);
     },
     updateNodes() {
-        $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
-            Page.appendNode(key, value.name);
+        const nodesNames = Nodes.getNodesNames();
+        $.each(nodesNames, (i, {id, name}) => {
+            Page.appendNode(id, name);
         });
-        Page.selectNode(localStorage['selectedNodeValue']);
+        Page.selectNode(Nodes.getCurrentNodeId());
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
@@ -359,10 +350,6 @@ const Page = {
     selectNode(valueToSelect) {
         const element = document.getElementById(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE);
         element.value = valueToSelect;
-    },
-    getCurrentNode() {
-        const curNodeName = localStorage['selectedNodeValue'];
-        return JSON.parse(localStorage['Nodes'])[curNodeName];
     },
     showBalanceError(error) {
         Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
@@ -997,18 +984,11 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.REMOVE_NODE_BUTTON).click(() => {
-        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const Nodes = JSON.parse(localStorage['Nodes']);
-        if (Object.keys(Nodes).length < 2) {
-            return false;
-        }
-        delete Nodes[curNodeName];
-        localStorage.setItem('Nodes', JSON.stringify(Nodes));
-        Page.removeNode(curNodeName);
-        const newNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const currentNode = JSON.parse(localStorage['Nodes'])[newNodeName];
-        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
-        localStorage.setItem('selectedNodeValue', newNodeName);
+        const curNodId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const newNodeInfo = Nodes.removeNode(curNodId);
+        Page.removeNode(curNodId);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(newNodeInfo.id);
+        web3.setProvider(new web3.providers.HttpProvider(newNodeInfo.node.url));
         return false;
     });
 
@@ -1018,10 +998,9 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
-        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const currentNode = JSON.parse(localStorage['Nodes'])[curNodeName];
+        const currentNodeId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const currentNode = Nodes.setCurrentNodeId(currentNodeId);
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
-        localStorage.setItem('selectedNodeValue', curNodeName);
     });
 
     Page.showWalletValid(false);
@@ -1104,7 +1083,7 @@ function onload() {
         const Wallet = ethers.Wallet;
         const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
         const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
-        const currentNode = Page.getCurrentNode();
+        const currentNode = Nodes.getCurrentNode();
         try {
             const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
             currentWallet = wallet;
@@ -1130,7 +1109,7 @@ function onload() {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             Wallet.fromEncryptedWallet(content, password)
                 .then((wallet) => {
-                    const currentNode = Page.getCurrentNode();
+                    const currentNode = Nodes.getCurrentNode();
                     wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                     currentWallet = wallet;
                     Page.showCurrentWallet(wallet);
@@ -1189,20 +1168,14 @@ function onload() {
         const url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
         const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
         if (name && url && chainId) {
-            // maybe generate uuid
-            const id = '' + Math.random();
-            const Nodes = JSON.parse(localStorage['Nodes']);
-
-            Nodes[id] = {
+            const newNodeId = Nodes.addNode({
                 name,
                 url,
                 chainId
-            };
-            localStorage.setItem('Nodes', JSON.stringify(Nodes));
-            Page.appendNode(id, name);
+            });
+            Page.appendNode(newNodeId, name);
             web3.setProvider(new web3.providers.HttpProvider(url));
-            localStorage.setItem('selectedNodeValue', id);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(id);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(newNodeId);
         } else {
             //log error
         }
