@@ -669,18 +669,8 @@ const Validator = {
 };
 
 function onload() {
-    Page.toggleAddNodeGroup(false);
-    Page.showBalanceError();
-    Page.showBalance();
-    Page.showTokensHistory();
-    Page.showBalanceWait(false);
     currentWallet = null;
-    Page.showCurrentWallet();
-    Page.showAlterWalletPrivateKeyError();
-    Page.showAlterWalletFileError();
-    Page.showBuyTokensError();
-    Page.showSellTokensError();
-    Page.updateNodes();
+    Page.init();
 
     Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
         Page.toggleAddNodeGroup(true);

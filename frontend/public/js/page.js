@@ -290,5 +290,18 @@ const Page = {
     },
     showTokenPriceChart(fromDate) {
         TokenPriceChart.show(fromDate);
+    },
+    init() {
+        Page.toggleAddNodeGroup(false);
+        Page.showBalanceError();
+        Page.showBalance();
+        Page.showTokensHistory();
+        Page.showBalanceWait(false);
+        Page.showCurrentWallet();
+        Page.showAlterWalletPrivateKeyError();
+        Page.showAlterWalletFileError();
+        Page.showBuyTokensError();
+        Page.showSellTokensError();
+        Page.updateNodes();
     }
 };
