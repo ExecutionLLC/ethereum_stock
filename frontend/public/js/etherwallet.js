@@ -3,9 +3,19 @@ const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-const currentNode = Nodes.getCurrentNode();// code was: JSON.parse(localStorage['Nodes']).Node1;
-web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
-web3.eth.defaultAccount = web3.eth.coinbase;
+function initNode() {
+    const currentNode = Nodes.getCurrentNode();
+    web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+    web3.eth.defaultAccount = web3.eth.coinbase;
+}
+
+try {
+    initNode();
+}
+catch (e)
+{
+    console.error(e);
+}
 
 const CONTRACT = {
     ID: '0x3f0bb3ede10ad2caed900e2f4f70e1b2ad5631b9',
