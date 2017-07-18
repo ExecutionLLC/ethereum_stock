@@ -3,27 +3,7 @@ const web3 = new Web3();
 
 const BigNumber = Web3_require('bignumber.js');
 
-if (!localStorage['Nodes']) {
-    const Nodes = {
-        Node1: {
-            name: 'igor',
-            url: 'http://192.168.1.101:8111/',
-            chainId: 15
-        },
-        Node2: {
-            name: 'dima',
-            url: 'http://192.168.1.104:8111/',
-            chainId: 15
-        },
-    };
-    localStorage.setItem('Nodes', JSON.stringify(Nodes));
-}
-
-if (!localStorage['selectedNodeValue']) {
-    localStorage.setItem('selectedNodeValue', 'Node1');
-}
-
-const currentNode = JSON.parse(localStorage['Nodes']).Node1;
+const currentNode = Nodes.getCurrentNode();// code was: JSON.parse(localStorage['Nodes']).Node1;
 web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
 web3.eth.defaultAccount = web3.eth.coinbase;
 
