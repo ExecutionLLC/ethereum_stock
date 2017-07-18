@@ -992,8 +992,8 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
-        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const currentNode = Nodes.setCurrentNode(curNodeName);
+        const currentNodeId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const currentNode = Nodes.setCurrentNode(currentNodeId);
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
     });
 
