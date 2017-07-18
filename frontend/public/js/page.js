@@ -325,10 +325,22 @@ const Page = {
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
             }
             catch (e) {
-
             }
             return false;
         });
+
+        Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).click(() => {
+            const curNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
+            try {
+                const id = Page.onNodeRemove(curNodeId);
+                Page.removeNode(curNodeId);
+                Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
+            } catch (e) {
+            }
+            return false;
+        });
+
     },
-    onNodeAdd() {}
+    onNodeAdd() {},
+    onNodeRemove() {}
 };
