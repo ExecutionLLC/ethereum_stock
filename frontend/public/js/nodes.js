@@ -76,6 +76,10 @@ const Nodes = (() => {
         getCurrentNode() {
             return nodes[currentNode];
         },
+        setCurrentNode(id) {
+            setCurrentNode(id);
+            return nodes[id];
+        },
         getNodesNames() {
             const res = [];
             $.each(nodes, function (id, node) {
