@@ -340,7 +340,17 @@ const Page = {
             return false;
         });
 
+        Page.$id(Page.ELEMENT_ID.NODES.NODE).change(() => {
+            const currentNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
+            try {
+                Page.onNodeChange(currentNodeId);
+            }
+            catch (e) {
+            }
+        });
+
     },
     onNodeAdd() {},
-    onNodeRemove() {}
+    onNodeRemove() {},
+    onNodeChange() {}
 };

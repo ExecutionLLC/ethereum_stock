@@ -672,12 +672,6 @@ function onload() {
     currentWallet = null;
     Page.init();
 
-    Page.$id(Page.ELEMENT_ID.NODES.NODE).change(() => {
-        const currentNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
-        const currentNode = Nodes.setCurrentNodeId(currentNodeId);
-        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
-    });
-
     Page.showWalletValid(false);
 
     Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
@@ -859,6 +853,11 @@ function onload() {
         const {id, node} = Nodes.removeNode(idToRemove);
         web3.setProvider(new web3.providers.HttpProvider(node.url));
         return id;
+    };
+
+    Page.onNodeChange = (id) => {
+        const currentNode = Nodes.setCurrentNodeId(id);
+        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
     };
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
