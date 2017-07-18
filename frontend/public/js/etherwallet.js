@@ -12,8 +12,7 @@ function initNode() {
 try {
     initNode();
 }
-catch (e)
-{
+catch (e) {
     console.error(e);
 }
 
