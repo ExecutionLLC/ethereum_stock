@@ -978,9 +978,9 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.REMOVE_NODE_BUTTON).click(() => {
-        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
-        const newNodeInfo = Nodes.removeNode(curNodeName);
-        Page.removeNode(curNodeName);
+        const curNodId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const newNodeInfo = Nodes.removeNode(curNodId);
+        Page.removeNode(curNodId);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(newNodeInfo.id);
         web3.setProvider(new web3.providers.HttpProvider(newNodeInfo.node.url));
         return false;
