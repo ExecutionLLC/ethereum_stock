@@ -1200,6 +1200,9 @@ function onload() {
             };
             localStorage.setItem('Nodes', JSON.stringify(Nodes));
             Page.appendNode(id, name);
+            web3.setProvider(new web3.providers.HttpProvider(url));
+            localStorage.setItem('selectedNodeValue', id);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(id);
         } else {
             //log error
         }
