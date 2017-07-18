@@ -48,15 +48,17 @@ const Nodes = (() => {
         Storage.storeCurrent(id);
     }
 
+    function cloneNodes(nodes) {
+        return Object.assign(
+            Object.create(null),
+            nodes
+        );
+    }
+
     function init() {
         nodes = Storage.fetchNodes();
         if (!nodes || !Object.keys(nodes).length) {
-            setNodes(
-                Object.assign(
-                    Object.create(null),
-                    DEFAULT_NODES
-                )
-            );
+            setNodes(cloneNodes(DEFAULT_NODES));
         }
         currentNode = Storage.fetchCurrent();
         if (currentNode == null || !nodes[currentNode]) {
@@ -85,15 +87,12 @@ const Nodes = (() => {
             if (Object.keys(nodes).length < 2) {
                 throw 'Can\'t remove last node';
             }
-            const newNodes = Object.assign(
-                Object.create(null),
-                nodes
-            );
+            const newNodes = cloneNodes(nodes);
             delete newNodes[id];
             setNodes(newNodes);
-            const newNodeId = Object.keys(newNodes)[0];
+            const newNodeId = Object.keys(nodes)[0];
             setCurrentNode(newNodeId);
-            const newCurrentNode = newNodes[newNodeId];
+            const newCurrentNode = nodes[newNodeId];
             return {
                 id: newNodeId,
                 node: newCurrentNode
