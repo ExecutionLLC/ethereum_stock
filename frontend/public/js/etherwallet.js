@@ -735,51 +735,36 @@ function onload() {
         showCurrentSellTokensValid();
     });
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
+    Page.onAlterWalletPrivateKey = (privateKey0x) => {
         currentWallet = null;
-        Page.showCurrentWallet();
-        Page.showAlterWalletPrivateKeyError();
-        Page.showAlterWalletFileError();
         const Wallet = ethers.Wallet;
-        const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
-        const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
         const currentNode = Nodes.getCurrentNode();
-        try {
-            const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-            currentWallet = wallet;
-            Page.showCurrentWallet(wallet);
-        } catch (e) {
-            Page.showAlterWalletPrivateKeyError(e);
-        }
-        return false;
-    });
+        const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
+        currentWallet = wallet;
+        return wallet;
+    };
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
-        currentWallet = null;
-        Page.showCurrentWallet();
-        Page.showAlterWalletPrivateKeyError();
-        Page.showAlterWalletFileError();
-        const Wallet = ethers.Wallet;
-        const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-        readFileContent(file, (err, content) => {
-            if (err) {
-                Page.showAlterWalletFileError(err);
-                return;
-            }
-            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
-            Wallet.fromEncryptedWallet(content, password)
-                .then((wallet) => {
-                    const currentNode = Nodes.getCurrentNode();
-                    wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                    currentWallet = wallet;
-                    Page.showCurrentWallet(wallet);
-                })
-                .catch((err) => {
-                    Page.showAlterWalletFileError(err);
-                });
+    Page.onAlterWalletFile = (file, password) => {
+        return new Promise((resolve, reject) => {
+            const Wallet = ethers.Wallet;
+            readFileContent(file, (err, content) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                Wallet.fromEncryptedWallet(content, password)
+                    .then((wallet) => {
+                        const currentNode = Nodes.getCurrentNode();
+                        wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
+                        currentWallet = wallet;
+                        resolve(wallet);
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
         });
-        return false;
-    });
+    };
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
         Page.showBuyTokensError();

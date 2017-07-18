@@ -381,9 +381,48 @@ const Page = {
             }
             return false;
         });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.BUTTON).click(() => {
+            Page.showCurrentWallet();
+            Page.showAlterWalletPrivateKeyError();
+            Page.showAlterWalletFileError();
+            const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
+            const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
+            try {
+                const wallet = Page.onAlterWalletPrivateKey(privateKey0x);
+                Page.showCurrentWallet(wallet);
+            }
+            catch (e) {
+                Page.showAlterWalletPrivateKeyError(e);
+            }
+            return false;
+        });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).click(() => {
+            Page.showCurrentWallet();
+            Page.showAlterWalletPrivateKeyError();
+            Page.showAlterWalletFileError();
+            const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
+            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
+            try {
+                Page.onAlterWalletFile(file, password)
+                    .then((wallet) => {
+                        Page.showCurrentWallet(wallet);
+                    })
+                    .catch((err) => {
+                        Page.showAlterWalletFileError(err);
+                    });
+            }
+            catch (e) {
+                Page.showAlterWalletFileError(err);
+            }
+            return false;
+        });
     },
     onNodeAdd() {},
     onNodeRemove() {},
     onNodeChange() {},
-    onBalanceCheck() {}
+    onBalanceCheck() {},
+    onAlterWalletPrivateKey() {},
+    onAlterWalletFile() {}
 };
