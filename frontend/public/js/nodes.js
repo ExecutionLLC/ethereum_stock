@@ -80,6 +80,24 @@ const Nodes = (() => {
                 res.push({id, name: node.name});
             });
             return res;
+        },
+        removeNode(id) {
+            if (Object.keys(nodes).length < 2) {
+                throw 'Can\'t remove last node';
+            }
+            const newNodes = Object.assign(
+                Object.create(null),
+                nodes
+            );
+            delete newNodes[id];
+            setNodes(newNodes);
+            const newNodeId = Object.keys(newNodes)[0];
+            setCurrentNode(newNodeId);
+            const newCurrentNode = newNodes[newNodeId];
+            return {
+                id: newNodeId,
+                node: newCurrentNode
+            };
         }
     };
 })();
