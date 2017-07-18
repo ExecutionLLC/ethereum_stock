@@ -439,6 +439,28 @@ const Page = {
             }
             return false;
         });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
+            Page.showSellTokensError();
+            Page.sellTokensState.toggleWait(true);
+            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
+            const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
+            try {
+                Page.onSellTokensAsync(count, walletId)
+                    .then(() => {
+                        Page.sellTokensState.toggleWait(false);
+                    })
+                    .catch((err) => {
+                        Page.showSellTokensError(err);
+                        Page.sellTokensState.toggleWait(false);
+                    })
+            }
+            catch (e) {
+                Page.showSellTokensError(e);
+                Page.sellTokensState.toggleWait(false);
+            }
+            return false;
+        });
     },
     onNodeAdd() {},
     onNodeRemove() {},
@@ -446,5 +468,6 @@ const Page = {
     onBalanceCheckAsync() {},
     onAlterWalletPrivateKey() {},
     onAlterWalletFileAsync() {},
-    onBuyTokensAsync() {}
+    onBuyTokensAsync() {},
+    onSellTokensAsync() {}
 };

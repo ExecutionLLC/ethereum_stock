@@ -775,7 +775,7 @@ function onload() {
         const weiStr = `0x${wei.toString(16)}`;
         return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
     };
-    
+
     Page.showAddNodeValid(false);
     function calcAndShowAddNodeValid() {
         const nameValid = !!Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
@@ -825,47 +825,40 @@ function onload() {
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
     };
 
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
-        Page.showSellTokensError();
-        Page.sellTokensState.toggleWait(true);
-        const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
-        const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
-        console.log('sell tokens', count);
+    Page.onSellTokensAsync = (count, walletId) => {
         const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        contract.tokenPrice()
-            .then((tokenPrice) => {
-                const wei = new BigNumber(tokenPrice[0]).times(count);
-                const weiStr = `0x${wei.toString(16)}`;
-                contract.estimate.buyFor(walletId, {value: weiStr})
-                    .then((gasCost) => {
-                        contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
-                            .then((res) => {
-                                console.log(res);
-                                return res.hash;
-                            })
-                            .then((transactionHash) => {
-                                currentWallet.provider.once(transactionHash, (transaction) => {
-                                    Page.sellTokensState.toggleWait(false);
-                                    console.log('Transaction sell Minded: ' + transaction.hash);
-                                    console.log(transaction);
+        return new Promise((resolve, reject) => {
+            contract.tokenPrice()
+                .then((tokenPrice) => {
+                    const wei = new BigNumber(tokenPrice[0]).times(count);
+                    const weiStr = `0x${wei.toString(16)}`;
+                    contract.estimate.buyFor(walletId, {value: weiStr})
+                        .then((gasCost) => {
+                            contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
+                                .then((res) => {
+                                    console.log(res);
+                                    return res.hash;
+                                })
+                                .then((transactionHash) => {
+                                    currentWallet.provider.once(transactionHash, (transaction) => {
+                                        console.log('Transaction sell Minded: ' + transaction.hash);
+                                        console.log(transaction);
+                                        resolve();
+                                    });
+                                })
+                                .catch((err) => {
+                                    reject(err);
                                 });
-                            })
-                            .catch((err) => {
-                                Page.showSellTokensError(err);
-                                Page.sellTokensState.toggleWait(false);
-                            });
-                    })
-                    .catch((err) => {
-                        Page.showSellTokensError(err);
-                        Page.sellTokensState.toggleWait(false);
-                    });
-            })
-            .catch((err) => {
-                Page.showSellTokensError(err);
-                Page.sellTokensState.toggleWait(false);
-            });
-        return false;
-    });
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    };
 
     // Page.initTokenPriceChart((err) => {
     //     if (err) {
