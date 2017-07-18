@@ -259,8 +259,9 @@ const Page = {
         return $(`#${id}`);
     },
     updateNodes() {
-        $.each(JSON.parse(localStorage['Nodes']), function (key, value) {
-            Page.appendNode(key, value.name);
+        const nodesNames = Nodes.getNodesNames();
+        $.each(nodesNames, (i, {id, name}) => {
+            Page.appendNode(id, name);
         });
         Page.selectNode(localStorage['selectedNodeValue']);
     },

@@ -73,6 +73,13 @@ const Nodes = (() => {
     return {
         getCurrentNode() {
             return nodes[currentNode];
+        },
+        getNodesNames() {
+            const res = [];
+            $.each(nodes, function (id, node) {
+                res.push({id, name: node.name});
+            });
+            return res;
         }
     };
 })();
