@@ -265,10 +265,13 @@ const Page = {
             SELECT_NODE: {
                 NODE: 'select-node',
                 ADD_NODE_GROUP: 'add-node-group',
+                ADD_NODE_SHOW_BUTTON: 'add-node-button',
+                REMOVE_NODE_BUTTON: 'remove-node-button',
                 NAME: 'select-node-name',
                 URL: 'select-node-url',
                 CHAIN_ID: 'select-node-chain-id',
-                ADD: 'select-node-add'
+                ADD: 'select-node-add',
+                CANCEL: 'select-node-cancel'
             }
         }
     },
@@ -286,6 +289,15 @@ const Page = {
             .append($('<option></option>')
                 .attr("value", value)
                 .text(name));
+    },
+    removeNode(value) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE)
+            .find(`[value="${value}"]`)
+            .remove();
+    },
+    toggleAddNodeGroup(show) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_GROUP).toggle(show);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_SHOW_BUTTON).prop('disabled', show);
     },
     showWalletValid(isValid) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
@@ -966,6 +978,7 @@ const Validator = {
 };
 
 function onload() {
+    Page.toggleAddNodeGroup(false);
     Page.showBalanceError();
     Page.showBalance();
     Page.showTokensHistory();
@@ -977,6 +990,32 @@ function onload() {
     Page.showBuyTokensError();
     Page.showSellTokensError();
     Page.updateNodes();
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD_NODE_SHOW_BUTTON).click(() => {
+        Page.toggleAddNodeGroup(true);
+        return false;
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.REMOVE_NODE_BUTTON).click(() => {
+        const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const Nodes = JSON.parse(localStorage['Nodes']);
+        if (Object.keys(Nodes).length < 2) {
+            return false;
+        }
+        delete Nodes[curNodeName];
+        localStorage.setItem('Nodes', JSON.stringify(Nodes));
+        Page.removeNode(curNodeName);
+        const newNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
+        const currentNode = JSON.parse(localStorage['Nodes'])[newNodeName];
+        web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+        localStorage.setItem('selectedNodeValue', newNodeName);
+        return false;
+    });
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CANCEL).click(() => {
+        Page.toggleAddNodeGroup(false);
+        return false;
+    });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).change(() => {
         const curNodeName = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val();
@@ -1145,12 +1184,13 @@ function onload() {
     });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.ADD).click(() => {
+        Page.toggleAddNodeGroup(false);
         const name = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NAME).val();
         const url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
         const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
         if (name && url && chainId) {
             // maybe generate uuid
-            const id = Object.keys(localStorage['Nodes']).length;
+            const id = '' + Math.random();
             const Nodes = JSON.parse(localStorage['Nodes']);
 
             Nodes[id] = {
@@ -1160,6 +1200,9 @@ function onload() {
             };
             localStorage.setItem('Nodes', JSON.stringify(Nodes));
             Page.appendNode(id, name);
+            web3.setProvider(new web3.providers.HttpProvider(url));
+            localStorage.setItem('selectedNodeValue', id);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(id);
         } else {
             //log error
         }

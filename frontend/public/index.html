@@ -65,13 +65,21 @@
                 <div class="form-group form-inline">
                     <label class="control-label">Current node</label>
                     <select id="select-node" class="form-control"></select>
+                    <button id="add-node-button" class="btn btn-default">Add node...</button>
+                    <button id="remove-node-button" class="btn btn-default">Remove node</button>
                 </div>
-                <div id="add-node-group" class="form-group form-inline">
-                    <label class="control-label">Add new Node</label>
-                    <input id="select-node-name" class="form-control" />
-                    <input id="select-node-url" class="form-control" />
-                    <input id="select-node-chain-id" class="form-control" />
+                <div id="add-node-group" class="form-group">
+                    <span class="control-label">Add new Node:</span>
+                    <div class="form-group">
+                        <label class="control-label">Name</label>
+                        <input id="select-node-name" class="form-control" placeholder="Display node name" />
+                        <label class="control-label">URL</label>
+                        <input id="select-node-url" class="form-control" placeholder="http(s)://location.to.node:port"/>
+                        <label class="control-label">Chain id</label>
+                        <input id="select-node-chain-id" class="form-control" placeholder="Chain id" />
+                    </div>
                     <button id="select-node-add" class="btn btn-default">Add Node</button>
+                    <button id="select-node-cancel" class="btn btn-default">Cancel</button>
                 </div>
             </form>
         </div>
