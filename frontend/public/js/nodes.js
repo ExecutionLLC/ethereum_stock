@@ -43,7 +43,7 @@ const Nodes = (() => {
         Storage.storeNodes(nodes);
     }
 
-    function setCurrentNode(id) {
+    function setCurrentNodeId(id) {
         currentNodeId = id;
         Storage.storeCurrent(id);
     }
@@ -68,9 +68,9 @@ const Nodes = (() => {
         currentNodeId = Storage.fetchCurrent();
         if (currentNodeId == null || !nodes[currentNodeId]) {
             if (nodes[DEFAULT_NODE_ID]) {
-                setCurrentNode(DEFAULT_NODE_ID);
+                setCurrentNodeId(DEFAULT_NODE_ID);
             } else {
-                setCurrentNode(Object.keys(nodes)[0])
+                setCurrentNodeId(Object.keys(nodes)[0])
             }
         }
     }
@@ -85,7 +85,7 @@ const Nodes = (() => {
             return currentNodeId;
         },
         setCurrentNodeId(id) {
-            setCurrentNode(id);
+            setCurrentNodeId(id);
             return nodes[id];
         },
         getNodesNames() {
@@ -103,7 +103,7 @@ const Nodes = (() => {
             delete newNodes[id];
             setNodes(newNodes);
             const newNodeId = Object.keys(nodes)[0];
-            setCurrentNode(newNodeId);
+            setCurrentNodeId(newNodeId);
             const newCurrentNode = nodes[newNodeId];
             return {
                 id: newNodeId,
@@ -115,7 +115,7 @@ const Nodes = (() => {
             const newNodes = cloneNodes(nodes);
             newNodes[id] = node;
             setNodes(newNodes);
-            setCurrentNode(id);
+            setCurrentNodeId(id);
             return id;
         }
     };
