@@ -678,35 +678,26 @@ function onload() {
         Page.showWalletValid(Validator.walletId(evt.target.value));
     });
 
-    Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
-        Page.showBalanceWait(true);
-        Page.showBalanceError();
-        const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
+    Page.onBalanceCheck = (walletId) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
-        Ether.getBalance(contract, walletId, (err, balance) => {
-            if (err) {
-                Page.showBalanceWait(false);
-                Page.showBalanceError(err);
-                Page.showBalance();
-                Page.showTokensHistory();
-            } else {
-                Ether.getPriceData(walletId, contract, (err, res) => {
-                    Page.showBalanceWait(false);
-                    if (err) {
-                        Page.showBalanceError(err);
-                        Page.showBalance();
-                        Page.showTokensHistory();
-                    } else {
-                        Page.showBalance(balance.tokens, balance.eth, balance.btc);
-                        Page.showTokensHistory(walletId, res);
-                    }
-                });
-            }
+        return new Promise((resolve, reject) => {
+            Ether.getBalance(contract, walletId, (err, balance) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    Ether.getPriceData(walletId, contract, (err, tokens) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve({balance, tokens});
+                        }
+                    });
+                }
+            });
         });
-        return false;
-    });
+    };
 
     Page.showAlterWalletValid(false, false, true);
     function showCurrentAlterWalletValid() {

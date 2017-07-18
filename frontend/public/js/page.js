@@ -349,8 +349,41 @@ const Page = {
             }
         });
 
+        Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).click(() => {
+            Page.showBalanceWait(true);
+            Page.showBalanceError();
+            const walletId = Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).val();
+
+            function handleError(err/*, isThrown*/) {
+                Page.showBalanceWait(false);
+                Page.showBalanceError(err);
+                Page.showBalance();
+                Page.showTokensHistory();
+            }
+
+            function handleResult({balance, tokens}) {
+                Page.showBalanceWait(false);
+                Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                Page.showTokensHistory(walletId, tokens);
+            }
+
+            try {
+                Page.onBalanceCheck(walletId)
+                    .then(({balance, tokens}) => {
+                        handleResult({balance, tokens});
+                    })
+                    .catch((err) => {
+                        handleError(err, false);
+                    });
+            }
+            catch (e) {
+                handleError(e, true);
+            }
+            return false;
+        });
     },
     onNodeAdd() {},
     onNodeRemove() {},
-    onNodeChange() {}
+    onNodeChange() {},
+    onBalanceCheck() {}
 };
