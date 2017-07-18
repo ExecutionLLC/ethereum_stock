@@ -678,7 +678,7 @@ function onload() {
         Page.showWalletValid(Validator.walletId(evt.target.value));
     });
 
-    Page.onBalanceCheck = (walletId) => {
+    Page.onBalanceCheckAsync = (walletId) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
@@ -744,7 +744,7 @@ function onload() {
         return wallet;
     };
 
-    Page.onAlterWalletFile = (file, password) => {
+    Page.onAlterWalletFileAsync = (file, password) => {
         return new Promise((resolve, reject) => {
             const Wallet = ethers.Wallet;
             readFileContent(file, (err, content) => {

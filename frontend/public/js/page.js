@@ -368,7 +368,7 @@ const Page = {
             }
 
             try {
-                Page.onBalanceCheck(walletId)
+                Page.onBalanceCheckAsync(walletId)
                     .then(({balance, tokens}) => {
                         handleResult({balance, tokens});
                     })
@@ -405,7 +405,7 @@ const Page = {
             const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
             try {
-                Page.onAlterWalletFile(file, password)
+                Page.onAlterWalletFileAsync(file, password)
                     .then((wallet) => {
                         Page.showCurrentWallet(wallet);
                     })
@@ -422,7 +422,7 @@ const Page = {
     onNodeAdd() {},
     onNodeRemove() {},
     onNodeChange() {},
-    onBalanceCheck() {},
+    onBalanceCheckAsync() {},
     onAlterWalletPrivateKey() {},
-    onAlterWalletFile() {}
+    onAlterWalletFileAsync() {}
 };
