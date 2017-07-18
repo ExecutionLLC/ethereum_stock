@@ -1162,20 +1162,14 @@ function onload() {
         const url = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.URL).val();
         const chainId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.CHAIN_ID).val();
         if (name && url && chainId) {
-            // maybe generate uuid
-            const id = '' + Math.random();
-            const Nodes = JSON.parse(localStorage['Nodes']);
-
-            Nodes[id] = {
+            const newNodeId = Nodes.addNode({
                 name,
                 url,
                 chainId
-            };
-            localStorage.setItem('Nodes', JSON.stringify(Nodes));
-            Page.appendNode(id, name);
+            });
+            Page.appendNode(newNodeId, name);
             web3.setProvider(new web3.providers.HttpProvider(url));
-            localStorage.setItem('selectedNodeValue', id);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(id);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.SELECT_NODE.NODE).val(newNodeId);
         } else {
             //log error
         }

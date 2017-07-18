@@ -55,6 +55,11 @@ const Nodes = (() => {
         );
     }
 
+    function generateNodeId() {
+        // maybe generate uuid
+        return '' + Math.random();
+    }
+
     function init() {
         nodes = Storage.fetchNodes();
         if (!nodes || !Object.keys(nodes).length) {
@@ -101,6 +106,14 @@ const Nodes = (() => {
                 id: newNodeId,
                 node: newCurrentNode
             };
+        },
+        addNode(node) {
+            const id = generateNodeId();
+            const newNodes = cloneNodes(nodes);
+            newNodes[id] = node;
+            setNodes(newNodes);
+            setCurrentNode(id);
+            return id;
         }
     };
 })();
