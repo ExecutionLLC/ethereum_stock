@@ -672,22 +672,12 @@ function onload() {
     currentWallet = null;
     Page.init();
 
-    Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
-        Page.toggleAddNodeGroup(true);
-        return false;
-    });
-
     Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).click(() => {
         const curNodId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
         const newNodeInfo = Nodes.removeNode(curNodId);
         Page.removeNode(curNodId);
         Page.$id(Page.ELEMENT_ID.NODES.NODE).val(newNodeInfo.id);
         web3.setProvider(new web3.providers.HttpProvider(newNodeInfo.node.url));
-        return false;
-    });
-
-    Page.$id(Page.ELEMENT_ID.NODES.CANCEL).click(() => {
-        Page.toggleAddNodeGroup(false);
         return false;
     });
 
@@ -856,25 +846,23 @@ function onload() {
         calcAndShowAddNodeValid();
     });
 
-    Page.$id(Page.ELEMENT_ID.NODES.ADD).click(() => {
-        Page.toggleAddNodeGroup(false);
-        const name = Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
-        const url = Page.$id(Page.ELEMENT_ID.NODES.URL).val();
-        const chainId = Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val();
+    Page.onNodeAdd = ({name, url, chainId}) => {
         if (name && url && chainId) {
-            const newNodeId = Nodes.addNode({
+            const newNode = {
                 name,
                 url,
                 chainId
-            });
-            Page.appendNode(newNodeId, name);
+            };
+            const newNodeId = Nodes.addNode(newNode);
             web3.setProvider(new web3.providers.HttpProvider(url));
-            Page.$id(Page.ELEMENT_ID.NODES.NODE).val(newNodeId);
+            return {
+                id: newNodeId,
+                node: newNode
+            };
         } else {
-            //log error
+            throw 'Fail to add node';
         }
-        return false;
-    });
+    };
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
         Page.showSellTokensError();

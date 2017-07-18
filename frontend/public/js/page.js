@@ -303,5 +303,32 @@ const Page = {
         Page.showBuyTokensError();
         Page.showSellTokensError();
         Page.updateNodes();
-    }
+
+        Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
+            Page.toggleAddNodeGroup(true);
+            return false;
+        });
+
+        Page.$id(Page.ELEMENT_ID.NODES.CANCEL).click(() => {
+            Page.toggleAddNodeGroup(false);
+            return false;
+        });
+
+        Page.$id(Page.ELEMENT_ID.NODES.ADD).click(() => {
+            Page.toggleAddNodeGroup(false);
+            try {
+                const name = Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
+                const url = Page.$id(Page.ELEMENT_ID.NODES.URL).val();
+                const chainId = Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val();
+                const {id, node} = Page.onNodeAdd({name, url, chainId});
+                Page.appendNode(id, node.name);
+                Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
+            }
+            catch (e) {
+
+            }
+            return false;
+        });
+    },
+    onNodeAdd() {}
 };
