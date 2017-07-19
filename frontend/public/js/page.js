@@ -26,7 +26,8 @@ const Page = {
             TEMPLATE: 'tokens-history-template',
             OPERATION: {
                 TIME: 'tokens-history-op-time',
-                NAME: 'tokens-history-op-name',
+                NAME_BUY: 'tokens-history-op-name-buy',
+                NAME_SELL: 'tokens-history-op-name-sell',
                 COUNT: 'tokens-history-op-count'
             },
             CONTAINER: 'tokens-history-container',
@@ -137,11 +138,19 @@ const Page = {
             setElementContent($el, key, text);
         }
 
+        function toggleElementId($parent, elId, key, show) {
+            const $el = $parent.find(`#${elId}`);
+            addElementIdKey($el, key);
+            $el.toggle(show);
+        }
+
         const $rows = res && res.map((item, index) => {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
-            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, walletId.toLowerCase() === item.to.toLowerCase() ? 'buy' : 'sell');
+            const isBuy = walletId.toLowerCase() === item.to.toLowerCase();
+            toggleElementId($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME_BUY, index, isBuy);
+            toggleElementId($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME_SELL, index, !isBuy);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
             return $el;
         });
