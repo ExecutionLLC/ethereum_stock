@@ -2,11 +2,11 @@
 @import "variables.less";
 
 body {
-  padding-top: 170px;
+  padding-top: @nav-with-header-height;
 }
 
 body.hide-header {
-  padding-top: 70px;
+  padding-top: @nav-height;
 }
 
 body.hide-header .hideable-header {
@@ -24,4 +24,17 @@ body.hide-header .hideable-header {
   100% {
     transform: rotate(359deg);
   }
+}
+
+body a.anchor {
+  position: relative;
+  top: -@nav-with-header-height;
+}
+
+body a.anchor:before {
+  content: ""; // for jumping to offsetted #anchor it need to be the content in it
+}
+
+body.hide-header a.anchor {
+  top: -@nav-height;
 }
