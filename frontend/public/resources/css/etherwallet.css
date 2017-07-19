@@ -6741,3 +6741,13 @@ body.hide-header .hideable-header {
     transform: rotate(359deg);
   }
 }
+body a.anchor {
+  position: relative;
+  top: -170px;
+}
+body a.anchor:before {
+  content: "";
+}
+body.hide-header a.anchor {
+  top: -70px;
+}
