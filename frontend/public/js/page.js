@@ -29,7 +29,8 @@ const Page = {
                 NAME: 'tokens-history-op-name',
                 COUNT: 'tokens-history-op-count'
             },
-            CONTAINER: 'tokens-history-container'
+            CONTAINER: 'tokens-history-container',
+            CONTENT: 'tokens-history-content'
         },
         CHART: {
             ID: 'chart',
@@ -117,6 +118,8 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
     showTokensHistory(walletId, res) {
+        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).css('visibility', res == null ? 'hidden' : 'visible');
+
         const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
@@ -142,7 +145,7 @@ const Page = {
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
             return $el;
         });
-        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty();
+        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTENT).empty();
         if ($rows) {
             $container.append($rows);
         }
