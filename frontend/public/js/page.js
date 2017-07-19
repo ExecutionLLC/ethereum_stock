@@ -26,10 +26,12 @@ const Page = {
             TEMPLATE: 'tokens-history-template',
             OPERATION: {
                 TIME: 'tokens-history-op-time',
-                NAME: 'tokens-history-op-name',
+                NAME_BUY: 'tokens-history-op-name-buy',
+                NAME_SELL: 'tokens-history-op-name-sell',
                 COUNT: 'tokens-history-op-count'
             },
-            CONTAINER: 'tokens-history-container'
+            CONTAINER: 'tokens-history-container',
+            CONTENT: 'tokens-history-content'
         },
         CHART: {
             ID: 'chart',
@@ -117,6 +119,8 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
     },
     showTokensHistory(walletId, res) {
+        Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).css('visibility', res == null ? 'hidden' : 'visible');
+
         const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
@@ -134,15 +138,23 @@ const Page = {
             setElementContent($el, key, text);
         }
 
+        function toggleElementId($parent, elId, key, show) {
+            const $el = $parent.find(`#${elId}`);
+            addElementIdKey($el, key);
+            $el.toggle(show);
+        }
+
         const $rows = res && res.map((item, index) => {
             const $el = $tmpl.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
-            setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME, index, walletId.toLowerCase() === item.to.toLowerCase() ? 'buy' : 'sell');
+            const isBuy = walletId.toLowerCase() === item.to.toLowerCase();
+            toggleElementId($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME_BUY, index, isBuy);
+            toggleElementId($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.NAME_SELL, index, !isBuy);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.COUNT, index, item.count);
             return $el;
         });
-        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).empty();
+        const $container = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTENT).empty();
         if ($rows) {
             $container.append($rows);
         }
