@@ -10,7 +10,8 @@ const Page = {
             CHAIN_ID: 'select-node-chain-id',
             ADD: 'select-node-add',
             CANCEL: 'select-node-cancel',
-            ADD_ERROR: 'add-node-error'
+            ADD_ERROR: 'add-node-error',
+            NODE_ERROR: 'node-error'
         },
         BALANCE: {
             WALLET_FORM_GROUP: 'wallet-form-group',
@@ -168,6 +169,11 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.NODES.URL).toggleClass('alert-danger', !urlValid);
         Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).toggleClass('alert-danger', !chainIdValid);
     },
+    showNodeError(error) {
+        Page.$id(Page.ELEMENT_ID.NODES.NODE_ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
     showAddNodeError(error) {
         Page.$id(Page.ELEMENT_ID.NODES.ADD_ERROR)
             .text(error)
@@ -298,6 +304,7 @@ const Page = {
     },
     init() {
         Page.toggleAddNodeGroup(false);
+        Page.showNodeError();
         Page.showAddNodeError();
         Page.showBalanceError();
         Page.showBalance();
@@ -315,17 +322,20 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
             Page.toggleAddNodeGroup(true);
+            Page.showNodeError();
             Page.showAddNodeError();
             return false;
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.CANCEL).click(() => {
             Page.toggleAddNodeGroup(false);
+            Page.showNodeError();
             return false;
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD).click(() => {
             Page.showAddNodeError();
+            Page.showNodeError();
             try {
                 const name = Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
                 const url = Page.$id(Page.ELEMENT_ID.NODES.URL).val();
@@ -342,22 +352,26 @@ const Page = {
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).click(() => {
+            Page.showNodeError();
             const curNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
             try {
                 const id = Page.onNodeRemove(curNodeId);
                 Page.removeNode(curNodeId);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
             } catch (e) {
+                Page.showNodeError(e);
             }
             return false;
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.NODE).change(() => {
+            Page.showNodeError();
             const currentNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
             try {
                 Page.onNodeChange(currentNodeId);
             }
             catch (e) {
+                Page.showNodeError(e);
             }
         });
 
