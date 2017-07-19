@@ -415,8 +415,9 @@ const Ether = {
                 const allHistory = toClientHistory.concat(fromClientHistory);
                 allHistory.sort((x, y) => {
                     return x.timestamp - y.timestamp
-                }).slice(-historyCount);
-                callback(null, allHistory);
+                });
+                const allHistoryLast = allHistory.slice(-historyCount);
+                callback(null, allHistoryLast);
             }
         });
     },
