@@ -60,6 +60,14 @@ const Nodes = (() => {
         return '' + Math.random();
     }
 
+    function nodesCount() {
+        return Object.keys(nodes).length;
+    }
+
+    function canRemoveNode() {
+        return nodesCount() >= 2;
+    }
+
     function init() {
         nodes = Storage.fetchNodes();
         if (!nodes || !Object.keys(nodes).length) {
@@ -95,8 +103,11 @@ const Nodes = (() => {
             });
             return res;
         },
+        canRemoveNode() {
+            return canRemoveNode();
+        },
         removeNode(id) {
-            if (Object.keys(nodes).length < 2) {
+            if (!canRemoveNode()) {
                 throw 'Can\'t remove last node';
             }
             const newNodes = cloneNodes(nodes);

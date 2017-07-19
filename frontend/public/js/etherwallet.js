@@ -758,8 +758,9 @@ function onload() {
         };
     };
 
-    Page.onNodeAdd = ({name, url, chainId}) => {
-        if (name && url && chainId) {
+    Page.onNodeAdd = ({name, url, chainId: chainIdStr}) => {
+        if (name && url && chainIdStr) {
+            const chainId = +chainIdStr;
             const newNode = {
                 name,
                 url,
