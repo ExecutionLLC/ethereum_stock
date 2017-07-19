@@ -98,6 +98,12 @@ const Page = {
             .find(`[value="${value}"]`)
             .remove();
     },
+    disableRemoveNode(disable) {
+        Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).prop('disabled', disable);
+    },
+    disableSelectNode(disable) {
+        Page.$id(Page.ELEMENT_ID.NODES.NODE).prop('disabled', disable);
+    },
     toggleAddNodeGroup(show) {
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_GROUP).toggle(show);
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).prop('disabled', show);
@@ -304,6 +310,8 @@ const Page = {
     },
     init() {
         Page.toggleAddNodeGroup(false);
+        Page.disableRemoveNode(!Nodes.canRemoveNode());
+        Page.disableSelectNode(false);
         Page.showNodeError();
         Page.showAddNodeError();
         Page.showBalanceError();
@@ -322,6 +330,8 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
             Page.toggleAddNodeGroup(true);
+            Page.disableRemoveNode(true);
+            Page.disableSelectNode(true);
             Page.showNodeError();
             Page.showAddNodeError();
             return false;
@@ -329,6 +339,8 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.CANCEL).click(() => {
             Page.toggleAddNodeGroup(false);
+            Page.disableRemoveNode(!Nodes.canRemoveNode());
+            Page.disableSelectNode(false);
             Page.showNodeError();
             return false;
         });
@@ -344,6 +356,8 @@ const Page = {
                 Page.appendNode(id, node.name);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
                 Page.toggleAddNodeGroup(false);
+                Page.disableRemoveNode(!Nodes.canRemoveNode());
+                Page.disableSelectNode(false);
             }
             catch (e) {
                 Page.showAddNodeError(e);
@@ -361,6 +375,7 @@ const Page = {
             } catch (e) {
                 Page.showNodeError(e);
             }
+            Page.disableRemoveNode(!Nodes.canRemoveNode());
             return false;
         });
 
