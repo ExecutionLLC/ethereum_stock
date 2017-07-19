@@ -9,7 +9,8 @@ const Page = {
             URL: 'select-node-url',
             CHAIN_ID: 'select-node-chain-id',
             ADD: 'select-node-add',
-            CANCEL: 'select-node-cancel'
+            CANCEL: 'select-node-cancel',
+            ADD_ERROR: 'add-node-error'
         },
         BALANCE: {
             WALLET_FORM_GROUP: 'wallet-form-group',
@@ -167,6 +168,11 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.NODES.URL).toggleClass('alert-danger', !urlValid);
         Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).toggleClass('alert-danger', !chainIdValid);
     },
+    showAddNodeError(error) {
+        Page.$id(Page.ELEMENT_ID.NODES.ADD_ERROR)
+            .text(error)
+            .toggle(error != null);
+    },
     selectNode(valueToSelect) {
         const element = document.getElementById(Page.ELEMENT_ID.NODES.NODE);
         element.value = valueToSelect;
@@ -292,6 +298,7 @@ const Page = {
     },
     init() {
         Page.toggleAddNodeGroup(false);
+        Page.showAddNodeError();
         Page.showBalanceError();
         Page.showBalance();
         Page.showTokensHistory();
@@ -308,6 +315,7 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
             Page.toggleAddNodeGroup(true);
+            Page.showAddNodeError();
             return false;
         });
 
@@ -317,7 +325,7 @@ const Page = {
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD).click(() => {
-            Page.toggleAddNodeGroup(false);
+            Page.showAddNodeError();
             try {
                 const name = Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
                 const url = Page.$id(Page.ELEMENT_ID.NODES.URL).val();
@@ -325,8 +333,10 @@ const Page = {
                 const {id, node} = Page.onNodeAdd({name, url, chainId});
                 Page.appendNode(id, node.name);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
+                Page.toggleAddNodeGroup(false);
             }
             catch (e) {
+                Page.showAddNodeError(e);
             }
             return false;
         });
