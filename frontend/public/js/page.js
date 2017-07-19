@@ -451,6 +451,96 @@ const Page = {
             }
             return false;
         });
+
+        // Add node validation >>>
+
+        Page.showAddNodeValid(false);
+        function calcAndShowAddNodeValid() {
+            const {nameValid, urlValid, chainIdValid} = Page.onAddNodeValidation(
+                Page.$id(Page.ELEMENT_ID.NODES.NAME).val(),
+                Page.$id(Page.ELEMENT_ID.NODES.URL).val(),
+                Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val()
+            );
+            Page.showAddNodeValid(nameValid, urlValid, chainIdValid);
+        }
+
+        Page.$id(Page.ELEMENT_ID.NODES.NAME).on('input', () => {
+            calcAndShowAddNodeValid();
+        });
+
+        Page.$id(Page.ELEMENT_ID.NODES.URL).on('input', () => {
+            calcAndShowAddNodeValid();
+        });
+
+        Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).on('input', () => {
+            calcAndShowAddNodeValid();
+        });
+
+        // <<< Add node validation
+
+        // Wallet validation >>>
+
+        Page.showWalletValid(false);
+
+        Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
+            Page.showWalletValid(
+                Page.onBalanceWalletValidation(evt.target.value)
+            );
+        });
+
+        // <<< Wallet validation
+
+        // Alter wallet validation >>>
+
+        Page.showAlterWalletValid(false, false, true);
+        function showCurrentAlterWalletValid() {
+            const {keyValid, fileValid} = Page.onAlterWalletValidation(
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val(),
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0]
+            );
+            Page.showAlterWalletValid(keyValid, fileValid, true);
+        }
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', () => {
+            showCurrentAlterWalletValid();
+        });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).on('change', () => {
+            showCurrentAlterWalletValid();
+        });
+
+        // <<< Alter wallet validation
+
+        // Buy tokens validation >>>
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
+            Page.buyTokensState.toggleValid(
+                Page.onBuyTokensValidation(evt.target.value)
+            );
+        });
+
+        // <<< Buy tokens validation
+
+        // Sell tokens validation >>>
+
+        function showCurrentSellTokensValid() {
+            const {countValid, recipientValid} = Page.onSellTokensValidation(
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val(),
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val()
+            );
+            Page.sellTokensState.toggleValid(countValid, recipientValid);
+        }
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
+            showCurrentSellTokensValid();
+        });
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
+            showCurrentSellTokensValid();
+        });
+
+        // <<< Sell tokens validation
+
     },
     onNodeAdd() {},
     onNodeRemove() {},
@@ -459,5 +549,10 @@ const Page = {
     onAlterWalletPrivateKey() {},
     onAlterWalletFileAsync() {},
     onBuyTokensAsync() {},
-    onSellTokensAsync() {}
+    onSellTokensAsync() {},
+    onAddNodeValidation() {},
+    onBalanceWalletValidation() {},
+    onAlterWalletValidation() {},
+    onBuyTokensValidation() {},
+    onSellTokensValidation() {}
 };

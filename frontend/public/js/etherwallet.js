@@ -672,15 +672,9 @@ function onload() {
     currentWallet = null;
     Page.init();
 
-    // Wallet validation >>>
-
-    Page.showWalletValid(false);
-
-    Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
-        Page.showWalletValid(Validator.walletId(evt.target.value));
-    });
-
-    // <<< Wallet validation
+    Page.onBalanceWalletValidation = (walletId) => {
+        return Validator.walletId(walletId);
+    };
 
     Page.onBalanceCheckAsync = (walletId) => {
         const contract = web3.eth
@@ -703,50 +697,12 @@ function onload() {
         });
     };
 
-    // Alter wallet validation >>>
-
-    Page.showAlterWalletValid(false, false, true);
-    function showCurrentAlterWalletValid() {
-        const keyValid = Validator.privateKey(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val());
-        const fileValid = !!Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-        Page.showAlterWalletValid(keyValid, fileValid, true);
-    }
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).on('input', () => {
-        showCurrentAlterWalletValid();
-    });
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).on('change', () => {
-        showCurrentAlterWalletValid();
-    });
-
-    // <<< Alter wallet validation
-
-    // Buy tokens validation >>>
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
-        Page.buyTokensState.toggleValid(Validator.tokenCount(evt.target.value));
-    });
-
-    // <<< Buy tokens validation
-
-    // Sell tokens validation >>>
-
-    function showCurrentSellTokensValid() {
-        const countValid = Validator.tokenCount(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val());
-        const recipientValid = Validator.walletId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val());
-        Page.sellTokensState.toggleValid(countValid, recipientValid);
-    }
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
-        showCurrentSellTokensValid();
-    });
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
-        showCurrentSellTokensValid();
-    });
-
-    // <<< Sell tokens validation
+    Page.onAlterWalletValidation = (key, file) => {
+        return {
+            keyValid: Validator.privateKey(key),
+            fileValid: !!file
+        };
+    };
 
     Page.onAlterWalletPrivateKey = (privateKey0x) => {
         currentWallet = null;
@@ -779,6 +735,10 @@ function onload() {
         });
     };
 
+    Page.onBuyTokensValidation = (count) => {
+        return Validator.tokenCount(count);
+    };
+
     Page.onBuyTokensAsync = (count) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
@@ -789,29 +749,13 @@ function onload() {
         return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
     };
 
-    // Add node validation >>>
-
-    Page.showAddNodeValid(false);
-    function calcAndShowAddNodeValid() {
-        const nameValid = !!Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
-        const urlValid = Validator.url(Page.$id(Page.ELEMENT_ID.NODES.URL).val());
-        const chainIdValid = Validator.chainId(Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val());
-        Page.showAddNodeValid(nameValid, urlValid, chainIdValid);
-    }
-
-    Page.$id(Page.ELEMENT_ID.NODES.NAME).on('input', () => {
-        calcAndShowAddNodeValid();
-    });
-
-    Page.$id(Page.ELEMENT_ID.NODES.URL).on('input', () => {
-        calcAndShowAddNodeValid();
-    });
-
-    Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).on('input', () => {
-        calcAndShowAddNodeValid();
-    });
-
-    // <<< Add node validation
+    Page.onAddNodeValidation = (name, url, chainId) => {
+        return {
+            nameValid: !!name,
+            urlValid: Validator.url(url),
+            chainIdValid: Validator.chainId(chainId)
+        };
+    };
 
     Page.onNodeAdd = ({name, url, chainId}) => {
         if (name && url && chainId) {
@@ -840,6 +784,13 @@ function onload() {
     Page.onNodeChange = (id) => {
         const currentNode = Nodes.setCurrentNodeId(id);
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+    };
+
+    Page.onSellTokensValidation = (count, walletId) => {
+        return {
+            countValid: Validator.tokenCount(count),
+            recipientValid: Validator.walletId(walletId)
+        };
     };
 
     Page.onSellTokensAsync = (count, walletId) => {
