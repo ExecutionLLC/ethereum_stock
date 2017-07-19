@@ -672,11 +672,15 @@ function onload() {
     currentWallet = null;
     Page.init();
 
+    // Wallet validation >>>
+
     Page.showWalletValid(false);
 
     Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_INPUT).on('input', (evt) => {
         Page.showWalletValid(Validator.walletId(evt.target.value));
     });
+
+    // <<< Wallet validation
 
     Page.onBalanceCheckAsync = (walletId) => {
         const contract = web3.eth
@@ -699,6 +703,8 @@ function onload() {
         });
     };
 
+    // Alter wallet validation >>>
+
     Page.showAlterWalletValid(false, false, true);
     function showCurrentAlterWalletValid() {
         const keyValid = Validator.privateKey(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val());
@@ -714,15 +720,23 @@ function onload() {
         showCurrentAlterWalletValid();
     });
 
+    // <<< Alter wallet validation
+
+    // Buy tokens validation >>>
+
+    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
+        Page.buyTokensState.toggleValid(Validator.tokenCount(evt.target.value));
+    });
+
+    // <<< Buy tokens validation
+
+    // Sell tokens validation >>>
+
     function showCurrentSellTokensValid() {
         const countValid = Validator.tokenCount(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val());
         const recipientValid = Validator.walletId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val());
         Page.sellTokensState.toggleValid(countValid, recipientValid);
     }
-
-    Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
-        Page.buyTokensState.toggleValid(Validator.tokenCount(evt.target.value));
-    });
 
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
         showCurrentSellTokensValid();
@@ -731,6 +745,8 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
         showCurrentSellTokensValid();
     });
+
+    // <<< Sell tokens validation
 
     Page.onAlterWalletPrivateKey = (privateKey0x) => {
         currentWallet = null;
@@ -773,6 +789,8 @@ function onload() {
         return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
     };
 
+    // Add node validation >>>
+
     Page.showAddNodeValid(false);
     function calcAndShowAddNodeValid() {
         const nameValid = !!Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
@@ -792,6 +810,8 @@ function onload() {
     Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).on('input', () => {
         calcAndShowAddNodeValid();
     });
+
+    // <<< Add node validation
 
     Page.onNodeAdd = ({name, url, chainId}) => {
         if (name && url && chainId) {
