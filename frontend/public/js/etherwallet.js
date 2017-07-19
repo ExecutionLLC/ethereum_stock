@@ -714,9 +714,6 @@ function onload() {
         showCurrentAlterWalletValid();
     });
 
-    Page.buyTokensState.init();
-    Page.sellTokensState.init();
-
     function showCurrentSellTokensValid() {
         const countValid = Validator.tokenCount(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val());
         const recipientValid = Validator.walletId(Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val());

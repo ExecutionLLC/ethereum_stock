@@ -203,9 +203,12 @@ const Page = {
         _isValid: false,
         _isWaiting: false,
         _showCurrentState() {
-            Page.showBuyTokensValid(Page.buyTokensState._isValid);
-            Page.toggleBuyWait(Page.buyTokensState._isWaiting);
-            Page.showBuyButtonEnable(Page.buyTokensState._isValid && !Page.buyTokensState._isWaiting);
+            const isValid = Page.buyTokensState._isValid;
+            const isWaiting = Page.buyTokensState._isWaiting;
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !isValid || isWaiting);
         },
         init() {
             Page.buyTokensState._isValid = false;
@@ -226,9 +229,17 @@ const Page = {
         _isRecipientValid: false,
         _isWaiting: false,
         _showCurrentState() {
-            Page.showSellTokensValid(Page.sellTokensState._isCountValid, Page.sellTokensState._isRecipientValid);
-            Page.toggleSellWait(Page.sellTokensState._isWaiting);
-            Page.showSellButtonEnable(Page.sellTokensState._isCountValid && Page.sellTokensState._isRecipientValid && !Page.buyTokensState._isWaiting);
+            const isCountValid = Page.sellTokensState._isCountValid;
+            const isRecipientValid = Page.sellTokensState._isRecipientValid;
+            const isWaiting = Page.sellTokensState._isWaiting;
+            const isGroupValid = isCountValid && isRecipientValid;
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.GROUP).toggleClass('has-error', !isGroupValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).toggleClass('alert-danger', !isCountValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !isCountValid || !isRecipientValid || isWaiting);
         },
         init() {
             Page.sellTokensState._isCountValid = false;
@@ -245,30 +256,6 @@ const Page = {
             Page.sellTokensState._isRecipientValid = isRecipientValid;
             Page.sellTokensState._showCurrentState();
         }
-    },
-    showBuyButtonEnable(enable) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !enable);
-    },
-    showSellButtonEnable(enable) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !enable);
-    },
-    showBuyTokensValid(isValid) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
-    },
-    showSellTokensValid(isCountValid, isRecipientValid) {
-        const isGroupValid = isCountValid && isRecipientValid;
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.GROUP).toggleClass('has-error', !isGroupValid);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).toggleClass('alert-danger', !isCountValid);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
-    },
-    toggleBuyWait(show) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(show);
-    },
-    toggleSellWait(show) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', show);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(show);
     },
     initTokenPriceChart(callback) {
         const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
@@ -303,6 +290,9 @@ const Page = {
         Page.showBuyTokensError();
         Page.showSellTokensError();
         Page.updateNodes();
+
+        Page.buyTokensState.init();
+        Page.sellTokensState.init();
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
             Page.toggleAddNodeGroup(true);
