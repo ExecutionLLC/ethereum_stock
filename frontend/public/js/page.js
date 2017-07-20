@@ -310,26 +310,8 @@ const Page = {
     showSellTransaction(id, complete, fail) {
         Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL, id, complete, fail);
     },
-    initTokenPriceChart(callback) {
-        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
-        if (!ctx) {
-            callback('No canvas element');
-            return;
-        }
-        Ether.getPriceHistoryData(//Ether
-            web3,//web3
-            CONTRACT.ABI,//CONTRACT
-            CONTRACT.ID,
-            (err, res) => {
-                if (!err) {
-                    TokenPriceChart.createChart(ctx, res);//TokenPriceChart
-                }
-                callback(err, res);
-            }
-        );
-    },
-    showTokenPriceChart(fromDate) {
-        TokenPriceChart.show(fromDate);
+    getChartCanvasElement() {
+        return Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
     },
     nodesState: {
         _disableRemove: false,
@@ -561,6 +543,15 @@ const Page = {
             return false;
         });
 
+        Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+            Page.onChartShowWhole();
+            return false;
+        });
+        Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+            Page.onChartShowMonth();
+            return false;
+        });
+
         // Add node validation >>>
 
         Page.showAddNodeValid(false);
@@ -663,5 +654,7 @@ const Page = {
     onBalanceWalletValidation() {},
     onAlterWalletValidation() {},
     onBuyTokensValidation() {},
-    onSellTokensValidation() {}
+    onSellTokensValidation() {},
+    onChartShowWhole() {},
+    onChartShowMonth() {}
 };
