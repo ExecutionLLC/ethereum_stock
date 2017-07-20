@@ -393,11 +393,11 @@ const Page = {
                 const name = Page.$id(Page.ELEMENT_ID.NODES.NAME).val();
                 const url = Page.$id(Page.ELEMENT_ID.NODES.URL).val();
                 const chainId = Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val();
-                const {id, node} = Page.onNodeAdd({name, url, chainId});
+                const {id, node, canRemoveNode} = Page.onNodeAdd({name, url, chainId});
                 Page.appendNode(id, node.name);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
                 Page.nodesState.toggleNodeAdding(false);
-                Page.nodesState.disableRemoveNode(!Nodes.canRemoveNode()); // TODO get 'can remove' from onNodeRemove
+                Page.nodesState.disableRemoveNode(!canRemoveNode);
             }
             catch (e) {
                 Page.showAddNodeError(e);
@@ -409,13 +409,13 @@ const Page = {
             Page.showNodeError();
             const curNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
             try {
-                const id = Page.onNodeRemove(curNodeId);
+                const {id, canRemoveNode} = Page.onNodeRemove(curNodeId);
                 Page.removeNode(curNodeId);
+                Page.nodesState.disableRemoveNode(!canRemoveNode);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
             } catch (e) {
                 Page.showNodeError(e);
             }
-            Page.nodesState.disableRemoveNode(!Nodes.canRemoveNode()); // TODO get 'can remove' from onNodeRemove
             return false;
         });
 

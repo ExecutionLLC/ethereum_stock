@@ -779,7 +779,8 @@ function onload() {
             web3.setProvider(new web3.providers.HttpProvider(url));
             return {
                 id: newNodeId,
-                node: newNode
+                node: newNode,
+                canRemoveNode: Nodes.canRemoveNode()
             };
         } else {
             throw 'Fail to add node';
@@ -789,7 +790,10 @@ function onload() {
     Page.onNodeRemove = (idToRemove) => {
         const {id, node} = Nodes.removeNode(idToRemove);
         web3.setProvider(new web3.providers.HttpProvider(node.url));
-        return id;
+        return {
+            id,
+            canRemoveNode: Nodes.canRemoveNode()
+        };
     };
 
     Page.onNodeChange = (id) => {
