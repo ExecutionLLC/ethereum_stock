@@ -640,11 +640,11 @@ const Page = {
             Page.sellTokensState.toggleValid(countValid, recipientValid);
         }
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', () => {
             showCurrentSellTokensValid();
         });
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', () => {
             showCurrentSellTokensValid();
         });
 
