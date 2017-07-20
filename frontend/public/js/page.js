@@ -53,7 +53,7 @@ const Page = {
             FILE: {
                 GROUP: 'add-wallet-file-group',
                 FILE: 'add-wallet-file',
-                PASWORD: 'add-wallet-file-password',
+                PASSWORD: 'add-wallet-file-password',
                 BUTTON: 'add-wallet-file-button',
                 ERROR: 'add-wallet-file-error'
             },
@@ -127,7 +127,7 @@ const Page = {
     showTokensHistory(walletId, res) {
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).css('visibility', res == null ? 'hidden' : 'visible');
 
-        const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
+        const $template = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
             const newId = $el[0].id + '-' + key;
@@ -151,7 +151,7 @@ const Page = {
         }
 
         const $rows = res && res.map((item, index) => {
-            const $el = $tmpl.clone().show();
+            const $el = $template.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
             const isBuy = walletId.toLowerCase() === item.to.toLowerCase();
@@ -218,7 +218,7 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.GROUP).toggleClass('has-error', !fileValid || !filePasswordValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).prop('disabled', !fileValid || !filePasswordValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).toggleClass('alert-danger', !fileValid);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).toggleClass('alert-danger', !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).toggleClass('alert-danger', !filePasswordValid);
     },
     showCurrentWallet(wallet) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
@@ -484,7 +484,7 @@ const Page = {
             Page.showAlterWalletPrivateKeyError();
             Page.showAlterWalletFileError();
             const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
+            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).val();
             try {
                 Page.onAlterWalletFileAsync(file, password)
                     .then((wallet) => {
