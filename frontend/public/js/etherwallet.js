@@ -269,9 +269,11 @@ const Ether = {
     getBalance(contract, walletId, callback) {
         let tokens;
         let tokenPrice;
+        let withdrawals;
         try {
             tokens = new BigNumber(contract.balanceOf(walletId)).toNumber();
             tokenPrice = new BigNumber(web3.fromWei(contract.tokenPrice(), 'ether')).toNumber();
+            withdrawals = new BigNumber(web3.fromWei(contract.pendingWithdrawals(walletId), 'ether')).toNumber();
         } catch (e) {
             callback(e);
             return;
@@ -286,7 +288,8 @@ const Ether = {
                     tokens,
                     tokenPrice,
                     eth,
-                    btc
+                    btc,
+                    withdrawals
                 });
             }
         });

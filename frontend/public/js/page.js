@@ -21,6 +21,7 @@ const Page = {
             TOKENS: 'balance-tokens',
             ETH: 'balance-eth',
             BTC: 'balance-btc',
+            WITHDRAWALS_ETH: 'balance-withdrawals-eth',
             WAIT: 'balance-wait',
             ERROR: 'balance-error'
         },
@@ -121,7 +122,7 @@ const Page = {
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
     },
-    showBalance(tokens, eth, btc) {
+    showBalance(tokens, eth, btc, withdrawals) {
 
         function strNull(s) {
             return s == null ? '...' : s;
@@ -131,6 +132,7 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.BALANCE.TOKENS).text(strNull(tokens));
         Page.$id(Page.ELEMENT_ID.BALANCE.ETH).text(strNull(eth));
         Page.$id(Page.ELEMENT_ID.BALANCE.BTC).text(strNull(btc));
+        Page.$id(Page.ELEMENT_ID.BALANCE.WITHDRAWALS_ETH).text(strNull(withdrawals));
     },
     showTokensHistory(walletId, res) {
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).css('visibility', res == null ? 'hidden' : 'visible');
@@ -437,7 +439,7 @@ const Page = {
 
             function handleResult({balance, tokens}) {
                 Page.showBalanceWait(false);
-                Page.showBalance(balance.tokens, balance.eth, balance.btc);
+                Page.showBalance(balance.tokens, balance.eth, balance.btc, balance.withdrawals);
                 Page.showTokensHistory(walletId, tokens);
             }
 
