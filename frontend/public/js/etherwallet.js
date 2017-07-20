@@ -421,7 +421,7 @@ const Ether = {
             }
         });
     },
-    buyTokens(wallet, contractAddress, value) {
+    buyTokens(wallet, contractAddress, value, onTransaction) {
         const provider = wallet.provider;
         const gasPricePromise = provider.getGasPrice();
         const transactionCountPromise = provider.getTransactionCount(wallet.address);
@@ -456,6 +456,7 @@ const Ether = {
 
             })
             .then((hash) => {
+                onTransaction(hash);
                 console.log(hash);
                 return provider.waitForTransaction(hash)
             })
@@ -740,14 +741,14 @@ function onload() {
         return Validator.tokenCount(count);
     };
 
-    Page.onBuyTokensAsync = (count) => {
+    Page.onBuyTokensAsync = (count, onTransaction) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
+        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr, onTransaction);
     };
 
     Page.onAddNodeValidation = (name, url, chainId) => {
