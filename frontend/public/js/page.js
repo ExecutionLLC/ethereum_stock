@@ -105,16 +105,6 @@ const Page = {
             .find(`[value="${value}"]`)
             .remove();
     },
-    disableRemoveNode(disable) {
-        Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).prop('disabled', disable);
-    },
-    disableSelectNode(disable) {
-        Page.$id(Page.ELEMENT_ID.NODES.NODE).prop('disabled', disable);
-    },
-    toggleAddNodeGroup(show) {
-        Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_GROUP).toggle(show);
-        Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).prop('disabled', show);
-    },
     showWalletValid(isValid) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WALLET_FORM_GROUP).toggleClass('has-error', !isValid);
         Page.$id(Page.ELEMENT_ID.BALANCE.CHECK_BUTTON).prop('disabled', !isValid);
@@ -347,9 +337,10 @@ const Page = {
         _showCurrentState() {
             const disableRemove = Page.nodesState._disableRemove;
             const nodeAdding = Page.nodesState._nodeAdding;
-            Page.disableRemoveNode(disableRemove || nodeAdding);
-            Page.toggleAddNodeGroup(nodeAdding);
-            Page.disableSelectNode(nodeAdding);
+            Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).prop('disabled', disableRemove || nodeAdding);
+            Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_GROUP).toggle(nodeAdding);
+            Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).prop('disabled', nodeAdding);
+            Page.$id(Page.ELEMENT_ID.NODES.NODE).prop('disabled', nodeAdding);
         },
         init() {
             Page.nodesState._showCurrentState();
