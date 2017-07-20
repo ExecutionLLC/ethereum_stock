@@ -495,7 +495,7 @@ const Page = {
                     });
             }
             catch (e) {
-                Page.showAlterWalletFileError(err);
+                Page.showAlterWalletFileError(e);
             }
             return false;
         });
