@@ -92,7 +92,7 @@ const Page = {
             Page.appendNode(id, name);
         });
         Page.selectNode(currentId);
-        Page.disableRemoveNode(!canRemove);
+        Page.nodesState.disableRemoveNode(!canRemove);
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.NODES.NODE)
@@ -341,9 +341,29 @@ const Page = {
     showTokenPriceChart(fromDate) {
         TokenPriceChart.show(fromDate);
     },
+    nodesState: {
+        _disableRemove: false,
+        _nodeAdding: false,
+        _showCurrentState() {
+            const disableRemove = Page.nodesState._disableRemove;
+            const nodeAdding = Page.nodesState._nodeAdding;
+            Page.disableRemoveNode(disableRemove || nodeAdding);
+            Page.toggleAddNodeGroup(nodeAdding);
+            Page.disableSelectNode(nodeAdding);
+        },
+        init() {
+            Page.nodesState._showCurrentState();
+        },
+        disableRemoveNode(disable) {
+            Page.nodesState._disableRemove = disable;
+            Page.nodesState._showCurrentState();
+        },
+        toggleNodeAdding(adding) {
+            Page.nodesState._nodeAdding = adding;
+            Page.nodesState._showCurrentState();
+        }
+    },
     init() {
-        Page.toggleAddNodeGroup(false);
-        Page.disableSelectNode(false);
         Page.showNodeError();
         Page.showAddNodeError();
         Page.showBalanceError();
@@ -360,20 +380,17 @@ const Page = {
 
         Page.buyTokensState.init();
         Page.sellTokensState.init();
+        Page.nodesState.init();
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
-            Page.toggleAddNodeGroup(true);
-            Page.disableRemoveNode(true);
-            Page.disableSelectNode(true);
+            Page.nodesState.toggleNodeAdding(true);
             Page.showNodeError();
             Page.showAddNodeError();
             return false;
         });
 
         Page.$id(Page.ELEMENT_ID.NODES.CANCEL).click(() => {
-            Page.toggleAddNodeGroup(false);
-            Page.disableRemoveNode(!Nodes.canRemoveNode());
-            Page.disableSelectNode(false);
+            Page.nodesState.toggleNodeAdding(false);
             Page.showNodeError();
             return false;
         });
@@ -388,9 +405,8 @@ const Page = {
                 const {id, node} = Page.onNodeAdd({name, url, chainId});
                 Page.appendNode(id, node.name);
                 Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
-                Page.toggleAddNodeGroup(false);
-                Page.disableRemoveNode(!Nodes.canRemoveNode());
-                Page.disableSelectNode(false);
+                Page.nodesState.toggleNodeAdding(false);
+                Page.nodesState.disableRemoveNode(!Nodes.canRemoveNode()); // TODO get 'can remove' from onNodeRemove
             }
             catch (e) {
                 Page.showAddNodeError(e);
@@ -408,7 +424,7 @@ const Page = {
             } catch (e) {
                 Page.showNodeError(e);
             }
-            Page.disableRemoveNode(!Nodes.canRemoveNode());
+            Page.nodesState.disableRemoveNode(!Nodes.canRemoveNode()); // TODO get 'can remove' from onNodeRemove
             return false;
         });
 
