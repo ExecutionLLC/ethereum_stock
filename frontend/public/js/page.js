@@ -316,13 +316,13 @@ const Page = {
             callback('No canvas element');
             return;
         }
-        Ether.getPriceHistoryData(
-            web3,
-            CONTRACT.ABI,
+        Ether.getPriceHistoryData(//Ether
+            web3,//web3
+            CONTRACT.ABI,//CONTRACT
             CONTRACT.ID,
             (err, res) => {
                 if (!err) {
-                    TokenPriceChart.createChart(ctx, res);
+                    TokenPriceChart.createChart(ctx, res);//TokenPriceChart
                 }
                 callback(err, res);
             }
