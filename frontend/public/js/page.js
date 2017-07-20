@@ -293,10 +293,10 @@ const Page = {
             Page.sellTokensState._showCurrentState();
         }
     },
-    showBuyTransaction(id, complete, fail) {
-        const $wait = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.TRANSACTION_WAIT);
-        const $complete = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.TRANSACTION_COMPLETE);
-        const $failed = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.TRANSACTION_FAILED);
+    showTransaction(ids, id, complete, fail) {
+        const $wait = Page.$id(ids.TRANSACTION_WAIT);
+        const $complete = Page.$id(ids.TRANSACTION_COMPLETE);
+        const $failed = Page.$id(ids.TRANSACTION_FAILED);
         $wait.hide();
         $complete.hide();
         $failed.hide();
@@ -311,6 +311,12 @@ const Page = {
         const templateText = $caption.data('template');
         const text = templateText.replace('%', id);
         $caption.text(text).show();
+    },
+    showBuyTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY, id, complete, fail);
+    },
+    showSellTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL, id, complete, fail);
     },
     initTokenPriceChart(callback) {
         const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
@@ -349,6 +355,7 @@ const Page = {
         Page.showBuyTokensError();
         Page.showSellTokensError();
         Page.showBuyTransaction();
+        Page.showSellTransaction();
         Page.updateNodes();
 
         Page.buyTokensState.init();
@@ -518,17 +525,26 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
             Page.showSellTokensError();
+            Page.showSellTransaction();
             Page.sellTokensState.toggleWait(true);
             const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
             const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
             try {
-                Page.onSellTokensAsync(count, walletId)
+                let transactionId;
+                function onTransactionId(id) {
+                    transactionId = id;
+                    Page.showSellTransaction(id, false);
+                }
+
+                Page.onSellTokensAsync(count, walletId, onTransactionId)
                     .then(() => {
                         Page.sellTokensState.toggleWait(false);
+                        Page.showSellTransaction(transactionId, true);
                     })
                     .catch((err) => {
                         Page.showSellTokensError(err);
                         Page.sellTokensState.toggleWait(false);
+                        Page.showSellTransaction(transactionId, true, true);
                     })
             }
             catch (e) {

@@ -796,7 +796,7 @@ function onload() {
         };
     };
 
-    Page.onSellTokensAsync = (count, walletId) => {
+    Page.onSellTokensAsync = (count, walletId, onTransaction) => {
         const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
         return new Promise((resolve, reject) => {
             contract.tokenPrice()
@@ -807,6 +807,7 @@ function onload() {
                         .then((gasCost) => {
                             contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
                                 .then((res) => {
+                                    onTransaction(res.hash);
                                     console.log(res);
                                     return res.hash;
                                 })
