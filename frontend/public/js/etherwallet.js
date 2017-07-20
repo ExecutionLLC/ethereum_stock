@@ -421,7 +421,7 @@ const Ether = {
             }
         });
     },
-    buyTokens(wallet, contractAddress, value) {
+    buyTokens(wallet, contractAddress, value, onTransaction) {
         const provider = wallet.provider;
         const gasPricePromise = provider.getGasPrice();
         const transactionCountPromise = provider.getTransactionCount(wallet.address);
@@ -456,6 +456,7 @@ const Ether = {
 
             })
             .then((hash) => {
+                onTransaction(hash);
                 console.log(hash);
                 return provider.waitForTransaction(hash)
             })
@@ -740,14 +741,14 @@ function onload() {
         return Validator.tokenCount(count);
     };
 
-    Page.onBuyTokensAsync = (count) => {
+    Page.onBuyTokensAsync = (count, onTransaction) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr);
+        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr, onTransaction);
     };
 
     Page.onAddNodeValidation = (name, url, chainId) => {
@@ -795,7 +796,7 @@ function onload() {
         };
     };
 
-    Page.onSellTokensAsync = (count, walletId) => {
+    Page.onSellTokensAsync = (count, walletId, onTransaction) => {
         const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
         return new Promise((resolve, reject) => {
             contract.tokenPrice()
@@ -806,6 +807,7 @@ function onload() {
                         .then((gasCost) => {
                             contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
                                 .then((res) => {
+                                    onTransaction(res.hash);
                                     console.log(res);
                                     return res.hash;
                                 })

@@ -64,7 +64,10 @@ const Page = {
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button',
                     WAIT: 'buy-tokens-wait',
-                    ERROR: 'buy-tokens-error'
+                    ERROR: 'buy-tokens-error',
+                    TRANSACTION_WAIT: 'buy-tokens-transaction-waiting',
+                    TRANSACTION_COMPLETE: 'buy-tokens-transaction-completed',
+                    TRANSACTION_FAILED: 'buy-tokens-transaction-failed'
                 },
                 SELL: {
                     GROUP: 'sell-tokens-group',
@@ -72,7 +75,10 @@ const Page = {
                     WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
                     WAIT: 'sell-tokens-wait',
-                    ERROR: 'sell-tokens-error'
+                    ERROR: 'sell-tokens-error',
+                    TRANSACTION_WAIT: 'sell-tokens-transaction-waiting',
+                    TRANSACTION_COMPLETE: 'sell-tokens-transaction-completed',
+                    TRANSACTION_FAILED: 'buy-tokens-transaction-failed'
                 }
             }
         }
@@ -237,7 +243,7 @@ const Page = {
             const isWaiting = Page.buyTokensState._isWaiting;
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).toggle(isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !isValid || isWaiting);
         },
         init() {
@@ -268,7 +274,7 @@ const Page = {
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', isWaiting);
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).toggle(isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !isCountValid || !isRecipientValid || isWaiting);
         },
         init() {
@@ -286,6 +292,31 @@ const Page = {
             Page.sellTokensState._isRecipientValid = isRecipientValid;
             Page.sellTokensState._showCurrentState();
         }
+    },
+    showTransaction(ids, id, complete, fail) {
+        const $wait = Page.$id(ids.TRANSACTION_WAIT);
+        const $complete = Page.$id(ids.TRANSACTION_COMPLETE);
+        const $failed = Page.$id(ids.TRANSACTION_FAILED);
+        $wait.hide();
+        $complete.hide();
+        $failed.hide();
+        if (id == null) {
+            return;
+        }
+        const $caption = complete ?
+            fail ?
+                $failed :
+                $complete :
+            $wait;
+        const templateText = $caption.data('template');
+        const text = templateText.replace('%', id);
+        $caption.text(text).show();
+    },
+    showBuyTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY, id, complete, fail);
+    },
+    showSellTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL, id, complete, fail);
     },
     initTokenPriceChart(callback) {
         const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
@@ -323,6 +354,8 @@ const Page = {
         Page.showAlterWalletFileError();
         Page.showBuyTokensError();
         Page.showSellTokensError();
+        Page.showBuyTransaction();
+        Page.showSellTransaction();
         Page.updateNodes();
 
         Page.buyTokensState.init();
@@ -462,16 +495,25 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
             Page.showBuyTokensError();
+            Page.showBuyTransaction();
             Page.buyTokensState.toggleWait(true);
             const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
             try {
-                Page.onBuyTokensAsync(count)
+                let transactionId;
+                function onTransactionId(id) {
+                    transactionId = id;
+                    Page.showBuyTransaction(id, false);
+                }
+
+                Page.onBuyTokensAsync(count, onTransactionId)
                     .then(() => {
                         Page.buyTokensState.toggleWait(false);
+                        Page.showBuyTransaction(transactionId, true);
                     })
                     .catch((err) => {
                         Page.showBuyTokensError(err);
                         Page.buyTokensState.toggleWait(false);
+                        Page.showBuyTransaction(transactionId, true, true);
                     })
             }
             catch (e) {
@@ -483,17 +525,26 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
             Page.showSellTokensError();
+            Page.showSellTransaction();
             Page.sellTokensState.toggleWait(true);
             const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
             const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
             try {
-                Page.onSellTokensAsync(count, walletId)
+                let transactionId;
+                function onTransactionId(id) {
+                    transactionId = id;
+                    Page.showSellTransaction(id, false);
+                }
+
+                Page.onSellTokensAsync(count, walletId, onTransactionId)
                     .then(() => {
                         Page.sellTokensState.toggleWait(false);
+                        Page.showSellTransaction(transactionId, true);
                     })
                     .catch((err) => {
                         Page.showSellTokensError(err);
                         Page.sellTokensState.toggleWait(false);
+                        Page.showSellTransaction(transactionId, true, true);
                     })
             }
             catch (e) {
