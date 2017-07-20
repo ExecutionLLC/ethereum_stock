@@ -199,31 +199,12 @@ TokenPriceChart = {
             data: {
                 datasets: [
                     {
-                        label: 'ETH',
-                        backgroundColor: 'transparent',
+                        label: 'Tokens',
                         borderColor: 'red',
                         lineTension: 0,
                         yAxisID: "y-axis-1",
-                        data: [],//data.eth,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ETH-dots',
-                        backgroundColor: 'transparent',
-                        borderColor: 'red',
-                        borderDash: [0, 1],
-                        lineTension: 0,
-                        yAxisID: "y-axis-1",
-                        data: [],//data.ethDots
-                    },
-                    {
-                        label: 'BTC',
-                        backgroundColor: 'transparent',
-                        borderColor: 'blue',
-                        lineTension: 0,
-                        yAxisID: "y-axis-2",
-                        data: [],//data.btc
-                    },
+                        data: []
+                    }
                 ]
             },
             options: {
@@ -238,15 +219,7 @@ TokenPriceChart = {
                         type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                         display: true,
                         position: "left",
-                        id: "y-axis-1",
-                    }, {
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "right",
-                        id: "y-axis-2",
-                        gridLines: {
-                            drawOnChartArea: false
-                        }
+                        id: "y-axis-1"
                     }]
                 },
                 responsive: false
@@ -254,13 +227,8 @@ TokenPriceChart = {
         });
     },
     show(fromDate) {
-        const newEth = XYData.setRange(TokenPriceChart.data.eth, fromDate, +new Date());
-        const newEthDots = XYData.setRange(TokenPriceChart.data.ethDots, fromDate, +new Date());
-        const newBtc = XYData.setRange(TokenPriceChart.data.btc, fromDate, +new Date());
-
-        TokenPriceChart.chart.data.datasets[0].data = newEth;
-        TokenPriceChart.chart.data.datasets[1].data = newEthDots;
-        TokenPriceChart.chart.data.datasets[2].data = newBtc;
+        const newData = XYData.setRange(TokenPriceChart.data, fromDate, +new Date());
+        TokenPriceChart.chart.data.datasets[0].data = newData;
         TokenPriceChart.chart.update();
     }
 };
@@ -392,6 +360,42 @@ const Ether = {
                     });
                 }, (error, result) => {
                     callback(error, result);
+                });
+            }
+        });
+    },
+    getBlockTimestamp(blockNumber, callback) {
+        web3.eth.getBlock(blockNumber, (error, block) => {
+            if (error) {
+                callback (error);
+            } else {
+                callback(null, block.timestamp);
+            }
+        });
+    },
+    getTokensHistory(callback) {
+        const web3contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const transferEvent = web3contract.Transfer({}, {fromBlock: 0, toBlock: 'latest'});
+        transferEvent.get((error, logs) => {
+            if (error) {
+                callback(error);
+            } else {
+                async.map(logs, (log, callback) => {
+                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
+                        const {args: {_from, _to, _value}} = log;
+                        callback(null, {
+                            x: timestamp * 1000,
+                            y: new BigNumber(_value).toNumber()
+                        });
+                    });
+                }, (err, res) => {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        callback(null, XYData.makeAccumulation(res))
+                    }
                 });
             }
         });
@@ -644,6 +648,16 @@ const XYData = {
             return 0;
         }
         return data[data.length - 1].x - data[0].x;
+    },
+    makeAccumulation(data) {
+        let accum = 0;
+        return data.map((xy) => {
+            accum += xy.y;
+            return {
+                x: xy.x,
+                y: accum
+            };
+        });
     }
 };
 
@@ -844,28 +858,24 @@ function onload() {
         });
     };
 
-    // const chartCtx = Page.getChartCanvasElement();
-    // if (chartCtx) {
-    //     console.log('No chart canvas element');
-    // } else {
-    //     Ether.getPriceHistoryData(
-    //         web3,
-    //         CONTRACT.ABI,
-    //         CONTRACT.ID,
-    //         (err, res) => {
-    //             if (!err) {
-    //                 TokenPriceChart.createChart(chartCtx, res);
-    //                 Page.onChartShowWhole = () => {
-    //                     TokenPriceChart.show(0);
-    //                 };
-    //                 Page.onChartShowMonth = () => {
-    //                     TokenPriceChart.show(+moment().subtract(7, 'day'));
-    //                 };
-    //                 TokenPriceChart.show(0);
-    //             }
-    //         }
-    //     );
-    // }
+    const chartCtx = Page.getChartCanvasElement();
+    if (!chartCtx) {
+        console.log('No chart canvas element');
+    } else {
+        Ether.getTokensHistory((err, data) => {
+            if (err) {
+                throw `Tokens history error, ${err}`;
+            }
+            TokenPriceChart.createChart(chartCtx, data);
+            Page.onChartShowWhole = () => {
+                TokenPriceChart.show(0);
+            };
+            Page.onChartShowMonth = () => {
+                TokenPriceChart.show(+moment().subtract(3, 'day'));
+            };
+            TokenPriceChart.show(0);
+        });
+    }
 }
 
 $(onload);
