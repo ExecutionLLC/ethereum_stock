@@ -53,7 +53,7 @@ const Page = {
             FILE: {
                 GROUP: 'add-wallet-file-group',
                 FILE: 'add-wallet-file',
-                PASWORD: 'add-wallet-file-password',
+                PASSWORD: 'add-wallet-file-password',
                 BUTTON: 'add-wallet-file-button',
                 ERROR: 'add-wallet-file-error'
             },
@@ -127,7 +127,7 @@ const Page = {
     showTokensHistory(walletId, res) {
         Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.CONTAINER).css('visibility', res == null ? 'hidden' : 'visible');
 
-        const $tmpl = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
+        const $template = Page.$id(Page.ELEMENT_ID.TOKENS_HISTORY.TEMPLATE);
 
         function addElementIdKey($el, key) {
             const newId = $el[0].id + '-' + key;
@@ -151,7 +151,7 @@ const Page = {
         }
 
         const $rows = res && res.map((item, index) => {
-            const $el = $tmpl.clone().show();
+            const $el = $template.clone().show();
             addElementIdKey($el, index);
             setElementIdContent($el, Page.ELEMENT_ID.TOKENS_HISTORY.OPERATION.TIME, index, moment(item.timestamp * 1000).format('DD.MM.YY HH:mm:ss'));
             const isBuy = walletId.toLowerCase() === item.to.toLowerCase();
@@ -218,7 +218,7 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.GROUP).toggleClass('has-error', !fileValid || !filePasswordValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.BUTTON).prop('disabled', !fileValid || !filePasswordValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).toggleClass('alert-danger', !fileValid);
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).toggleClass('alert-danger', !filePasswordValid);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).toggleClass('alert-danger', !filePasswordValid);
     },
     showCurrentWallet(wallet) {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
@@ -310,26 +310,8 @@ const Page = {
     showSellTransaction(id, complete, fail) {
         Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL, id, complete, fail);
     },
-    initTokenPriceChart(callback) {
-        const ctx = Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
-        if (!ctx) {
-            callback('No canvas element');
-            return;
-        }
-        Ether.getPriceHistoryData(
-            web3,
-            CONTRACT.ABI,
-            CONTRACT.ID,
-            (err, res) => {
-                if (!err) {
-                    TokenPriceChart.createChart(ctx, res);
-                }
-                callback(err, res);
-            }
-        );
-    },
-    showTokenPriceChart(fromDate) {
-        TokenPriceChart.show(fromDate);
+    getChartCanvasElement() {
+        return Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
     },
     nodesState: {
         _disableRemove: false,
@@ -484,7 +466,7 @@ const Page = {
             Page.showAlterWalletPrivateKeyError();
             Page.showAlterWalletFileError();
             const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
-            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASWORD).val();
+            const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).val();
             try {
                 Page.onAlterWalletFileAsync(file, password)
                     .then((wallet) => {
@@ -495,7 +477,7 @@ const Page = {
                     });
             }
             catch (e) {
-                Page.showAlterWalletFileError(err);
+                Page.showAlterWalletFileError(e);
             }
             return false;
         });
@@ -558,6 +540,15 @@ const Page = {
                 Page.showSellTokensError(e);
                 Page.sellTokensState.toggleWait(false);
             }
+            return false;
+        });
+
+        Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
+            Page.onChartShowWhole();
+            return false;
+        });
+        Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
+            Page.onChartShowMonth();
             return false;
         });
 
@@ -640,11 +631,11 @@ const Page = {
             Page.sellTokensState.toggleValid(countValid, recipientValid);
         }
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', (evt) => {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', () => {
             showCurrentSellTokensValid();
         });
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', (evt) => {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', () => {
             showCurrentSellTokensValid();
         });
 
@@ -663,5 +654,7 @@ const Page = {
     onBalanceWalletValidation() {},
     onAlterWalletValidation() {},
     onBuyTokensValidation() {},
-    onSellTokensValidation() {}
+    onSellTokensValidation() {},
+    onChartShowWhole() {},
+    onChartShowMonth() {}
 };
