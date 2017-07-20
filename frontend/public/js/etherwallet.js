@@ -676,6 +676,11 @@ const Validator = {
 function onload() {
     currentWallet = null;
     Page.init();
+    Page.setNodes(
+        Nodes.getNodesNames(),
+        Nodes.getCurrentNodeId(),
+        Nodes.canRemoveNode()
+    );
 
     Page.onBalanceWalletValidation = (walletId) => {
         return Validator.walletId(walletId);
@@ -774,7 +779,8 @@ function onload() {
             web3.setProvider(new web3.providers.HttpProvider(url));
             return {
                 id: newNodeId,
-                node: newNode
+                node: newNode,
+                canRemoveNode: Nodes.canRemoveNode()
             };
         } else {
             throw 'Fail to add node';
@@ -784,7 +790,10 @@ function onload() {
     Page.onNodeRemove = (idToRemove) => {
         const {id, node} = Nodes.removeNode(idToRemove);
         web3.setProvider(new web3.providers.HttpProvider(node.url));
-        return id;
+        return {
+            id,
+            canRemoveNode: Nodes.canRemoveNode()
+        };
     };
 
     Page.onNodeChange = (id) => {
@@ -835,21 +844,28 @@ function onload() {
         });
     };
 
-    // Page.initTokenPriceChart((err) => {
-    //     if (err) {
-    //         console.log('Init token chart error', err);
-    //     } else {
-    //         Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.WHOLE).click(() => {
-    //             Page.showTokenPriceChart(0);
-    //             return false;
-    //         });
-    //         Page.$id(Page.ELEMENT_ID.CHART.BUTTONS.MONTH).click(() => {
-    //             Page.showTokenPriceChart(+moment().subtract(7, 'day'));
-    //             return false;
-    //         });
-    //         Page.showTokenPriceChart(0);
-    //     }
-    // });
+    // const chartCtx = Page.getChartCanvasElement();
+    // if (chartCtx) {
+    //     console.log('No chart canvas element');
+    // } else {
+    //     Ether.getPriceHistoryData(
+    //         web3,
+    //         CONTRACT.ABI,
+    //         CONTRACT.ID,
+    //         (err, res) => {
+    //             if (!err) {
+    //                 TokenPriceChart.createChart(chartCtx, res);
+    //                 Page.onChartShowWhole = () => {
+    //                     TokenPriceChart.show(0);
+    //                 };
+    //                 Page.onChartShowMonth = () => {
+    //                     TokenPriceChart.show(+moment().subtract(7, 'day'));
+    //                 };
+    //                 TokenPriceChart.show(0);
+    //             }
+    //         }
+    //     );
+    // }
 }
 
 $(onload);
