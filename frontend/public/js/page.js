@@ -87,12 +87,12 @@ const Page = {
     $id(id) {
         return $(`#${id}`);
     },
-    updateNodes() {
-        const nodesNames = Nodes.getNodesNames();
+    setNodes(nodesNames, currentId, canRemove) {
         $.each(nodesNames, (i, {id, name}) => {
             Page.appendNode(id, name);
         });
-        Page.selectNode(Nodes.getCurrentNodeId());
+        Page.selectNode(currentId);
+        Page.disableRemoveNode(!canRemove);
     },
     appendNode(value, name) {
         Page.$id(Page.ELEMENT_ID.NODES.NODE)
@@ -343,7 +343,6 @@ const Page = {
     },
     init() {
         Page.toggleAddNodeGroup(false);
-        Page.disableRemoveNode(!Nodes.canRemoveNode());
         Page.disableSelectNode(false);
         Page.showNodeError();
         Page.showAddNodeError();
@@ -358,7 +357,6 @@ const Page = {
         Page.showSellTokensError();
         Page.showBuyTransaction();
         Page.showSellTransaction();
-        Page.updateNodes();
 
         Page.buyTokensState.init();
         Page.sellTokensState.init();

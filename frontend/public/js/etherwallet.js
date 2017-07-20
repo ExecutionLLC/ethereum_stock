@@ -676,6 +676,11 @@ const Validator = {
 function onload() {
     currentWallet = null;
     Page.init();
+    Page.setNodes(
+        Nodes.getNodesNames(),
+        Nodes.getCurrentNodeId(),
+        Nodes.canRemoveNode()
+    );
 
     Page.onBalanceWalletValidation = (walletId) => {
         return Validator.walletId(walletId);
