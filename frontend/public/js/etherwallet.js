@@ -331,6 +331,7 @@ const Ether = {
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         const transferEvent = web3contract.Transfer({}, {fromBlock: 0, toBlock: 'latest'});
+        const target = new BigNumber(web3contract.maxSupply()).valueOf();
         transferEvent.get((error, logs) => {
             if (error) {
                 callback(error);
@@ -382,7 +383,7 @@ const Ether = {
                         target: [
                             {
                                 x: xyAccum[0].x,
-                                y: 1000
+                                y: target
                             }
                         ]
                     });
