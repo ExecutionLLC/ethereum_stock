@@ -201,10 +201,10 @@ TokenPriceChart = {
                     {
                         label: 'Tokens',
                         borderColor: 'red',
+                        pointRadius: 0,
                         lineTension: 0,
                         yAxisID: 'y-axis-1',
-                        data: [], // data.tokens
-                        pointRadius: 0
+                        data: [] // data.tokens
                     },
                     {
                         label: 'Tokens-dots',
@@ -219,6 +219,7 @@ TokenPriceChart = {
                         label: 'Target',
                         backgroundColor: 'transparent',
                         borderColor: 'blue',
+                        pointRadius: 0,
                         lineTension: 0,
                         yAxisID: 'y-axis-1',
                         data: [] // data.target
@@ -247,8 +248,10 @@ TokenPriceChart = {
     show(fromDate) {
         const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date());
         const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date());
+        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date());
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
         TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
+        TokenPriceChart.chart.data.datasets[2].data = newTarget;
         TokenPriceChart.chart.update();
     }
 };
@@ -416,14 +419,43 @@ const Ether = {
                         callback(err);
                         return;
                     }
-                    const xy = tokens.map((l) => ({
-                        x: l.timestamp * 1000,
-                        y: l.tokens
-                    }));
+
+                    function transactionsToXY(transactions) {
+                        const transactionsForTimestamps = transactions.reduce(
+                            (parts, trx) => {
+                                const {transactionIndex, timestamp} = trx;
+                                const transactionsForTimestamp = parts[timestamp] || 0;
+                                const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                                if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
+                                    parts[timestamp] = atLeastTransactionsForTimestamp;
+                                }
+                                return parts;
+                            },
+                            {}
+                        );
+                        const lastTimestamp = Math.floor(+new Date() / 1000);
+                        const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+                        transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+                        return transactions.map(trx => ({
+                            x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                            y: trx.tokens
+                        }));
+                    }
+
+                    const xy = transactionsToXY(tokens);
+                    const xyAccum = XYData.makeAccumulation(xy);
+                    const xyRanged = XYData.setRange(xyAccum, 0, +new Date());
+                    const xyStepped = XYData.makeStepped(xyRanged);
+                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
                     callback(null, {
-                        tokens: XYData.makeAccumulation(xy),
-                        tokensDots: [],
-                        target: []
+                        tokens: xyStepped,
+                        tokensDots: steppedDataMarks,
+                        target: [
+                            {
+                                x: xyRanged[0].x,
+                                y: 1000
+                            }
+                        ]
                     });
                 });
             }
