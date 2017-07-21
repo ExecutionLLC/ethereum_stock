@@ -202,8 +202,26 @@ TokenPriceChart = {
                         label: 'Tokens',
                         borderColor: 'red',
                         lineTension: 0,
-                        yAxisID: "y-axis-1",
-                        data: []
+                        yAxisID: 'y-axis-1',
+                        data: [], // data.tokens
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'Tokens-dots',
+                        backgroundColor: 'transparent',
+                        borderColor: 'red',
+                        borderDash: [0, 1],
+                        lineTension: 0,
+                        yAxisID: 'y-axis-1',
+                        data: [] // data.tokensDots
+                    },
+                    {
+                        label: 'Target',
+                        backgroundColor: 'transparent',
+                        borderColor: 'blue',
+                        lineTension: 0,
+                        yAxisID: 'y-axis-1',
+                        data: [] // data.target
                     }
                 ]
             },
@@ -227,8 +245,10 @@ TokenPriceChart = {
         });
     },
     show(fromDate) {
-        const newData = XYData.setRange(TokenPriceChart.data, fromDate, +new Date());
-        TokenPriceChart.chart.data.datasets[0].data = newData;
+        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date());
+        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date());
+        TokenPriceChart.chart.data.datasets[0].data = newTokens;
+        TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
         TokenPriceChart.chart.update();
     }
 };
@@ -384,18 +404,27 @@ const Ether = {
             } else {
                 async.map(logs, (log, callback) => {
                     Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
-                        const {args: {_from, _to, _value}} = log;
+                        const {transactionIndex, args: {_value}} = log;
                         callback(null, {
-                            x: timestamp * 1000,
-                            y: new BigNumber(_value).toNumber()
+                            timestamp,
+                            transactionIndex,
+                            tokens: new BigNumber(_value).toNumber()
                         });
                     });
-                }, (err, res) => {
+                }, (err, tokens) => {
                     if (err) {
                         callback(err);
-                    } else {
-                        callback(null, XYData.makeAccumulation(res))
+                        return;
                     }
+                    const xy = tokens.map((l) => ({
+                        x: l.timestamp * 1000,
+                        y: l.tokens
+                    }));
+                    callback(null, {
+                        tokens: XYData.makeAccumulation(xy),
+                        tokensDots: [],
+                        target: []
+                    });
                 });
             }
         });
