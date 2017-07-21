@@ -238,7 +238,11 @@ TokenPriceChart = {
                         type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                         display: true,
                         position: "left",
-                        id: "y-axis-1"
+                        id: "y-axis-1",
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: data.target[0].y * 1.1
+                        }
                     }]
                 },
                 responsive: false
