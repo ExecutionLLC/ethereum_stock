@@ -255,9 +255,9 @@ TokenPriceChart = {
         });
     },
     show(fromDate) {
-        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date());
-        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date());
-        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date());
+        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
+        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
+        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
         TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
         TokenPriceChart.chart.data.datasets[2].data = newTarget;
@@ -565,7 +565,7 @@ const XYData = {
             []
         );
     },
-    setRange(data, min, max) {
+    setRange(data, min, max, addMax) {
 
         function findDataInterval(data, x, iMin, iMax) {
             if (iMin == null) {
@@ -617,12 +617,12 @@ const XYData = {
             }
         }
 
-        function rangeMax(data, max) {
+        function rangeMax(data, max, addMax) {
             const maxIndex = findDataInterval(data, max);
             if (maxIndex < 0) {
                 return [];
             } else {
-                if (data[maxIndex].x === max) {
+                if (data[maxIndex].x === max || !addMax) {
                     return data.slice(0, maxIndex + 1);
                 } else {
                     return data.slice(0, maxIndex + 1).concat([{x: max, y: data[maxIndex].y}]);
@@ -631,7 +631,7 @@ const XYData = {
         }
 
         const dataRangeMin = rangeMin(data, min);
-        return rangeMax(dataRangeMin, max);
+        return rangeMax(dataRangeMin, max, addMax);
     },
     getRange(data) {
         if (data.length < 2) {
