@@ -48,6 +48,7 @@ const Page = {
                 GROUP: 'add-wallet-private-key-group',
                 KEY: 'add-wallet-private-key',
                 BUTTON: 'add-wallet-private-key-button',
+                WAIT: 'add-wallet-private-key-wait',
                 ERROR: 'add-wallet-private-key-error'
             },
             FILE: {
@@ -55,6 +56,7 @@ const Page = {
                 FILE: 'add-wallet-file',
                 PASSWORD: 'add-wallet-file-password',
                 BUTTON: 'add-wallet-file-button',
+                WAIT: 'add-wallet-file-wait',
                 ERROR: 'add-wallet-file-error'
             },
             OPERATIONS: {
@@ -111,6 +113,12 @@ const Page = {
     },
     showBalanceWait(show) {
         Page.$id(Page.ELEMENT_ID.BALANCE.WAIT).toggle(show);
+    },
+    showAlterWalletPrivateKeyWait(isWaiting) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
+    },
+    showAlterWalletFileWait(isWaiting) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
     },
     showBalance(tokens, eth, btc, withdrawals) {
 
@@ -343,6 +351,8 @@ const Page = {
         Page.showBalance();
         Page.showTokensHistory();
         Page.showBalanceWait(false);
+        Page.showAlterWalletPrivateKeyWait(false);
+        Page.showAlterWalletFileWait(false);
         Page.showCurrentWallet();
         Page.showAlterWalletPrivateKeyError();
         Page.showAlterWalletFileError();
@@ -449,6 +459,7 @@ const Page = {
             Page.showCurrentWallet();
             Page.showAlterWalletPrivateKeyError();
             Page.showAlterWalletFileError();
+            Page.showAlterWalletPrivateKeyWait(true);
             const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
             const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
             try {
@@ -458,6 +469,7 @@ const Page = {
             catch (e) {
                 Page.showAlterWalletPrivateKeyError(e);
             }
+            Page.showAlterWalletPrivateKeyWait(false);
             return false;
         });
 
@@ -465,19 +477,23 @@ const Page = {
             Page.showCurrentWallet();
             Page.showAlterWalletPrivateKeyError();
             Page.showAlterWalletFileError();
+            Page.showAlterWalletFileWait(true);
             const file = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE)[0].files[0];
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).val();
             try {
                 Page.onAlterWalletFileAsync(file, password)
                     .then((wallet) => {
                         Page.showCurrentWallet(wallet);
+                        Page.showAlterWalletFileWait(false);
                     })
                     .catch((err) => {
                         Page.showAlterWalletFileError(err);
+                        Page.showAlterWalletFileWait(false);
                     });
             }
             catch (e) {
                 Page.showAlterWalletFileError(e);
+                Page.showAlterWalletFileWait(false);
             }
             return false;
         });
