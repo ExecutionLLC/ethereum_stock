@@ -278,7 +278,7 @@ const Ether = {
             callback(e);
             return;
         }
-        API.getBtcFromEtH((error, result) => {
+        API.getBtcFromEth((error, result) => {
             if (error) {
                 callback(error);
             } else {
@@ -463,7 +463,7 @@ const Ether = {
 };
 
 const API = {
-    getBtcFromEtH(callback) {
+    getBtcFromEth(callback) {
         $.get('https://min-api.cryptocompare.com/data/price', {fsym: 'ETH', tsyms: 'BTC'})
             .done(function (data) {
                 callback(null, data);
