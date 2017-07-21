@@ -448,15 +448,14 @@ const Ether = {
 
                     const xy = transactionsToXY(tokens);
                     const xyAccum = XYData.makeAccumulation(xy);
-                    const xyRanged = XYData.setRange(xyAccum, 0, +new Date());
-                    const xyStepped = XYData.makeStepped(xyRanged);
+                    const xyStepped = XYData.makeStepped(xyAccum);
                     const steppedDataMarks = XYData.makeLastInX(xyStepped);
                     callback(null, {
                         tokens: xyStepped,
                         tokensDots: steppedDataMarks,
                         target: [
                             {
-                                x: xyRanged[0].x,
+                                x: xyAccum[0].x,
                                 y: 1000
                             }
                         ]
