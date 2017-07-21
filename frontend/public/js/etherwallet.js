@@ -263,7 +263,7 @@ const Ether = {
         });
 
     },
-    _getData(web3, abiArray, address, callback) {
+    _getData(web3, abiArray, address, callback) { // TODO remove
         const MyContract = web3.eth.contract(abiArray);
         const myContractInstance = MyContract.at(address);
         const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest'});
@@ -286,7 +286,7 @@ const Ether = {
             }
         });
     },
-    getPriceHistoryData(web3, abiArray, address, callback) {
+    getPriceHistoryData(web3, abiArray, address, callback) { // TODO remove
 
         function transactionsToXY(transactions) {
             const transactionsForTimestamps = transactions.reduce(
