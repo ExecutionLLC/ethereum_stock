@@ -199,31 +199,31 @@ TokenPriceChart = {
             data: {
                 datasets: [
                     {
-                        label: 'ETH',
-                        backgroundColor: 'transparent',
+                        label: 'Tokens',
                         borderColor: 'red',
+                        pointRadius: 0,
                         lineTension: 0,
-                        yAxisID: "y-axis-1",
-                        data: [],//data.eth,
-                        pointRadius: 0
+                        yAxisID: 'y-axis-1',
+                        data: [] // data.tokens
                     },
                     {
-                        label: 'ETH-dots',
+                        label: 'Tokens-dots',
                         backgroundColor: 'transparent',
                         borderColor: 'red',
                         borderDash: [0, 1],
                         lineTension: 0,
-                        yAxisID: "y-axis-1",
-                        data: [],//data.ethDots
+                        yAxisID: 'y-axis-1',
+                        data: [] // data.tokensDots
                     },
                     {
-                        label: 'BTC',
+                        label: 'Target',
                         backgroundColor: 'transparent',
                         borderColor: 'blue',
+                        pointRadius: 0,
                         lineTension: 0,
-                        yAxisID: "y-axis-2",
-                        data: [],//data.btc
-                    },
+                        yAxisID: 'y-axis-1',
+                        data: [] // data.target
+                    }
                 ]
             },
             options: {
@@ -239,28 +239,28 @@ TokenPriceChart = {
                         display: true,
                         position: "left",
                         id: "y-axis-1",
-                    }, {
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "right",
-                        id: "y-axis-2",
-                        gridLines: {
-                            drawOnChartArea: false
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: data.target[0].y * 1.1
                         }
                     }]
+                },
+                legend: {
+                    labels: {
+                        filter: (item) => item.datasetIndex !== 1
+                    }
                 },
                 responsive: false
             }
         });
     },
     show(fromDate) {
-        const newEth = XYData.setRange(TokenPriceChart.data.eth, fromDate, +new Date());
-        const newEthDots = XYData.setRange(TokenPriceChart.data.ethDots, fromDate, +new Date());
-        const newBtc = XYData.setRange(TokenPriceChart.data.btc, fromDate, +new Date());
-
-        TokenPriceChart.chart.data.datasets[0].data = newEth;
-        TokenPriceChart.chart.data.datasets[1].data = newEthDots;
-        TokenPriceChart.chart.data.datasets[2].data = newBtc;
+        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
+        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
+        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
+        TokenPriceChart.chart.data.datasets[0].data = newTokens;
+        TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
+        TokenPriceChart.chart.data.datasets[2].data = newTarget;
         TokenPriceChart.chart.update();
     }
 };
@@ -278,7 +278,7 @@ const Ether = {
             callback(e);
             return;
         }
-        API.getBtcFromEtH((error, result) => {
+        API.getBtcFromEth((error, result) => {
             if (error) {
                 callback(error);
             } else {
@@ -294,85 +294,6 @@ const Ether = {
             }
         });
 
-    },
-    _getData(web3, abiArray, address, callback) {
-        const MyContract = web3.eth.contract(abiArray);
-        const myContractInstance = MyContract.at(address);
-        const myEvent = myContractInstance.priceChanged({}, {fromBlock: 0, toBlock: 'latest'});
-        myEvent.get((error, logs) => {
-            if (error) {
-                callback(error);
-            } else {
-                async.map(logs, (log, callback) => {
-                    web3.eth.getBlock(log.blockNumber, (error, block) => {
-                        const {transactionIndex, args: {_newPrice}} = log;
-                        const ethPrice = new BigNumber(web3.fromWei(_newPrice, 'ether')).toNumber();
-                        const {timestamp} = block;
-                        callback(null, {
-                            timestamp,
-                            transactionIndex,
-                            price: ethPrice
-                        });
-                    });
-                }, callback);
-            }
-        });
-    },
-    getPriceHistoryData(web3, abiArray, address, callback) {
-
-        function transactionsToXY(transactions) {
-            const transactionsForTimestamps = transactions.reduce(
-                (parts, trx) => {
-                    const {transactionIndex, timestamp} = trx;
-                    const transactionsForTimestamp = parts[timestamp] || 0;
-                    const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                    if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
-                        parts[timestamp] = atLeastTransactionsForTimestamp;
-                    }
-                    return parts;
-                },
-                {}
-            );
-            const lastTimestamp = Math.floor(+new Date() / 1000);
-            const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
-            transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-            return transactions.map(trx => ({
-                x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
-                y: trx.price
-            }));
-        }
-
-        try {
-            Ether._getData(
-                web3,
-                abiArray,
-                address,
-                (err, res) => {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-                    const transactionsXY = transactionsToXY(res);
-                    const data = XYData.setRange(transactionsXY, 0, +new Date());
-                    const steppedData = XYData.makeStepped(data);
-                    const steppedDataMarks = XYData.makeLastInX(steppedData);
-                    const dataRange = XYData.getRange(steppedData);
-                    const BTCCurrencyInterval = 1000 * 60 * 60 * 6;
-                    const currencyIntervalsCountEstimate = dataRange / BTCCurrencyInterval;
-                    const steppedDataWIntermediate = currencyIntervalsCountEstimate > 1000 ? steppedData : XYData.addIntermediatePoints(steppedData, BTCCurrencyInterval);
-                    API.getBtcFromEthHistoryArray(steppedDataWIntermediate.map(xy => xy.x), (err, btc) => {
-                        const dataBtc = steppedDataWIntermediate.map((d, i) => ({
-                            x: d.x,
-                            y: d.y * btc[i].ETH.BTC
-                        }));
-                        callback(null, {eth: steppedData, ethDots: steppedDataMarks, btc: dataBtc});
-                    });
-                }
-            );
-        }
-        catch (e) {
-            callback(e);
-        }
     },
     getHistoryData(event, count, callback) {
         event.get((error, logs) => {
@@ -392,6 +313,80 @@ const Ether = {
                     });
                 }, (error, result) => {
                     callback(error, result);
+                });
+            }
+        });
+    },
+    getBlockTimestamp(blockNumber, callback) {
+        web3.eth.getBlock(blockNumber, (error, block) => {
+            if (error) {
+                callback (error);
+            } else {
+                callback(null, block.timestamp);
+            }
+        });
+    },
+    getTokensHistory(callback) {
+        const web3contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const transferEvent = web3contract.Transfer({}, {fromBlock: 0, toBlock: 'latest'});
+        const target = new BigNumber(web3contract.maxSupply()).valueOf();
+        transferEvent.get((error, logs) => {
+            if (error) {
+                callback(error);
+            } else {
+                async.map(logs, (log, callback) => {
+                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
+                        const {transactionIndex, args: {_value}} = log;
+                        callback(null, {
+                            timestamp,
+                            transactionIndex,
+                            tokens: new BigNumber(_value).toNumber()
+                        });
+                    });
+                }, (err, tokens) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+
+                    function transactionsToXY(transactions) {
+                        const transactionsForTimestamps = transactions.reduce(
+                            (parts, trx) => {
+                                const {transactionIndex, timestamp} = trx;
+                                const transactionsForTimestamp = parts[timestamp] || 0;
+                                const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                                if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
+                                    parts[timestamp] = atLeastTransactionsForTimestamp;
+                                }
+                                return parts;
+                            },
+                            {}
+                        );
+                        const lastTimestamp = Math.floor(+new Date() / 1000);
+                        const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+                        transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+                        return transactions.map(trx => ({
+                            x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                            y: trx.tokens
+                        }));
+                    }
+
+                    const xy = transactionsToXY(tokens);
+                    const xyAccum = XYData.makeAccumulation(xy);
+                    const xyStepped = XYData.makeStepped(xyAccum);
+                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
+                    callback(null, {
+                        tokens: xyStepped,
+                        tokensDots: steppedDataMarks,
+                        target: [
+                            {
+                                x: xyAccum[0].x,
+                                y: target
+                            }
+                        ]
+                    });
                 });
             }
         });
@@ -469,7 +464,7 @@ const Ether = {
 };
 
 const API = {
-    getBtcFromEtH(callback) {
+    getBtcFromEth(callback) {
         $.get('https://min-api.cryptocompare.com/data/price', {fsym: 'ETH', tsyms: 'BTC'})
             .done(function (data) {
                 callback(null, data);
@@ -571,7 +566,7 @@ const XYData = {
             []
         );
     },
-    setRange(data, min, max) {
+    setRange(data, min, max, addMax) {
 
         function findDataInterval(data, x, iMin, iMax) {
             if (iMin == null) {
@@ -623,12 +618,12 @@ const XYData = {
             }
         }
 
-        function rangeMax(data, max) {
+        function rangeMax(data, max, addMax) {
             const maxIndex = findDataInterval(data, max);
             if (maxIndex < 0) {
                 return [];
             } else {
-                if (data[maxIndex].x === max) {
+                if (data[maxIndex].x === max || !addMax) {
                     return data.slice(0, maxIndex + 1);
                 } else {
                     return data.slice(0, maxIndex + 1).concat([{x: max, y: data[maxIndex].y}]);
@@ -637,13 +632,23 @@ const XYData = {
         }
 
         const dataRangeMin = rangeMin(data, min);
-        return rangeMax(dataRangeMin, max);
+        return rangeMax(dataRangeMin, max, addMax);
     },
     getRange(data) {
         if (data.length < 2) {
             return 0;
         }
         return data[data.length - 1].x - data[0].x;
+    },
+    makeAccumulation(data) {
+        let accum = 0;
+        return data.map((xy) => {
+            accum += xy.y;
+            return {
+                x: xy.x,
+                y: accum
+            };
+        });
     }
 };
 
@@ -844,28 +849,24 @@ function onload() {
         });
     };
 
-    // const chartCtx = Page.getChartCanvasElement();
-    // if (chartCtx) {
-    //     console.log('No chart canvas element');
-    // } else {
-    //     Ether.getPriceHistoryData(
-    //         web3,
-    //         CONTRACT.ABI,
-    //         CONTRACT.ID,
-    //         (err, res) => {
-    //             if (!err) {
-    //                 TokenPriceChart.createChart(chartCtx, res);
-    //                 Page.onChartShowWhole = () => {
-    //                     TokenPriceChart.show(0);
-    //                 };
-    //                 Page.onChartShowMonth = () => {
-    //                     TokenPriceChart.show(+moment().subtract(7, 'day'));
-    //                 };
-    //                 TokenPriceChart.show(0);
-    //             }
-    //         }
-    //     );
-    // }
+    const chartCtx = Page.getChartCanvasElement();
+    if (!chartCtx) {
+        console.log('No chart canvas element');
+    } else {
+        Ether.getTokensHistory((err, data) => {
+            if (err) {
+                throw `Tokens history error, ${err}`;
+            }
+            TokenPriceChart.createChart(chartCtx, data);
+            Page.onChartShowWhole = () => {
+                TokenPriceChart.show(0);
+            };
+            Page.onChartShowMonth = () => {
+                TokenPriceChart.show(+moment().subtract(3, 'day'));
+            };
+            TokenPriceChart.show(0);
+        });
+    }
 }
 
 $(onload);
