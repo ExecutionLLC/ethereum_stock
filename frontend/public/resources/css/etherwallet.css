@@ -6751,3 +6751,8 @@ body a.anchor:before {
 body.hide-header a.anchor {
   top: -70px;
 }
+.tab-content {
+  border: #ddd 1px solid;
+  border-top: none;
+  padding-top: 15px;
+}
