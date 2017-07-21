@@ -245,6 +245,11 @@ TokenPriceChart = {
                         }
                     }]
                 },
+                legend: {
+                    labels: {
+                        filter: (item) => item.datasetIndex !== 1
+                    }
+                },
                 responsive: false
             }
         });
