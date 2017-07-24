@@ -237,14 +237,13 @@ const Page = {
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.FILE).toggleClass('alert-danger', !fileValid);
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).toggleClass('alert-danger', !filePasswordValid);
     },
-    showCurrentWallet(wallet) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!wallet);
-        if (!wallet) {
+    showCurrentWallet(walletInfo) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.CONTAINER).toggle(!!walletInfo);
+        if (!walletInfo) {
             return;
         }
+        const {wallet, info} = walletInfo;
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
-    },
-    showAlterWalletInfo(info) {
         const INFO_IDS = Page.ELEMENT_ID.ALTER_WALLET.INFO;
         Page.$id(INFO_IDS.BALANCE).text(info.balance);
         Page.$id(INFO_IDS.WITHDRAWALS).text(info.withdrawals);
@@ -487,9 +486,8 @@ const Page = {
             const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
             try {
                 Page.onAlterWalletPrivateKeyAsync(privateKey0x)
-                    .then(({wallet, info}) => {
-                        Page.showCurrentWallet(wallet);
-                        Page.showAlterWalletInfo(info);
+                    .then((walletInfo) => {
+                        Page.showCurrentWallet(walletInfo);
                         Page.showAlterWalletPrivateKeyWait(false);
                     })
                     .catch((err) => {
@@ -513,9 +511,8 @@ const Page = {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).val();
             try {
                 Page.onAlterWalletFileAsync(file, password)
-                    .then(({wallet, info}) => {
-                        Page.showCurrentWallet(wallet);
-                        Page.showAlterWalletInfo(info);
+                    .then((walletInfo) => {
+                        Page.showCurrentWallet(walletInfo);
                         Page.showAlterWalletFileWait(false);
                     })
                     .catch((err) => {
