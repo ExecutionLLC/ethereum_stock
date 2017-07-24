@@ -83,6 +83,13 @@ const Page = {
                     TRANSACTION_COMPLETE: 'sell-tokens-transaction-completed',
                     TRANSACTION_FAILED: 'buy-tokens-transaction-failed'
                 }
+            },
+            INFO: {
+                BALANCE: 'alter-wallet-balance',
+                WITHDRAWALS: 'alter-wallet-withdrawals',
+                PRICE: 'alter-wallet-token-price',
+                CAN_BE_BOUGHT: 'alter-wallet-tokens-can-be-bought',
+                TOKENS_LEFT: 'alter-wallet-tokens-left'
             }
         }
     },
