@@ -903,7 +903,9 @@ function onload() {
     if (!chartCtx) {
         console.log('No chart canvas element');
     } else {
+        const wc = createChartWaiting(chartCtx);
         Ether.getTokensHistory((err, data) => {
+            wc.destroy();
             if (err) {
                 throw `Tokens history error, ${err}`;
             }
