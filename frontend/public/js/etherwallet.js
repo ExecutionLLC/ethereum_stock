@@ -473,13 +473,15 @@ const Ether = {
             const tokenPrice = web3contract.tokenPrice();
             const canBeBought = balance.div(tokenPrice).floor();
             const tokensLeft = new BigNumber(goal).sub(bought);
+            const walletTokens = web3contract.balanceOf(walletId);
             return {
                 balance: web3.fromWei(balance, 'ether'),
                 withdrawals: web3.fromWei(web3contract.pendingWithdrawals(walletId), 'ether'),
                 price: web3.fromWei(tokenPrice, 'ether'),
                 canBeBought: canBeBought,
                 tokensLeft: tokensLeft,
-                tokensAvailable: BigNumber.min(canBeBought, tokensLeft)
+                tokensAvailable: BigNumber.min(canBeBought, tokensLeft),
+                walletTokens
             };
         });
     }

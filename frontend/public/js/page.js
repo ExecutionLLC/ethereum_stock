@@ -91,7 +91,8 @@ const Page = {
                 WITHDRAWALS: 'alter-wallet-withdrawals',
                 PRICE: 'alter-wallet-token-price',
                 CAN_BE_BOUGHT: 'alter-wallet-tokens-can-be-bought',
-                TOKENS_LEFT: 'alter-wallet-tokens-left'
+                TOKENS_LEFT: 'alter-wallet-tokens-left',
+                WALLET_TOKENS: 'alter-wallet-tokens'
             }
         }
     },
@@ -250,6 +251,7 @@ const Page = {
         Page.$id(INFO_IDS.PRICE).text(info.price);
         Page.$id(INFO_IDS.CAN_BE_BOUGHT).text(info.canBeBought);
         Page.$id(INFO_IDS.TOKENS_LEFT).text(info.tokensLeft);
+        Page.$id(INFO_IDS.WALLET_TOKENS).text(info.walletTokens);
     },
     buyTokensState: {
         _isValid: false,
