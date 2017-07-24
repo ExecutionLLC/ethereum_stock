@@ -872,49 +872,37 @@ function onload() {
 
     Page.onSellTokensAsync = (count, walletId, onTransaction) => {
         const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet.wallet);
-        return new Promise((resolve, reject) => {
-            contract.tokenPrice()
-                .then((tokenPrice) => {
-                    const wei = new BigNumber(tokenPrice[0]).times(count);
-                    const weiStr = `0x${wei.toString(16)}`;
-                    contract.estimate.buyFor(walletId, {value: weiStr})
-                        .then((gasCost) => {
-                            contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
-                                .then((res) => {
-                                    onTransaction(res.hash);
-                                    console.log(res);
-                                    return res.hash;
-                                })
-                                .then((transactionHash) => {
-                                    currentWallet.wallet.provider.once(transactionHash, (transaction) => {
-                                        console.log('Transaction sell Minded: ' + transaction.hash);
-                                        console.log(transaction);
-                                        Ether.getWalletInfoAsync(currentWallet.wallet)
-                                            .then((info) => {
-                                                currentWallet = {
-                                                    wallet: currentWallet.wallet,
-                                                    info
-                                                };
-                                                Page.showCurrentWallet(currentWallet);
-                                                resolve();
-                                            })
-                                            .catch((err) => {
-                                                reject(err);
-                                            });
-                                    });
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
-                    reject(err);
+        return contract.tokenPrice()
+            .then((tokenPrice) => {
+                const wei = new BigNumber(tokenPrice[0]).times(count);
+                const weiStr = `0x${wei.toString(16)}`;
+                return contract.estimate.buyFor(walletId, {value: weiStr})
+                    .then((gasCost) => ({gasCost, weiStr}));
+            })
+            .then(({gasCost, weiStr}) => {
+                return contract.buyFor(walletId, {value: weiStr, gasLimit: gasCost})
+            })
+            .then((buyTransaction) => {
+                const {hash} = buyTransaction;
+                onTransaction(hash);
+                return new Promise((resolve) => {
+                    currentWallet.wallet.provider.once(hash, (transaction) => {
+                        console.log('Transaction sell Minded: ' + transaction.hash);
+                        console.log(transaction);
+                        resolve();
+                    });
                 });
-        });
+            })
+            .then(() => {
+                return Ether.getWalletInfoAsync(currentWallet.wallet);
+            })
+            .then((info) => {
+                currentWallet = {
+                    wallet: currentWallet.wallet,
+                    info
+                };
+                Page.showCurrentWallet(currentWallet);
+            });
     };
 
     const chartCtx = Page.getChartCanvasElement();
