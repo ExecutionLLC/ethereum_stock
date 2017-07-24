@@ -474,11 +474,11 @@ const Ether = {
             const canBeBought = balance.div(tokenPrice).floor();
             const tokensLeft = new BigNumber(goal).sub(bought);
             return {
-                balance: web3.fromWei(balance, 'ether').toString(),
-                withdrawals: web3.fromWei(web3contract.pendingWithdrawals(walletId), 'ether').toString(),
-                price: web3.fromWei(tokenPrice, 'ether').toString(),
-                canBeBought: canBeBought.toString(),
-                tokensLeft: tokensLeft.toString(),
+                balance: web3.fromWei(balance, 'ether'),
+                withdrawals: web3.fromWei(web3contract.pendingWithdrawals(walletId), 'ether'),
+                price: web3.fromWei(tokenPrice, 'ether'),
+                canBeBought: canBeBought,
+                tokensLeft: tokensLeft,
                 tokensAvailable: BigNumber.min(canBeBought, tokensLeft)
             };
         });
@@ -791,7 +791,7 @@ function onload() {
             Page.showBuyTokensPrice(0);
             return false;
         }
-        Page.showBuyTokensPrice(+currentWallet.info.price * count);
+        Page.showBuyTokensPrice(currentWallet.info.price.mul(count).toString());
         return !currentWallet.info.tokensAvailable.lessThan(count);
     };
 
@@ -853,7 +853,7 @@ function onload() {
             countValid = false;
             Page.showSellTokensPrice(0);
         } else {
-            Page.showSellTokensPrice(+currentWallet.info.price * count);
+            Page.showSellTokensPrice(currentWallet.info.price.mul(count));
             countValid = !currentWallet.info.tokensAvailable.lessThan(count);
         }
         return {
