@@ -460,6 +460,9 @@ const Ether = {
             })
             .then((transaction) => console.log("The transaction was mined: Block " + transaction.hash));
 
+    },
+    getWalletInfo(wallet) {
+        return {};
     }
 };
 
@@ -724,8 +727,11 @@ function onload() {
         const Wallet = ethers.Wallet;
         const currentNode = Nodes.getCurrentNode();
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-        currentWallet = wallet;
-        return wallet;
+        currentWallet = {
+            wallet,
+            info: Ether.getWalletInfo(wallet)
+        };
+        return currentWallet;
     };
 
     Page.onAlterWalletFileAsync = (file, password) => {
@@ -740,8 +746,11 @@ function onload() {
                     .then((wallet) => {
                         const currentNode = Nodes.getCurrentNode();
                         wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                        currentWallet = wallet;
-                        resolve(wallet);
+                        currentWallet = {
+                            wallet,
+                            info: Ether.getWalletInfo(wallet)
+                        };
+                        resolve(currentWallet);
                     })
                     .catch((err) => {
                         reject(err);
@@ -761,7 +770,7 @@ function onload() {
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr, onTransaction);
+        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, onTransaction);
     };
 
     Page.onAddNodeValidation = (name, url, chainId) => {
@@ -814,7 +823,7 @@ function onload() {
     };
 
     Page.onSellTokensAsync = (count, walletId, onTransaction) => {
-        const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
+        const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet.wallet);
         return new Promise((resolve, reject) => {
             contract.tokenPrice()
                 .then((tokenPrice) => {
@@ -829,7 +838,7 @@ function onload() {
                                     return res.hash;
                                 })
                                 .then((transactionHash) => {
-                                    currentWallet.provider.once(transactionHash, (transaction) => {
+                                    currentWallet.wallet.provider.once(transactionHash, (transaction) => {
                                         console.log('Transaction sell Minded: ' + transaction.hash);
                                         console.log(transaction);
                                         resolve();

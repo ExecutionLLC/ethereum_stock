@@ -242,6 +242,14 @@ const Page = {
         }
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
     },
+    showAlterWalletInfo(info) {
+        const INFO_IDS = Page.ELEMENT_ID.ALTER_WALLET.INFO;
+        Page.$id(INFO_IDS.BALANCE).text(info.balance);
+        Page.$id(INFO_IDS.WITHDRAWALS).text(info.withdrawals);
+        Page.$id(INFO_IDS.PRICE).text(info.price);
+        Page.$id(INFO_IDS.CAN_BE_BOUGHT).text(info.canBeBought);
+        Page.$id(INFO_IDS.TOKENS_LEFT).text(info.tokensLeft);
+    },
     buyTokensState: {
         _isValid: false,
         _isWaiting: false,
@@ -470,8 +478,9 @@ const Page = {
             const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
             const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
             try {
-                const wallet = Page.onAlterWalletPrivateKey(privateKey0x);
+                const {wallet, info} = Page.onAlterWalletPrivateKey(privateKey0x);
                 Page.showCurrentWallet(wallet);
+                Page.showAlterWalletInfo(info);
             }
             catch (e) {
                 Page.showAlterWalletPrivateKeyError(e);
@@ -489,8 +498,9 @@ const Page = {
             const password = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.FILE.PASSWORD).val();
             try {
                 Page.onAlterWalletFileAsync(file, password)
-                    .then((wallet) => {
+                    .then(({wallet, info}) => {
                         Page.showCurrentWallet(wallet);
+                        Page.showAlterWalletInfo(info);
                         Page.showAlterWalletFileWait(false);
                     })
                     .catch((err) => {
