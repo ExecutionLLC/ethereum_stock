@@ -332,10 +332,11 @@ const Ether = {
             .at(CONTRACT.ID);
         const transferEvent = web3contract.Transfer({}, {fromBlock: 0, toBlock: 'latest'});
         const target = new BigNumber(web3contract.maxSupply()).valueOf();
-        transferEvent.get((error, logs) => {
+        transferEvent.get((error, allLogs) => {
             if (error) {
                 callback(error);
             } else {
+                const logs = allLogs.filter(l => l.args._from === '0x0000000000000000000000000000000000000000');
                 async.map(logs, (log, callback) => {
                     Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
                         const {transactionIndex, args: {_value}} = log;
