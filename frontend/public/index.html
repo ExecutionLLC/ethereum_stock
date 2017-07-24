@@ -218,10 +218,31 @@
                             <div class="form-group">
                                 <label class="control-label">Операции с кошельком <span id="wallet-address"></span></label>
                             </div>
+                            <div class="form-group">
+                                <div>
+                                    Баланс: <span id="alter-wallet-balance"></span> ETH
+                                </div>
+                                <div>
+                                    Сдача: <span id="alter-wallet-withdrawals"></span> ETH
+                                </div>
+                                <div>
+                                    Цена токена: <span id="alter-wallet-token-price"></span> ETH
+                                </div>
+                                <div>
+                                    Хватит на: <span id="alter-wallet-tokens-can-be-bought"></span>
+                                </div>
+                                <div>
+                                    Токенов осталось: <span id="alter-wallet-tokens-left"></span>
+                                </div>
+                                <div>
+                                    Токенов куплено для кошелька: <span id="alter-wallet-tokens"></span>
+                                </div>
+                            </div>
                             <div id="buy-tokens-group" class="form-group form-inline">
                                 <label class="control-label">Купить</label>
                                 <input id="buy-tokens-count" class="form-control"/>
                                 <button id="buy-tokens-button" class="btn btn-default">Купить</button>
+                                (<span id="buy-tokens-price"></span> ETH)
                                 <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
                                 <span id="buy-tokens-transaction-waiting" data-template="Выполняется транзакция %..."></span>
                                 <span id="buy-tokens-transaction-completed" data-template="Транзакция % завершена."></span>
@@ -234,6 +255,7 @@
                                 <label class="control-label">в кол-ве</label>
                                 <input id="sell-tokens-count" class="form-control"/>
                                 <button id="sell-tokens-button" class="btn btn-default">Купить</button>
+                                (<span id="sell-tokens-price"></span> ETH)
                                 <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
                                 <span id="sell-tokens-transaction-waiting" data-template="Выполняется транзакция %..."></span>
                                 <span id="sell-tokens-transaction-completed" data-template="Транзакция % завершена."></span>

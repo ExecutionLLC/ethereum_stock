@@ -461,6 +461,29 @@ const Ether = {
             })
             .then((transaction) => console.log("The transaction was mined: Block " + transaction.hash));
 
+    },
+    getWalletInfoAsync(wallet) {
+        const web3contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const walletId = wallet.address;
+        const [goal, bought] = web3contract.progress();
+        return wallet.getBalance().then((balanceResult) => {
+            const balance = new BigNumber(balanceResult);
+            const tokenPrice = web3contract.tokenPrice();
+            const canBeBought = balance.div(tokenPrice).floor();
+            const tokensLeft = new BigNumber(goal).sub(bought);
+            const walletTokens = web3contract.balanceOf(walletId);
+            return {
+                balance: web3.fromWei(balance, 'ether'),
+                withdrawals: web3.fromWei(web3contract.pendingWithdrawals(walletId), 'ether'),
+                price: web3.fromWei(tokenPrice, 'ether'),
+                canBeBought: canBeBought,
+                tokensLeft: tokensLeft,
+                tokensAvailable: BigNumber.min(canBeBought, tokensLeft),
+                walletTokens
+            };
+        });
     }
 };
 
@@ -720,13 +743,18 @@ function onload() {
         };
     };
 
-    Page.onAlterWalletPrivateKey = (privateKey0x) => {
+    Page.onAlterWalletPrivateKeyAsync = (privateKey0x) => {
         currentWallet = null;
         const Wallet = ethers.Wallet;
         const currentNode = Nodes.getCurrentNode();
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-        currentWallet = wallet;
-        return wallet;
+        return Ether.getWalletInfoAsync(wallet).then((info) => {
+            currentWallet = {
+                wallet,
+                info
+            };
+            return currentWallet;
+        });
     };
 
     Page.onAlterWalletFileAsync = (file, password) => {
@@ -741,8 +769,17 @@ function onload() {
                     .then((wallet) => {
                         const currentNode = Nodes.getCurrentNode();
                         wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                        currentWallet = wallet;
-                        resolve(wallet);
+                        Ether.getWalletInfoAsync(wallet)
+                            .then((info) => {
+                                currentWallet = {
+                                    wallet,
+                                    info
+                                };
+                                resolve(currentWallet);
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
                     })
                     .catch((err) => {
                         reject(err);
@@ -752,7 +789,12 @@ function onload() {
     };
 
     Page.onBuyTokensValidation = (count) => {
-        return Validator.tokenCount(count);
+        if (!Validator.tokenCount(count)) {
+            Page.showBuyTokensPrice(0);
+            return false;
+        }
+        Page.showBuyTokensPrice(currentWallet.info.price.mul(count).toString());
+        return !currentWallet.info.tokensAvailable.lessThan(count);
     };
 
     Page.onBuyTokensAsync = (count, onTransaction) => {
@@ -762,7 +804,15 @@ function onload() {
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet, CONTRACT.ID, weiStr, onTransaction);
+        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, onTransaction)
+            .then(() => Ether.getWalletInfoAsync(currentWallet.wallet))
+            .then((info) => {
+                currentWallet = {
+                    wallet: currentWallet.wallet,
+                    info
+                };
+                Page.showCurrentWallet(currentWallet);
+            });
     };
 
     Page.onAddNodeValidation = (name, url, chainId) => {
@@ -808,46 +858,53 @@ function onload() {
     };
 
     Page.onSellTokensValidation = (count, walletId) => {
+        let countValid;
+        if (!Validator.tokenCount(count)) {
+            countValid = false;
+            Page.showSellTokensPrice(0);
+        } else {
+            Page.showSellTokensPrice(currentWallet.info.price.mul(count));
+            countValid = !currentWallet.info.tokensAvailable.lessThan(count);
+        }
         return {
-            countValid: Validator.tokenCount(count),
+            countValid,
             recipientValid: Validator.walletId(walletId)
         };
     };
 
     Page.onSellTokensAsync = (count, walletId, onTransaction) => {
-        const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet);
-        return new Promise((resolve, reject) => {
-            contract.tokenPrice()
-                .then((tokenPrice) => {
-                    const wei = new BigNumber(tokenPrice[0]).times(count);
-                    const weiStr = `0x${wei.toString(16)}`;
-                    contract.estimate.buyFor(walletId, {value: weiStr})
-                        .then((gasCost) => {
-                            contract.buyFor(walletId, {value: weiStr, gasLimit:gasCost})
-                                .then((res) => {
-                                    onTransaction(res.hash);
-                                    console.log(res);
-                                    return res.hash;
-                                })
-                                .then((transactionHash) => {
-                                    currentWallet.provider.once(transactionHash, (transaction) => {
-                                        console.log('Transaction sell Minded: ' + transaction.hash);
-                                        console.log(transaction);
-                                        resolve();
-                                    });
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
-                    reject(err);
+        const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet.wallet);
+        return contract.tokenPrice()
+            .then((tokenPrice) => {
+                const wei = new BigNumber(tokenPrice[0]).times(count);
+                const weiStr = `0x${wei.toString(16)}`;
+                return contract.estimate.buyFor(walletId, {value: weiStr})
+                    .then((gasCost) => ({gasCost, weiStr}));
+            })
+            .then(({gasCost, weiStr}) => {
+                return contract.buyFor(walletId, {value: weiStr, gasLimit: gasCost})
+            })
+            .then((buyTransaction) => {
+                const {hash} = buyTransaction;
+                onTransaction(hash);
+                return new Promise((resolve) => {
+                    currentWallet.wallet.provider.once(hash, (transaction) => {
+                        console.log('Transaction sell Minded: ' + transaction.hash);
+                        console.log(transaction);
+                        resolve();
+                    });
                 });
-        });
+            })
+            .then(() => {
+                return Ether.getWalletInfoAsync(currentWallet.wallet);
+            })
+            .then((info) => {
+                currentWallet = {
+                    wallet: currentWallet.wallet,
+                    info
+                };
+                Page.showCurrentWallet(currentWallet);
+            });
     };
 
     const chartCtx = Page.getChartCanvasElement();
