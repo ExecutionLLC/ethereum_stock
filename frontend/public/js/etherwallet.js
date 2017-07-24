@@ -534,16 +534,18 @@ const API = {
     }
 };
 
-function readFileContent(file, callback) {
+function readFileContentAsync(file) {
     if (file.size > 102400) { // 100K JSON wallet will be our limit
-        callback(`JSON file too big (${file.size} bytes)`);
-        return;
+        return Promise.reject(`JSON file too big (${file.size} bytes)`);
+    } else {
+        return new Promise((resolve) => {
+            const fr = new FileReader();
+            fr.onload = function () {
+                resolve(fr.result);
+            };
+            fr.readAsText(file);
+        });
     }
-    const fr = new FileReader();
-    fr.onload = function () {
-        callback(null, fr.result);
-    };
-    fr.readAsText(file);
 }
 
 const XYData = {
@@ -758,34 +760,24 @@ function onload() {
     };
 
     Page.onAlterWalletFileAsync = (file, password) => {
-        return new Promise((resolve, reject) => {
-            const Wallet = ethers.Wallet;
-            readFileContent(file, (err, content) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                Wallet.fromEncryptedWallet(content, password)
-                    .then((wallet) => {
-                        const currentNode = Nodes.getCurrentNode();
-                        wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                        Ether.getWalletInfoAsync(wallet)
-                            .then((info) => {
-                                currentWallet = {
-                                    wallet,
-                                    info
-                                };
-                                resolve(currentWallet);
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    })
-                    .catch((err) => {
-                        reject(err);
-                    });
+        return readFileContentAsync(file)
+            .then((content) => {
+                const Wallet = ethers.Wallet;
+                return Wallet.fromEncryptedWallet(content, password);
+            })
+            .then((wallet) => {
+                const currentNode = Nodes.getCurrentNode();
+                wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
+                return Ether.getWalletInfoAsync(wallet)
+                    .then((info) => ({wallet, info}));
+            })
+            .then(({wallet, info}) => {
+                currentWallet = {
+                    wallet,
+                    info
+                };
+                return currentWallet;
             });
-        });
     };
 
     Page.onBuyTokensValidation = (count) => {
