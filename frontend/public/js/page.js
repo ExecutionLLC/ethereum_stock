@@ -478,14 +478,21 @@ const Page = {
             const privateKey = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.PRIVATE_KEY.KEY).val();
             const privateKey0x = /^0x/.test(privateKey) ? privateKey : `0x${privateKey}`;
             try {
-                const {wallet, info} = Page.onAlterWalletPrivateKey(privateKey0x);
-                Page.showCurrentWallet(wallet);
-                Page.showAlterWalletInfo(info);
+                Page.onAlterWalletPrivateKeyAsync(privateKey0x)
+                    .then(({wallet, info}) => {
+                        Page.showCurrentWallet(wallet);
+                        Page.showAlterWalletInfo(info);
+                        Page.showAlterWalletPrivateKeyWait(false);
+                    })
+                    .catch((err) => {
+                        Page.showAlterWalletPrivateKeyError(err);
+                        Page.showAlterWalletPrivateKeyWait(false);
+                    });
             }
             catch (e) {
                 Page.showAlterWalletPrivateKeyError(e);
+                Page.showAlterWalletPrivateKeyWait(false);
             }
-            Page.showAlterWalletPrivateKeyWait(false);
             return false;
         });
 
@@ -679,7 +686,7 @@ const Page = {
     onNodeRemove() {},
     onNodeChange() {},
     onBalanceCheckAsync() {},
-    onAlterWalletPrivateKey() {},
+    onAlterWalletPrivateKeyAsync() {},
     onAlterWalletFileAsync() {},
     onBuyTokensAsync() {},
     onSellTokensAsync() {},

@@ -462,8 +462,10 @@ const Ether = {
             .then((transaction) => console.log("The transaction was mined: Block " + transaction.hash));
 
     },
-    getWalletInfo(wallet) {
-        return {};
+    getWalletInfoAsync(wallet) {
+        return new Promise((resolve, reject) => {
+            resolve({});
+        });
     }
 };
 
@@ -723,16 +725,18 @@ function onload() {
         };
     };
 
-    Page.onAlterWalletPrivateKey = (privateKey0x) => {
+    Page.onAlterWalletPrivateKeyAsync = (privateKey0x) => {
         currentWallet = null;
         const Wallet = ethers.Wallet;
         const currentNode = Nodes.getCurrentNode();
         const wallet = new Wallet(privateKey0x, new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId));
-        currentWallet = {
-            wallet,
-            info: Ether.getWalletInfo(wallet)
-        };
-        return currentWallet;
+        return Ether.getWalletInfoAsync(wallet).then((info) => {
+            currentWallet = {
+                wallet,
+                info
+            };
+            return currentWallet;
+        });
     };
 
     Page.onAlterWalletFileAsync = (file, password) => {
@@ -747,11 +751,17 @@ function onload() {
                     .then((wallet) => {
                         const currentNode = Nodes.getCurrentNode();
                         wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                        currentWallet = {
-                            wallet,
-                            info: Ether.getWalletInfo(wallet)
-                        };
-                        resolve(currentWallet);
+                        Ether.getWalletInfoAsync(wallet)
+                            .then((info) => {
+                                currentWallet = {
+                                    wallet,
+                                    info
+                                };
+                                resolve(currentWallet);
+                            })
+                            .catch((err) => {
+                                reject(err);
+                            });
                     })
                     .catch((err) => {
                         reject(err);
