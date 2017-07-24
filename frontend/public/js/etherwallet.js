@@ -463,8 +463,24 @@ const Ether = {
 
     },
     getWalletInfoAsync(wallet) {
-        return new Promise((resolve, reject) => {
-            resolve({});
+        const web3contract = web3.eth
+            .contract(CONTRACT.ABI)
+            .at(CONTRACT.ID);
+        const walletId = wallet.address;
+        const [goal, bought] = web3contract.progress();
+        return wallet.getBalance().then((balanceResult) => {
+            const balance = new BigNumber(balanceResult);
+            const tokenPrice = web3contract.tokenPrice();
+            const canBeBought = balance.div(tokenPrice).floor();
+            const tokensLeft = new BigNumber(goal).sub(bought);
+            return {
+                balance: web3.fromWei(balance, 'ether').toString(),
+                withdrawals: web3.fromWei(web3contract.pendingWithdrawals(walletId), 'ether').toString(),
+                price: web3.fromWei(tokenPrice, 'ether').toString(),
+                canBeBought: canBeBought.toString(),
+                tokensLeft: tokensLeft.toString(),
+                tokensAvailable: BigNumber.min(canBeBought, tokensLeft)
+            };
         });
     }
 };
