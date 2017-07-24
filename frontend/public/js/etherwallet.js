@@ -802,7 +802,15 @@ function onload() {
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, onTransaction);
+        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, onTransaction)
+            .then(() => Ether.getWalletInfoAsync(currentWallet.wallet))
+            .then((info) => {
+                currentWallet = {
+                    wallet: currentWallet.wallet,
+                    info
+                };
+                Page.showCurrentWallet(currentWallet);
+            });
     };
 
     Page.onAddNodeValidation = (name, url, chainId) => {
@@ -881,7 +889,18 @@ function onload() {
                                     currentWallet.wallet.provider.once(transactionHash, (transaction) => {
                                         console.log('Transaction sell Minded: ' + transaction.hash);
                                         console.log(transaction);
-                                        resolve();
+                                        Ether.getWalletInfoAsync(currentWallet.wallet)
+                                            .then((info) => {
+                                                currentWallet = {
+                                                    wallet: currentWallet.wallet,
+                                                    info
+                                                };
+                                                Page.showCurrentWallet(currentWallet);
+                                                resolve();
+                                            })
+                                            .catch((err) => {
+                                                reject(err);
+                                            });
                                     });
                                 })
                                 .catch((err) => {
