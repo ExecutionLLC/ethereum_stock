@@ -787,7 +787,12 @@ function onload() {
     };
 
     Page.onBuyTokensValidation = (count) => {
-        return Validator.tokenCount(count);
+        if (!Validator.tokenCount(count)) {
+            Page.showBuyTokensPrice(0);
+            return false;
+        }
+        Page.showBuyTokensPrice(+currentWallet.info.price * count);
+        return !currentWallet.info.tokensAvailable.lessThan(count);
     };
 
     Page.onBuyTokensAsync = (count, onTransaction) => {
@@ -843,8 +848,16 @@ function onload() {
     };
 
     Page.onSellTokensValidation = (count, walletId) => {
+        let countValid;
+        if (!Validator.tokenCount(count)) {
+            countValid = false;
+            Page.showSellTokensPrice(0);
+        } else {
+            Page.showSellTokensPrice(+currentWallet.info.price * count);
+            countValid = !currentWallet.info.tokensAvailable.lessThan(count);
+        }
         return {
-            countValid: Validator.tokenCount(count),
+            countValid,
             recipientValid: Validator.walletId(walletId)
         };
     };

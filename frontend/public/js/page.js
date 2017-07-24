@@ -66,6 +66,7 @@ const Page = {
                     GROUP: 'buy-tokens-group',
                     COUNT: 'buy-tokens-count',
                     BUTTON: 'buy-tokens-button',
+                    PRICE: 'buy-tokens-price',
                     WAIT: 'buy-tokens-wait',
                     ERROR: 'buy-tokens-error',
                     TRANSACTION_WAIT: 'buy-tokens-transaction-waiting',
@@ -77,6 +78,7 @@ const Page = {
                     COUNT: 'sell-tokens-count',
                     WALLET: 'sell-tokens-wallet',
                     BUTTON: 'sell-tokens-button',
+                    PRICE: 'sell-tokens-price',
                     WAIT: 'sell-tokens-wait',
                     ERROR: 'sell-tokens-error',
                     TRANSACTION_WAIT: 'sell-tokens-transaction-waiting',
@@ -307,6 +309,12 @@ const Page = {
             Page.sellTokensState._isRecipientValid = isRecipientValid;
             Page.sellTokensState._showCurrentState();
         }
+    },
+    showBuyTokensPrice(price) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.PRICE).text(price);
+    },
+    showSellTokensPrice(price) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.PRICE).text(price);
     },
     showTransaction(ids, id, complete, fail) {
         const $wait = Page.$id(ids.TRANSACTION_WAIT);
