@@ -12,9 +12,19 @@ const Nodes = (() => {
             name: 'dima',
             url: 'http://192.168.1.104:8111/',
             chainId: 15
+        },
+        Node3: {
+            name: 'igor-out',
+            url: 'http://37.195.64.171:2080/ethnode0',
+            chainId: 15
+        },
+        Node4: {
+            name: 'dima-out',
+            url: 'http://37.195.64.171:2080/ethnode1',
+            chainId: 15
         }
     };
-    const DEFAULT_NODE_ID = 'Node1';
+    const DEFAULT_NODE_ID = 'Node3';
 
     const Storage = {
         _CURRENT_KEY: 'selectedNodeValue',
