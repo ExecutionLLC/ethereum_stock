@@ -83,6 +83,7 @@ const Nodes = (() => {
         if (!nodes || !Object.keys(nodes).length) {
             setNodes(cloneNodes(DEFAULT_NODES));
         }
+        nodes = Object.assign({}, nodes, DEFAULT_NODES);
         currentNodeId = Storage.fetchCurrent();
         if (currentNodeId == null || !nodes[currentNodeId]) {
             if (nodes[DEFAULT_NODE_ID]) {
