@@ -931,7 +931,7 @@ function onload() {
                 TokenPriceChart.show(0);
             };
             Page.onChartShowMonth = () => {
-                TokenPriceChart.show(+moment().subtract(3, 'day'));
+                TokenPriceChart.show(+moment().subtract(7, 'day'));
             };
             TokenPriceChart.show(0);
         });
