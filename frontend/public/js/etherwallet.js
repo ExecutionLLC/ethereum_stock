@@ -194,6 +194,48 @@ TokenPriceChart = {
     data: null,
     createChart(ctx, data) {
         TokenPriceChart.data = data;
+        const options = {
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll HH:mm'
+                    }
+                }],
+                yAxes: [{
+                    type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                    display: true,
+                    position: "left",
+                    id: "y-axis-1"
+                }]
+            },
+            legend: {
+                labels: {
+                    filter: (item) => item.datasetIndex !== 1
+                }
+            },
+            responsive: false
+        };
+
+        const targetMax = data.target.length ? data.target[0].y * 1.1 : null;
+        const tokensMax = data.tokens.length ? data.tokens[data.tokens.length - 1].y : null;
+        const setMax = targetMax !== null && tokensMax !== null;
+        const setTokensMax = setMax && tokensMax < targetMax * 0.2;
+
+        if (setMax) {
+            if (setTokensMax) {
+                options.scales.yAxes[0].ticks = {
+                    suggestedMin: 0,
+                    max: tokensMax
+                };
+            } else {
+                options.scales.yAxes[0].ticks = {
+                    suggestedMin: 0,
+                    suggestedMax: targetMax
+                };
+            }
+        }
+
         TokenPriceChart.chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -226,32 +268,7 @@ TokenPriceChart = {
                     }
                 ]
             },
-            options: {
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            tooltipFormat: 'll HH:mm'
-                        }
-                    }],
-                    yAxes: [{
-                        type: "linear", // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: "left",
-                        id: "y-axis-1",
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: data.target[0].y * 1.1
-                        }
-                    }]
-                },
-                legend: {
-                    labels: {
-                        filter: (item) => item.datasetIndex !== 1
-                    }
-                },
-                responsive: false
-            }
+            options: options
         });
     },
     show(fromDate) {
