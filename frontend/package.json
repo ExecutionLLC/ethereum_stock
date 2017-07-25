@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
-    "makecss": "lessc src/less/styles.less > public/resources/css/etherwallet.css"
+    "makecss": "lessc src/less/styles.less > public/resources/css/etherwallet.css; cp node_modules/bootstrap/fonts/* public/resources/fonts;"
   },
   "dependencies": {
     "async": "^2.5.0",
