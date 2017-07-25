@@ -33,7 +33,7 @@
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
-    <h1 class="hideable-header">Заголовок страницы</h1>
+    <h1 class="hideable-header">Awesome ethereum token</h1>
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -46,10 +46,10 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#about">Какой-то текст</a></li>
-                <li><a href="#balance">Проверка баланса</a></li>
-                <li><a href="#currency">Курс токена</a></li>
-                <li><a href="#buysell">Купля / Продажа</a></li>
+                <li class="active"><a href="#about">Settings of ethereum node</a></li>
+                <li><a href="#balance">Token balance and operations history</a></li>
+                <li><a href="#currency">Crowdfunding progress</a></li>
+                <li><a href="#buysell">Purchase tokens</a></li>
             </ul>
         </div>
     </div>
@@ -58,12 +58,9 @@
     <a class="anchor" name="about"></a>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Текст</h3>
+            <h3 class="panel-title">Settings of ethereum node</h3>
         </div>
         <div class="panel-body">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.
             <form>
                 <div class="form-group form-inline">
                     <label class="control-label">Current node</label>
@@ -92,7 +89,7 @@
     <a class="anchor" name="balance"></a>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Проверьте баланс вашего кошелька</h3>
+            <h3 class="panel-title">Check balance</h3>
         </div>
         <div class="panel-body">
             <div class="container-fluid">
@@ -100,11 +97,11 @@
                     <div class="col-sm-5">
                         <form>
                             <div class="form-group">
-                                <label class="control-label">Введите адрес кошелька:</label>
+                                <label class="control-label">Enter the address of wallet:</label>
                             </div>
                             <div id="wallet-form-group" class="form-group form-inline">
-                                <input id="wallet-input" class="form-control" placeholder="Адрес кошелька..." />
-                                <button id="wallet-button" class="btn btn-default">Проверить</button>
+                                <input id="wallet-input" class="form-control" placeholder="0xaaaD4da8A374a8F39476F8CD0Dd2D950d0BDDDCd" />
+                                <button id="wallet-button" class="btn btn-default">Check</button>
                                 <span id="balance-wait" class="glyphicon glyphicon-refresh rotating"></span>
                                 <span id="balance-error" class="help-block"></span>
                             </div>
@@ -112,7 +109,7 @@
                     </div>
                     <div id="balance-container">
                         <div class="col-sm-2">
-                            На вашем счету:
+                            Your balance:
                         </div>
                         <div class="col-sm-5">
                             <div class="container-fluid">
@@ -137,19 +134,19 @@
                     </div>
                     <div id="tokens-history-container">
                         <div class="col-sm-2">
-                            Последние операции:
+                            Last operations:
                         </div>
                         <div class="col-sm-5">
                             <div class="container-fluid">
                                 <div class="row show-grid">
-                                    <div class="col-sm-4">Дата и время</div>
-                                    <div class="col-sm-4">Операция</div>
-                                    <div class="col-sm-4">Количество</div>
+                                    <div class="col-sm-4">Timestamp</div>
+                                    <div class="col-sm-4">Operation Type</div>
+                                    <div class="col-sm-4">Quantity</div>
                                 </div>
                                 <div id="tokens-history-template" class="row show-grid" style="display:none;">
                                     <div id="tokens-history-op-time" class="col-sm-4"></div>
-                                    <div id="tokens-history-op-name-buy" class="col-sm-4">Purchased</div>
-                                    <div id="tokens-history-op-name-sell" class="col-sm-4">Sold</div>
+                                    <div id="tokens-history-op-name-buy" class="col-sm-4">IN</div>
+                                    <div id="tokens-history-op-name-sell" class="col-sm-4">OUT</div>
                                     <div id="tokens-history-op-count" class="col-sm-4"></div>
                                 </div>
                                 <div id="tokens-history-content">
@@ -164,14 +161,14 @@
     <a class="anchor" name="currency"></a>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Курс токена</h3>
+            <h3 class="panel-title">Crowdfunding progress</h3>
         </div>
         <div class="panel-body">
             <canvas id="chart" width="1074" height="259"></canvas>
             <form>
                 <div class="form-group">
-                    <button id="chart-whole" class="btn btn-default">За все время</button>
-                    <button id="chart-month" class="btn btn-default">За месяц</button>
+                    <button id="chart-whole" class="btn btn-default">All time</button>
+                    <button id="chart-month" class="btn btn-default">Last week</button>
                 </div>
             </form>
         </div>
@@ -179,20 +176,20 @@
     <a class="anchor" name="buysell"></a>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Купить / продать</h3>
+            <h3 class="panel-title">Purchase tokens</h3>
         </div>
         <div class="panel-body">
             <ul class="nav nav-tabs">
-                <li id="" role="presentation" class="active"><a href="#alter-wallet-key" data-toggle="tab">По приватному ключу</a></li>
-                <li role="presentation"><a href="#alter-wallet-file" data-toggle="tab">По файлу</a></li>
+                <li id="" role="presentation" class="active"><a href="#alter-wallet-key" data-toggle="tab">By private key</a></li>
+                <li role="presentation"><a href="#alter-wallet-file" data-toggle="tab">By keystore file (UTC/JSON)</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="alter-wallet-key">
                     <div class="container">
                         <form>
                             <div id="add-wallet-private-key-group" class="form-group form-inline">
-                                <input id="add-wallet-private-key" class="form-control" placeholder="Приватный ключ..." />
-                                <button id="add-wallet-private-key-button" class="btn btn-default">Задать кошелёк</button>
+                                <input id="add-wallet-private-key" class="form-control" placeholder="Private key..." />
+                                <button id="add-wallet-private-key-button" class="btn btn-default">Set wallet</button>
                                 <span id="add-wallet-private-key-wait" class="glyphicon glyphicon-refresh rotating"></span>
                                 <span id="add-wallet-private-key-error" class="help-block"></span>
                             </div>
@@ -204,9 +201,9 @@
                         <form>
                             <div id="add-wallet-file-group" class="form-group form-inline">
                                 <input id="add-wallet-file" type="file" class="form-control"/>
-                                <label class="control-label">пароль:</label>
+                                <label class="control-label">Password:</label>
                                 <input id="add-wallet-file-password" type="password" class="form-control" />
-                                <button id="add-wallet-file-button" class="btn btn-default">Задать кошелёк</button>
+                                <button id="add-wallet-file-button" class="btn btn-default">Set wallet</button>
                                 <span id="add-wallet-file-wait" class="glyphicon glyphicon-refresh rotating"></span>
                                 <span id="add-wallet-file-error" class="help-block"></span>
                             </div>
@@ -217,50 +214,50 @@
                     <form>
                         <div id="wallet-ops">
                             <div class="form-group">
-                                <label class="control-label">Операции с кошельком <span id="wallet-address"></span></label>
+                                <label class="control-label">Buy tokens<span id="wallet-address"></span></label>
                             </div>
                             <div class="form-group">
                                 <div>
-                                    Баланс: <span id="alter-wallet-balance"></span> ETH
+                                    Balance: <span id="alter-wallet-balance"></span> ETH
                                 </div>
                                 <div>
-                                    Сдача: <span id="alter-wallet-withdrawals"></span> ETH
+                                    Withdrawals: <span id="alter-wallet-withdrawals"></span> ETH
                                 </div>
                                 <div>
-                                    Цена токена: <span id="alter-wallet-token-price"></span> ETH
+                                    Token price: <span id="alter-wallet-token-price"></span> ETH
                                 </div>
                                 <div>
-                                    Хватит на: <span id="alter-wallet-tokens-can-be-bought"></span>
+                                    You can buy up to: <span id="alter-wallet-tokens-can-be-bought"></span>
                                 </div>
                                 <div>
-                                    Токенов осталось: <span id="alter-wallet-tokens-left"></span>
+                                    Tokens left: <span id="alter-wallet-tokens-left"></span>
                                 </div>
                                 <div>
-                                    Токенов куплено для кошелька: <span id="alter-wallet-tokens"></span>
+                                    Your token balance: <span id="alter-wallet-tokens"></span>
                                 </div>
                             </div>
                             <div id="buy-tokens-group" class="form-group form-inline">
-                                <label class="control-label">Купить</label>
+                                <label class="control-label">Buy</label>
                                 <input id="buy-tokens-count" class="form-control"/>
-                                <button id="buy-tokens-button" class="btn btn-default">Купить</button>
+                                <button id="buy-tokens-button" class="btn btn-default">Buy</button>
                                 (<span id="buy-tokens-price"></span> ETH)
                                 <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
-                                <span id="buy-tokens-transaction-waiting" data-template="Выполняется транзакция %..."></span>
-                                <span id="buy-tokens-transaction-completed" data-template="Транзакция % завершена."></span>
-                                <span id="buy-tokens-transaction-failed" data-template="Транзакция % завершилась неудачей."></span>
+                                <span id="buy-tokens-transaction-waiting" data-template="Transaction running % ..."></span>
+                                <span id="buy-tokens-transaction-completed" data-template="Transaction % was successfully completed"></span>
+                                <span id="buy-tokens-transaction-failed" data-template="Transaction % failed"></span>
                                 <span id="buy-tokens-error" class="help-block"></span>
                             </div>
                             <div id="sell-tokens-group" class="form-group form-inline">
-                                <label class="control-label">Купить для</label>
+                                <label class="control-label">Buy for</label>
                                 <input id="sell-tokens-wallet" class="form-control"/>
-                                <label class="control-label">в кол-ве</label>
+                                <label class="control-label">Quantity</label>
                                 <input id="sell-tokens-count" class="form-control"/>
-                                <button id="sell-tokens-button" class="btn btn-default">Купить</button>
+                                <button id="sell-tokens-button" class="btn btn-default">Buy</button>
                                 (<span id="sell-tokens-price"></span> ETH)
                                 <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
-                                <span id="sell-tokens-transaction-waiting" data-template="Выполняется транзакция %..."></span>
-                                <span id="sell-tokens-transaction-completed" data-template="Транзакция % завершена."></span>
-                                <span id="sell-tokens-transaction-failed" data-template="Транзакция % завершилась неудачей."></span>
+                                <span id="sell-tokens-transaction-waiting" data-template="Transaction running % ..."></span>
+                                <span id="sell-tokens-transaction-completed" data-template="Transaction % was successfully completed"></span>
+                                <span id="sell-tokens-transaction-failed" data-template="Transaction % failed"></span>
                                 <span id="sell-tokens-error" class="help-block"></span>
                             </div>
                         </div>
