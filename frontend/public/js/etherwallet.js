@@ -225,13 +225,13 @@ TokenPriceChart = {
         if (setMax) {
             if (setTokensMax) {
                 options.scales.yAxes[0].ticks = {
-                    suggestedMin: 0,
+                    min: 0,
                     max: tokensMax
                 };
             } else {
                 options.scales.yAxes[0].ticks = {
-                    suggestedMin: 0,
-                    suggestedMax: targetMax
+                    min: 0,
+                    max: targetMax
                 };
             }
         }
