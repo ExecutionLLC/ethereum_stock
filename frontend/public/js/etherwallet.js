@@ -399,20 +399,24 @@ const Ether = {
                     }));
                 }
 
-                const xy = transactionsToXY(tokens);
-                const xyAccum = XYData.makeAccumulation(xy);
-                const xyStepped = XYData.makeStepped(xyAccum);
-                const steppedDataMarks = XYData.makeLastInX(xyStepped);
-                callback(null, {
-                    tokens: xyStepped,
-                    tokensDots: steppedDataMarks,
-                    target: [
-                        {
-                            x: xyAccum[0].x,
-                            y: target
-                        }
-                    ]
-                });
+                function handleTokens(tokens) {
+                    const xy = transactionsToXY(tokens);
+                    const xyAccum = XYData.makeAccumulation(xy);
+                    const xyStepped = XYData.makeStepped(xyAccum);
+                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
+                    callback(null, {
+                        tokens: xyStepped,
+                        tokensDots: steppedDataMarks,
+                        target: [
+                            {
+                                x: xyAccum[0].x,
+                                y: target
+                            }
+                        ]
+                    });
+                }
+
+                handleTokens(tokens);
             });
         });
     },
