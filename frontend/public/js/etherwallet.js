@@ -352,61 +352,68 @@ const Ether = {
         transferEvent.get((error, allLogs) => {
             if (error) {
                 callback(error);
-            } else {
-                const logs = allLogs.filter(l => l.args._from === '0x0000000000000000000000000000000000000000');
-                async.map(logs, (log, callback) => {
-                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
-                        const {transactionIndex, args: {_value}} = log;
-                        callback(null, {
-                            timestamp,
-                            transactionIndex,
-                            tokens: new BigNumber(_value).toNumber()
-                        });
-                    });
-                }, (err, tokens) => {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
+                return;
+            }
 
-                    function transactionsToXY(transactions) {
-                        const transactionsForTimestamps = transactions.reduce(
-                            (parts, trx) => {
-                                const {transactionIndex, timestamp} = trx;
-                                const transactionsForTimestamp = parts[timestamp] || 0;
-                                const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                                if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
-                                    parts[timestamp] = atLeastTransactionsForTimestamp;
-                                }
-                                return parts;
-                            },
-                            {}
-                        );
-                        const lastTimestamp = Math.floor(+new Date() / 1000);
-                        const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
-                        transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-                        return transactions.map(trx => ({
-                            x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
-                            y: trx.tokens
-                        }));
-                    }
+            function isLogToShow(log) {
+                return log.args._from === '0x0000000000000000000000000000000000000000';
+            }
 
-                    const xy = transactionsToXY(tokens);
-                    const xyAccum = XYData.makeAccumulation(xy);
-                    const xyStepped = XYData.makeStepped(xyAccum);
-                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
+            function timestampLog(log, callback) {
+                Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
+                    const {transactionIndex, args: {_value}} = log;
                     callback(null, {
-                        tokens: xyStepped,
-                        tokensDots: steppedDataMarks,
-                        target: [
-                            {
-                                x: xyAccum[0].x,
-                                y: target
-                            }
-                        ]
+                        timestamp,
+                        transactionIndex,
+                        tokens: new BigNumber(_value).toNumber()
                     });
                 });
             }
+
+            const logs = allLogs.filter(isLogToShow);
+            async.map(logs, timestampLog, (err, tokens) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                function transactionsToXY(transactions) {
+                    const transactionsForTimestamps = transactions.reduce(
+                        (parts, trx) => {
+                            const {transactionIndex, timestamp} = trx;
+                            const transactionsForTimestamp = parts[timestamp] || 0;
+                            const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                            if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
+                                parts[timestamp] = atLeastTransactionsForTimestamp;
+                            }
+                            return parts;
+                        },
+                        {}
+                    );
+                    const lastTimestamp = Math.floor(+new Date() / 1000);
+                    const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+                    transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+                    return transactions.map(trx => ({
+                        x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                        y: trx.tokens
+                    }));
+                }
+
+                const xy = transactionsToXY(tokens);
+                const xyAccum = XYData.makeAccumulation(xy);
+                const xyStepped = XYData.makeStepped(xyAccum);
+                const steppedDataMarks = XYData.makeLastInX(xyStepped);
+                callback(null, {
+                    tokens: xyStepped,
+                    tokensDots: steppedDataMarks,
+                    target: [
+                        {
+                            x: xyAccum[0].x,
+                            y: target
+                        }
+                    ]
+                });
+            });
         });
     },
     getPriceData(client, web3contract, callback) {
