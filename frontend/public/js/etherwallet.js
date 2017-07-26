@@ -932,19 +932,28 @@ function onload() {
         console.log('No chart canvas element');
     } else {
         const wc = createChartWaiting(chartCtx);
-        Ether.getTokensHistory((err, data) => {
+
+        let fromDate = 0;
+
+        function showChart() {
+            TokenPriceChart.show(fromDate);
+        }
+
+        Ether.getTokensHistory((err, data, reinit) => {
             wc.destroy();
             if (err) {
                 throw `Tokens history error, ${err}`;
             }
             TokenPriceChart.createChart(chartCtx, data);
             Page.onChartShowWhole = () => {
-                TokenPriceChart.show(0);
+                fromDate = 0;
+                showChart()
             };
             Page.onChartShowMonth = () => {
-                TokenPriceChart.show(+moment().subtract(7, 'day'));
+                fromDate = +moment().subtract(7, 'day');
+                showChart()
             };
-            TokenPriceChart.show(0);
+            showChart();
         });
     }
 }
