@@ -217,23 +217,36 @@ TokenPriceChart = {
             responsive: false
         };
 
-        const targetMax = data.target.length ? data.target[0].y * 1.1 : null;
-        const tokensMax = data.tokens.length ? data.tokens[data.tokens.length - 1].y : null;
-        const setMax = targetMax !== null && tokensMax !== null;
-        const setTokensMax = setMax && tokensMax < targetMax * 0.2;
+        function calcYRange(target, tokens) {
+            const targetMax = target.length ? target[0].y * 1.1 : null;
+            const tokensMax = tokens.length ? tokens[tokens.length - 1].y : null;
+            const setMax = targetMax !== null && tokensMax !== null;
+            const setTokensMax = setMax && tokensMax < targetMax * 0.2;
 
-        if (setMax) {
-            if (setTokensMax) {
-                options.scales.yAxes[0].ticks = {
-                    min: 0,
-                    max: tokensMax
-                };
+            if (setMax) {
+                if (setTokensMax) {
+                    return {
+                        min: 0,
+                        max: tokensMax
+                    };
+                } else {
+                    return {
+                        min: 0,
+                        max: targetMax
+                    };
+                }
             } else {
-                options.scales.yAxes[0].ticks = {
-                    min: 0,
-                    max: targetMax
-                };
+                return null;
             }
+        }
+
+        const yRange = calcYRange(data.target, data.tokens);
+
+        if (yRange) {
+            options.scales.yAxes[0].ticks = {
+                min: yRange.min,
+                max: yRange.max
+            };
         }
 
         TokenPriceChart.chart = new Chart(ctx, {
