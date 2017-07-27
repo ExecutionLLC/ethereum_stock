@@ -189,6 +189,26 @@ const CONTRACT = {
 
 let currentWallet = null;
 
+function smartCeil(a, pmin, pmax) {
+    function log10(a) {
+        return Math.log(a) / Math.log(10);
+    }
+
+    function flog10(a) {
+        return Math.floor(log10(a));
+    }
+
+    function ceil(a, n) {
+        const p10 = Math.pow(10, n);
+        return Math.ceil(a / p10) * p10;
+    }
+
+    const min = Math.floor(a + a * pmin + 1);
+    const maxDiff = a * pmax;
+    const maxDiffLog10 = flog10(maxDiff);
+    return ceil(min, maxDiffLog10);
+}
+
 TokenPriceChart = {
     chart: null,
     data: null,
@@ -209,29 +229,42 @@ TokenPriceChart = {
                     id: "y-axis-1"
                 }]
             },
-            legend: {
-                labels: {
-                    filter: (item) => item.datasetIndex !== 1
-                }
-            },
             responsive: false
         };
 
-        const targetMax = data.target.length ? data.target[0].y * 1.1 : null;
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
+
+        const targetMax = data.target.length ? data.target[0].y : null;
         const tokensMax = data.tokens.length ? data.tokens[data.tokens.length - 1].y : null;
         const setMax = targetMax !== null && tokensMax !== null;
         const setTokensMax = setMax && tokensMax < targetMax * 0.2;
 
         if (setMax) {
             if (setTokensMax) {
+                options.legend = {
+                    labels: {
+                        filter: labelsFilterWOTarget
+                    }
+                };
                 options.scales.yAxes[0].ticks = {
                     suggestedMin: 0,
-                    max: tokensMax
+                    max: smartCeil(tokensMax, 0.05, 0.2)
                 };
             } else {
+                options.legend = {
+                    labels: {
+                        filter: labelsFilterWithTarget
+                    }
+                };
                 options.scales.yAxes[0].ticks = {
                     suggestedMin: 0,
-                    suggestedMax: targetMax
+                    suggestedMax: smartCeil(targetMax, 0.05, 0.2)
                 };
             }
         }
