@@ -229,13 +229,16 @@ TokenPriceChart = {
                     id: "y-axis-1"
                 }]
             },
-            legend: {
-                labels: {
-                    filter: (item) => item.datasetIndex !== 1
-                }
-            },
             responsive: false
         };
+
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
 
         const targetMax = data.target.length ? data.target[0].y : null;
         const tokensMax = data.tokens.length ? data.tokens[data.tokens.length - 1].y : null;
@@ -244,11 +247,21 @@ TokenPriceChart = {
 
         if (setMax) {
             if (setTokensMax) {
+                options.legend = {
+                    labels: {
+                        filter: labelsFilterWOTarget
+                    }
+                };
                 options.scales.yAxes[0].ticks = {
                     suggestedMin: 0,
                     max: smartCeil(tokensMax, 0.05, 0.2)
                 };
             } else {
+                options.legend = {
+                    labels: {
+                        filter: labelsFilterWithTarget
+                    }
+                };
                 options.scales.yAxes[0].ticks = {
                     suggestedMin: 0,
                     suggestedMax: smartCeil(targetMax, 0.05, 0.2)
