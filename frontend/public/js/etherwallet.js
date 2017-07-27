@@ -331,7 +331,7 @@ TokenPriceChart = {
                 const yAxe = TokenPriceChart.chart.options.scales.yAxes[0];
                 yAxe.ticks.min = yRange.min;
                 yAxe.ticks.max = yRange.max;
-                TokenPriceChart.chart.options.labels.legend = yRange.showTarget ?
+                TokenPriceChart.chart.options.legend.labels.filter = yRange.showTarget ?
                     labelsFilterWithTarget :
                     labelsFilterWOTarget;
             }
