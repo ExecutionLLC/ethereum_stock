@@ -466,8 +466,8 @@ TODO: test and uncomment this code before merge
 
                 watchLogs(logs.length ? logs[logs.length - 1].blockNumber + 1 : 0, (log) => {
                     tokens.push(log);
-                    handleTokens(tokens, (err, result) => {
-                        callback(err, result, true);
+                    handleTokens(tokens, (err, data) => {
+                        callback(err, Object.assign({}, data, {update: true}));
                     });
                 });
 
@@ -476,7 +476,7 @@ TODO: test and uncomment this code before merge
                     const xyAccum = XYData.makeAccumulation(xy);
                     const xyStepped = XYData.makeStepped(xyAccum);
                     const steppedDataMarks = XYData.makeLastInX(xyStepped);
-                    callback(null, {
+                    callback(null, {data: {
                         tokens: xyStepped,
                         tokensDots: steppedDataMarks,
                         target: [
@@ -485,7 +485,7 @@ TODO: test and uncomment this code before merge
                                 y: target
                             }
                         ]
-                    });
+                    }});
                 }
 
                 handleTokens(tokens, callback);
@@ -1011,10 +1011,11 @@ function onload() {
             TokenPriceChart.show(fromDate);
         }
 
-        Ether.getTokensHistory((err, data, update) => {
+        Ether.getTokensHistory((err, result) => {
             if (err) {
                 throw `Tokens history error, ${err}`;
             }
+            const {data, update} = result;
             if (update) {
                 TokenPriceChart.show(fromDate, data);
                 return;
