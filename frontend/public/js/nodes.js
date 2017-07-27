@@ -74,8 +74,12 @@ const Nodes = (() => {
         return Object.keys(nodes).length;
     }
 
-    function canRemoveNode() {
-        return nodesCount() >= 2;
+    function isRONode(id) {
+        return !!DEFAULT_NODES[id];
+    }
+
+    function canRemoveNode(id) {
+        return nodesCount() >= 2 && !isRONode(id);
     }
 
     function init() {
@@ -114,12 +118,12 @@ const Nodes = (() => {
             });
             return res;
         },
-        canRemoveNode() {
-            return canRemoveNode();
+        canRemoveNode(id) {
+            return canRemoveNode(id);
         },
         removeNode(id) {
-            if (!canRemoveNode()) {
-                throw 'Can\'t remove last node';
+            if (!canRemoveNode(id)) {
+                throw `Can't remove node id ${id}`;
             }
             const newNodes = cloneNodes(nodes);
             delete newNodes[id];

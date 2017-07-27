@@ -441,7 +441,8 @@ const Page = {
             Page.showNodeError();
             const currentNodeId = Page.getSelectedNode();
             try {
-                Page.onNodeChange(currentNodeId);
+                const canRemoveNode = Page.onNodeChange(currentNodeId);
+                Page.nodesState.disableRemoveNode(!canRemoveNode);
             }
             catch (e) {
                 Page.showNodeError(e);
