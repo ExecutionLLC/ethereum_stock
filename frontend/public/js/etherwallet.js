@@ -189,20 +189,42 @@ const CONTRACT = {
 
 let currentWallet = null;
 
+function smartCeil(a, pmin, pmax) {
+    function log10(a) {
+        return Math.log(a) / Math.log(10);
+    }
+
+    function flog10(a) {
+        return Math.floor(log10(a));
+    }
+
+    function ceil(a, n) {
+        const p10 = Math.pow(10, n);
+        return Math.ceil(a / p10) * p10;
+    }
+
+    const min = Math.floor(a + a * pmin + 1);
+    const maxDiff = a * pmax;
+    const maxDiffLog10 = flog10(maxDiff);
+    return ceil(min, maxDiffLog10);
+}
+
 TokenPriceChart = {
     chart: null,
     data: null,
     _calcYRange(target, tokens) {
-        const targetMax = target.length ? target[0].y * 1.1 : null;
+        const targetMax = target.length ? target[0].y : null;
         const tokensMax = tokens.length ? tokens[tokens.length - 1].y : null;
         const setMax = targetMax !== null && tokensMax !== null;
         const setTokensMax = setMax && tokensMax < targetMax * 0.2;
 
         if (setMax) {
             const maxValue = setTokensMax ? tokensMax : Math.max(tokensMax, targetMax);
+            const max = smartCeil(maxValue, 0.05, 0.2);
             return {
                 min: 0,
-                max: maxValue
+                max: max,
+                showTarget: targetMax <= max
             };
         } else {
             return null;
@@ -225,13 +247,16 @@ TokenPriceChart = {
                     id: "y-axis-1"
                 }]
             },
-            legend: {
-                labels: {
-                    filter: (item) => item.datasetIndex !== 1
-                }
-            },
             responsive: false
         };
+
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
 
         const yRange = TokenPriceChart._calcYRange(data.target, data.tokens);
 
@@ -239,6 +264,13 @@ TokenPriceChart = {
             options.scales.yAxes[0].ticks = {
                 min: yRange.min,
                 max: yRange.max
+            };
+            options.legend = {
+                labels: {
+                    filter: yRange.showTarget ?
+                        labelsFilterWithTarget :
+                        labelsFilterWOTarget
+                }
             };
         }
 
@@ -284,12 +316,24 @@ TokenPriceChart = {
         const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
         const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
         const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
+
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
+
         if (newData) {
             const yRange = TokenPriceChart._calcYRange(newTarget, newTokens);
             if (yRange) {
                 const yAxe = TokenPriceChart.chart.options.scales.yAxes[0];
                 yAxe.ticks.min = yRange.min;
                 yAxe.ticks.max = yRange.max;
+                TokenPriceChart.chart.options.labels.legend = yRange.showTarget ?
+                    labelsFilterWithTarget :
+                    labelsFilterWOTarget;
             }
         }
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
