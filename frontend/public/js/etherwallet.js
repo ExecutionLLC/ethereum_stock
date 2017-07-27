@@ -1012,14 +1012,14 @@ function onload() {
         }
 
         Ether.getTokensHistory((err, data, update) => {
+            if (err) {
+                throw `Tokens history error, ${err}`;
+            }
             if (update) {
                 TokenPriceChart.show(fromDate, data);
                 return;
             }
             wc.destroy();
-            if (err) {
-                throw `Tokens history error, ${err}`;
-            }
             TokenPriceChart.createChart(chartCtx, data);
             Page.onChartShowWhole = () => {
                 fromDate = 0;
