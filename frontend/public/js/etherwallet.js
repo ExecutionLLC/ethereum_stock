@@ -341,9 +341,8 @@ const Ether = {
                 callback(error);
             } else {
                 async.map(logs.slice(-count), (log, callback) => {
-                    web3.eth.getBlock(log.blockNumber, (error, block) => {
-                        const {args: {_from, _to, _value}} = log;
-                        const {timestamp} = block;
+                    const {args: {_from, _to, _value}} = log;
+                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
                         callback(null, {
                             timestamp,
                             from: _from,
