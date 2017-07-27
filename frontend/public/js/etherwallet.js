@@ -230,6 +230,19 @@ TokenPriceChart = {
             return null;
         }
     },
+    _makeLabelsFilter(withTarget) {
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
+
+        return withTarget ?
+            labelsFilterWithTarget :
+            labelsFilterWOTarget;
+    },
     createChart(ctx, data) {
         TokenPriceChart.data = data;
         const options = {
@@ -250,14 +263,6 @@ TokenPriceChart = {
             responsive: false
         };
 
-        function labelsFilterWithTarget(item) {
-            return item.datasetIndex !== 1;
-        }
-
-        function labelsFilterWOTarget(item) {
-            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
-        }
-
         const yRange = TokenPriceChart._calcYRange(data.target, data.tokens);
 
         if (yRange) {
@@ -267,9 +272,7 @@ TokenPriceChart = {
             };
             options.legend = {
                 labels: {
-                    filter: yRange.showTarget ?
-                        labelsFilterWithTarget :
-                        labelsFilterWOTarget
+                    filter: TokenPriceChart._makeLabelsFilter(yRange.showTarget)
                 }
             };
         }
@@ -317,23 +320,13 @@ TokenPriceChart = {
         const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
         const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
 
-        function labelsFilterWithTarget(item) {
-            return item.datasetIndex !== 1;
-        }
-
-        function labelsFilterWOTarget(item) {
-            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
-        }
-
         if (newData) {
             const yRange = TokenPriceChart._calcYRange(newTarget, newTokens);
             if (yRange) {
                 const yAxe = TokenPriceChart.chart.options.scales.yAxes[0];
                 yAxe.ticks.min = yRange.min;
                 yAxe.ticks.max = yRange.max;
-                TokenPriceChart.chart.options.legend.labels.filter = yRange.showTarget ?
-                    labelsFilterWithTarget :
-                    labelsFilterWOTarget;
+                TokenPriceChart.chart.options.legend.labels.filter = TokenPriceChart._makeLabelsFilter(yRange.showTarget);
             }
         }
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
