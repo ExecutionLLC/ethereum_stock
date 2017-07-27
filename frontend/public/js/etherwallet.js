@@ -466,20 +466,9 @@ TODO: test and uncomment this code before merge
 
                 watchLogs(logs.length ? logs[logs.length - 1].blockNumber + 1 : 0, (log) => {
                     tokens.push(log);
-                    const xy = transactionsToXY(tokens);
-                    const xyAccum = XYData.makeAccumulation(xy);
-                    const xyStepped = XYData.makeStepped(xyAccum);
-                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
-                    callback(null, {
-                        tokens: xyStepped,
-                        tokensDots: steppedDataMarks,
-                        target: [
-                            {
-                                x: xyAccum[0].x,
-                                y: target
-                            }
-                        ]
-                    }, true);
+                    handleTokens(tokens, (err, result) => {
+                        callback(err, result, true);
+                    });
                 });
 
                 function handleTokens(tokens, callback) {
