@@ -202,8 +202,10 @@ const Page = {
             .toggle(error != null);
     },
     selectNode(valueToSelect) {
-        const element = Page.$id(Page.ELEMENT_ID.NODES.NODE);
-        element.value = valueToSelect;
+        Page.$id(Page.ELEMENT_ID.NODES.NODE).val(valueToSelect);
+    },
+    getSelectedNode() {
+        return Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
     },
     showBalanceError(error) {
         Page.$id(Page.ELEMENT_ID.BALANCE.ERROR)
@@ -411,7 +413,7 @@ const Page = {
                 const chainId = Page.$id(Page.ELEMENT_ID.NODES.CHAIN_ID).val();
                 const {id, node, canRemoveNode} = Page.onNodeAdd({name, url, chainId});
                 Page.appendNode(id, node.name);
-                Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
+                Page.selectNode(id);
                 Page.nodesState.toggleNodeAdding(false);
                 Page.nodesState.disableRemoveNode(!canRemoveNode);
             }
@@ -423,12 +425,12 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.REMOVE_NODE_BUTTON).click(() => {
             Page.showNodeError();
-            const curNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
+            const curNodeId = Page.getSelectedNode();
             try {
                 const {id, canRemoveNode} = Page.onNodeRemove(curNodeId);
                 Page.removeNode(curNodeId);
                 Page.nodesState.disableRemoveNode(!canRemoveNode);
-                Page.$id(Page.ELEMENT_ID.NODES.NODE).val(id);
+                Page.selectNode(id);
             } catch (e) {
                 Page.showNodeError(e);
             }
@@ -437,7 +439,7 @@ const Page = {
 
         Page.$id(Page.ELEMENT_ID.NODES.NODE).change(() => {
             Page.showNodeError();
-            const currentNodeId = Page.$id(Page.ELEMENT_ID.NODES.NODE).val();
+            const currentNodeId = Page.getSelectedNode();
             try {
                 Page.onNodeChange(currentNodeId);
             }
