@@ -202,7 +202,7 @@ const Page = {
             .toggle(error != null);
     },
     selectNode(valueToSelect) {
-        const element = document.getElementById(Page.ELEMENT_ID.NODES.NODE);
+        const element = Page.$id(Page.ELEMENT_ID.NODES.NODE);
         element.value = valueToSelect;
     },
     showBalanceError(error) {
