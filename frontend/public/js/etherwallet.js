@@ -760,7 +760,7 @@ function onload() {
     Page.setNodes(
         Nodes.getNodesNames(),
         Nodes.getCurrentNodeId(),
-        Nodes.canRemoveNode()
+        Nodes.canRemoveNode(Nodes.getCurrentNodeId())
     );
 
     Page.onBalanceWalletValidation = (walletId) => {
@@ -878,7 +878,7 @@ function onload() {
             return {
                 id: newNodeId,
                 node: newNode,
-                canRemoveNode: Nodes.canRemoveNode()
+                canRemoveNode: Nodes.canRemoveNode(newNodeId)
             };
         } else {
             throw 'Fail to add node';
@@ -890,13 +890,14 @@ function onload() {
         web3.setProvider(new web3.providers.HttpProvider(node.url));
         return {
             id,
-            canRemoveNode: Nodes.canRemoveNode()
+            canRemoveNode: Nodes.canRemoveNode(id)
         };
     };
 
     Page.onNodeChange = (id) => {
         const currentNode = Nodes.setCurrentNodeId(id);
         web3.setProvider(new web3.providers.HttpProvider(currentNode.url));
+        return Nodes.canRemoveNode(id);
     };
 
     Page.onSellTokensValidation = (count, walletId) => {
