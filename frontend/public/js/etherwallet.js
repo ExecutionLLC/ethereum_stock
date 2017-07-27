@@ -433,7 +433,7 @@ const Ether = {
                         tokensDots: steppedDataMarks,
                         target: [
                             {
-                                x: xyAccum[0].x,
+                                x: xyAccum.length ? xyAccum[0].x : 0,
                                 y: target
                             }
                         ]
