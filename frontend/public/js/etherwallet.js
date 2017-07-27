@@ -192,6 +192,28 @@ let currentWallet = null;
 TokenPriceChart = {
     chart: null,
     data: null,
+    _calcYRange(target, tokens) {
+        const targetMax = target.length ? target[0].y * 1.1 : null;
+        const tokensMax = tokens.length ? tokens[tokens.length - 1].y : null;
+        const setMax = targetMax !== null && tokensMax !== null;
+        const setTokensMax = setMax && tokensMax < targetMax * 0.2;
+
+        if (setMax) {
+            if (setTokensMax) {
+                return {
+                    min: 0,
+                    max: tokensMax
+                };
+            } else {
+                return {
+                    min: 0,
+                    max: Math.max(tokensMax, targetMax)
+                };
+            }
+        } else {
+            return null;
+        }
+    },
     createChart(ctx, data) {
         TokenPriceChart.data = data;
         const options = {
@@ -217,30 +239,7 @@ TokenPriceChart = {
             responsive: false
         };
 
-        function calcYRange(target, tokens) {
-            const targetMax = target.length ? target[0].y * 1.1 : null;
-            const tokensMax = tokens.length ? tokens[tokens.length - 1].y : null;
-            const setMax = targetMax !== null && tokensMax !== null;
-            const setTokensMax = setMax && tokensMax < targetMax * 0.2;
-
-            if (setMax) {
-                if (setTokensMax) {
-                    return {
-                        min: 0,
-                        max: tokensMax
-                    };
-                } else {
-                    return {
-                        min: 0,
-                        max: targetMax
-                    };
-                }
-            } else {
-                return null;
-            }
-        }
-
-        const yRange = calcYRange(data.target, data.tokens);
+        const yRange = TokenPriceChart._calcYRange(data.target, data.tokens);
 
         if (yRange) {
             options.scales.yAxes[0].ticks = {
