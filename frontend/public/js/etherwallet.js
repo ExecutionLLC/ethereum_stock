@@ -283,10 +283,21 @@ TokenPriceChart = {
             options: options
         });
     },
-    show(fromDate) {
+    show(fromDate, newData) {
+        if (newData) {
+            TokenPriceChart.data = newData;
+        }
         const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
         const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
         const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
+        if (newData) {
+            const yRange = TokenPriceChart._calcYRange(newTarget, newTokens);
+            if (yRange) {
+                const yAxe = TokenPriceChart.chart.options.scales.yAxes[0];
+                yAxe.ticks.min = yRange.min;
+                yAxe.ticks.max = yRange.max;
+            }
+        }
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
         TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
         TokenPriceChart.chart.data.datasets[2].data = newTarget;
@@ -951,7 +962,11 @@ function onload() {
             TokenPriceChart.show(fromDate);
         }
 
-        Ether.getTokensHistory((err, data, reinit) => {
+        Ether.getTokensHistory((err, data, update) => {
+            if (update) {
+                TokenPriceChart.show(fromDate, data);
+                return;
+            }
             wc.destroy();
             if (err) {
                 throw `Tokens history error, ${err}`;
