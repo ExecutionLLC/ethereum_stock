@@ -393,6 +393,48 @@ const Ether = {
                 });
             }
 
+            function watchLogs(fromBlock, onLog) {
+/*
+TODO: test and uncomment this code before merge
+
+                function handleLogAsync(log, callback) {
+                    if (!isLogToShow(log)) {
+                        return;
+                    }
+                    timestampLog(log, callback);
+                }
+
+                const web3contract = web3.eth
+                    .contract(CONTRACT.ABI)
+                    .at(CONTRACT.ID);
+                const transferEvent = web3contract.Transfer({}, {fromBlock: fromBlock, toBlock: 'latest'});
+                transferEvent.watch((err, log) => {
+                    if (err) {
+                        return;
+                    }
+                    handleLogAsync(log, (err, log) => {
+                        if (err) {
+                            return;
+                        }
+                        onLog(log);
+                    })
+                });
+*/
+
+// TODO: remove this code before merge
+
+                function f() {
+                    const lastLog = {
+                        timestamp: Math.floor(+new Date() / 1000),
+                        transactionIndex: 0,
+                        tokens: Math.floor(10000 * Math.random() + 1)
+                    };
+                    onLog(lastLog);
+                    setTimeout(f, 2000);
+                }
+                setTimeout(f, 2000);
+            }
+
             const logs = allLogs.filter(isLogToShow);
             async.map(logs, timestampLog, (err, tokens) => {
                 if (err) {
@@ -421,6 +463,24 @@ const Ether = {
                         y: trx.tokens
                     }));
                 }
+
+                watchLogs(logs.length ? logs[logs.length - 1].blockNumber + 1 : 0, (log) => {
+                    tokens.push(log);
+                    const xy = transactionsToXY(tokens);
+                    const xyAccum = XYData.makeAccumulation(xy);
+                    const xyStepped = XYData.makeStepped(xyAccum);
+                    const steppedDataMarks = XYData.makeLastInX(xyStepped);
+                    callback(null, {
+                        tokens: xyStepped,
+                        tokensDots: steppedDataMarks,
+                        target: [
+                            {
+                                x: xyAccum[0].x,
+                                y: target
+                            }
+                        ]
+                    }, true);
+                });
 
                 function handleTokens(tokens) {
                     const xy = transactionsToXY(tokens);
