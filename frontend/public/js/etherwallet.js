@@ -482,7 +482,7 @@ TODO: test and uncomment this code before merge
                     }, true);
                 });
 
-                function handleTokens(tokens) {
+                function handleTokens(tokens, callback) {
                     const xy = transactionsToXY(tokens);
                     const xyAccum = XYData.makeAccumulation(xy);
                     const xyStepped = XYData.makeStepped(xyAccum);
@@ -499,7 +499,7 @@ TODO: test and uncomment this code before merge
                     });
                 }
 
-                handleTokens(tokens);
+                handleTokens(tokens, callback);
             });
         });
     },
