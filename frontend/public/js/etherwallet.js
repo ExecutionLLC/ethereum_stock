@@ -199,17 +199,11 @@ TokenPriceChart = {
         const setTokensMax = setMax && tokensMax < targetMax * 0.2;
 
         if (setMax) {
-            if (setTokensMax) {
-                return {
-                    min: 0,
-                    max: tokensMax
-                };
-            } else {
-                return {
-                    min: 0,
-                    max: Math.max(tokensMax, targetMax)
-                };
-            }
+            const maxValue = setTokensMax ? tokensMax : Math.max(tokensMax, targetMax);
+            return {
+                min: 0,
+                max: maxValue
+            };
         } else {
             return null;
         }
