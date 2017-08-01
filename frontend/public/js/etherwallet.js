@@ -424,8 +424,6 @@ const Ether = {
             }
 
             function watchLogs(fromBlock, onLog) {
-/*
-TODO: test and uncomment this code before merge
 
                 function handleLogAsync(log, callback) {
                     if (!isLogToShow(log)) {
@@ -449,20 +447,6 @@ TODO: test and uncomment this code before merge
                         onLog(log);
                     })
                 });
-*/
-
-// TODO: remove this code before merge
-
-                function f() {
-                    const lastLog = {
-                        timestamp: Math.floor(+new Date() / 1000),
-                        transactionIndex: 0,
-                        tokens: Math.floor(10000 * Math.random() + 1)
-                    };
-                    onLog(lastLog);
-                    setTimeout(f, 2000);
-                }
-                setTimeout(f, 2000);
             }
 
             const logs = allLogs.filter(isLogToShow);
