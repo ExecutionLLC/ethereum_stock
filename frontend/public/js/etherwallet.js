@@ -312,13 +312,19 @@ TokenPriceChart = {
             options: options
         });
     },
-    show(fromDate, newData) {
+    show(fromDate, newData, overrideNow) {
         if (newData) {
             TokenPriceChart.data = newData;
         }
-        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
-        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
-        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
+        let now;
+        if (overrideNow && TokenPriceChart.data.tokens.length) {
+            now = TokenPriceChart.data.tokens[TokenPriceChart.data.tokens.length - 1].x
+        } else {
+            now = +new Date();
+        }
+        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, now, true);
+        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, now, false);
+        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, now, true);
 
         if (newData) {
             const yRange = TokenPriceChart._calcYRange(newTarget, newTokens);
@@ -1031,7 +1037,7 @@ function onload() {
             }
             const {data, update} = result;
             if (update) {
-                TokenPriceChart.show(fromDate, data);
+                TokenPriceChart.show(fromDate, data, true);
                 return;
             }
             wc.destroy();
