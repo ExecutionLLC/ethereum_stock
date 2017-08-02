@@ -65,6 +65,7 @@ const Page = {
                 BUY: {
                     GROUP: 'buy-tokens-group',
                     COUNT: 'buy-tokens-count',
+                    GAS_PRICE: 'buy-gas-price',
                     BUTTON: 'buy-tokens-button',
                     PRICE: 'buy-tokens-price',
                     WAIT: 'buy-tokens-wait',
@@ -245,7 +246,7 @@ const Page = {
         if (!walletInfo) {
             return;
         }
-        const {wallet, info} = walletInfo;
+        const {wallet, info, gasPrice} = walletInfo;
         Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.WALLET_ADDRESS).text(wallet.address);
         const INFO_IDS = Page.ELEMENT_ID.ALTER_WALLET.INFO;
         Page.$id(INFO_IDS.BALANCE).text(info.balance);
@@ -254,6 +255,8 @@ const Page = {
         Page.$id(INFO_IDS.CAN_BE_BOUGHT).text(info.canBeBought);
         Page.$id(INFO_IDS.TOKENS_LEFT).text(info.tokensLeft);
         Page.$id(INFO_IDS.WALLET_TOKENS).text(info.walletTokens);
+
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).val(gasPrice);
     },
     buyTokensState: {
         _isValid: false,
@@ -263,6 +266,7 @@ const Page = {
             const isWaiting = Page.buyTokensState._isWaiting;
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).prop('disabled', isWaiting);
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
             Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !isValid || isWaiting);
         },
@@ -537,6 +541,7 @@ const Page = {
             Page.showBuyTransaction();
             Page.buyTokensState.toggleWait(true);
             const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
+            const gasPrice = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).val();
             try {
                 let transactionId;
                 function onTransactionId(id) {
@@ -544,7 +549,7 @@ const Page = {
                     Page.showBuyTransaction(id, false);
                 }
 
-                Page.onBuyTokensAsync(count, onTransactionId)
+                Page.onBuyTokensAsync(count,gasPrice, onTransactionId)
                     .then(() => {
                         Page.buyTokensState.toggleWait(false);
                         Page.showBuyTransaction(transactionId, true);
