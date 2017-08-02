@@ -212,6 +212,37 @@ function smartCeil(a, pmin, pmax) {
 TokenPriceChart = {
     chart: null,
     data: null,
+    _calcYRange(target, tokens) {
+        const targetMax = target.length ? target[0].y : null;
+        const tokensMax = tokens.length ? tokens[tokens.length - 1].y : null;
+        const setMax = targetMax !== null && tokensMax !== null;
+        const setTokensMax = setMax && tokensMax < targetMax * 0.2;
+
+        if (setMax) {
+            const maxValue = setTokensMax ? tokensMax : Math.max(tokensMax, targetMax);
+            const max = smartCeil(maxValue, 0.05, 0.2);
+            return {
+                min: 0,
+                max: max,
+                showTarget: targetMax <= max
+            };
+        } else {
+            return null;
+        }
+    },
+    _makeLabelsFilter(withTarget) {
+        function labelsFilterWithTarget(item) {
+            return item.datasetIndex !== 1;
+        }
+
+        function labelsFilterWOTarget(item) {
+            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
+        }
+
+        return withTarget ?
+            labelsFilterWithTarget :
+            labelsFilterWOTarget;
+    },
     createChart(ctx, data) {
         TokenPriceChart.data = data;
         const options = {
@@ -232,41 +263,18 @@ TokenPriceChart = {
             responsive: false
         };
 
-        function labelsFilterWithTarget(item) {
-            return item.datasetIndex !== 1;
-        }
+        const yRange = TokenPriceChart._calcYRange(data.target, data.tokens);
 
-        function labelsFilterWOTarget(item) {
-            return item.datasetIndex !== 1 && item.datasetIndex !== 2;
-        }
-
-        const targetMax = data.target.length ? data.target[0].y : null;
-        const tokensMax = data.tokens.length ? data.tokens[data.tokens.length - 1].y : null;
-        const setMax = targetMax !== null && tokensMax !== null;
-        const setTokensMax = setMax && tokensMax < targetMax * 0.2;
-
-        if (setMax) {
-            if (setTokensMax) {
-                options.legend = {
-                    labels: {
-                        filter: labelsFilterWOTarget
-                    }
-                };
-                options.scales.yAxes[0].ticks = {
-                    suggestedMin: 0,
-                    max: smartCeil(tokensMax, 0.05, 0.2)
-                };
-            } else {
-                options.legend = {
-                    labels: {
-                        filter: labelsFilterWithTarget
-                    }
-                };
-                options.scales.yAxes[0].ticks = {
-                    suggestedMin: 0,
-                    suggestedMax: smartCeil(targetMax, 0.05, 0.2)
-                };
-            }
+        if (yRange) {
+            options.scales.yAxes[0].ticks = {
+                min: yRange.min,
+                max: yRange.max
+            };
+            options.legend = {
+                labels: {
+                    filter: TokenPriceChart._makeLabelsFilter(yRange.showTarget)
+                }
+            };
         }
 
         TokenPriceChart.chart = new Chart(ctx, {
@@ -304,10 +312,29 @@ TokenPriceChart = {
             options: options
         });
     },
-    show(fromDate) {
-        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, +new Date(), true);
-        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, +new Date(), false);
-        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, +new Date(), true);
+    show(fromDate, newData, overrideNow) {
+        if (newData) {
+            TokenPriceChart.data = newData;
+        }
+        let now;
+        if (overrideNow && TokenPriceChart.data.tokens.length) {
+            now = TokenPriceChart.data.tokens[TokenPriceChart.data.tokens.length - 1].x
+        } else {
+            now = +new Date();
+        }
+        const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, now, true);
+        const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, now, false);
+        const newTarget = XYData.setRange(TokenPriceChart.data.target, fromDate, now, true);
+
+        if (newData) {
+            const yRange = TokenPriceChart._calcYRange(newTarget, newTokens);
+            if (yRange) {
+                const yAxe = TokenPriceChart.chart.options.scales.yAxes[0];
+                yAxe.ticks.min = yRange.min;
+                yAxe.ticks.max = yRange.max;
+                TokenPriceChart.chart.options.legend.labels.filter = TokenPriceChart._makeLabelsFilter(yRange.showTarget);
+            }
+        }
         TokenPriceChart.chart.data.datasets[0].data = newTokens;
         TokenPriceChart.chart.data.datasets[1].data = newTokensDots;
         TokenPriceChart.chart.data.datasets[2].data = newTarget;
@@ -351,9 +378,8 @@ const Ether = {
                 callback(error);
             } else {
                 async.map(logs.slice(-count), (log, callback) => {
-                    web3.eth.getBlock(log.blockNumber, (error, block) => {
-                        const {args: {_from, _to, _value}} = log;
-                        const {timestamp} = block;
+                    const {args: {_from, _to, _value}} = log;
+                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
                         callback(null, {
                             timestamp,
                             from: _from,
@@ -385,50 +411,92 @@ const Ether = {
         transferEvent.get((error, allLogs) => {
             if (error) {
                 callback(error);
-            } else {
-                const logs = allLogs.filter(l => l.args._from === '0x0000000000000000000000000000000000000000');
-                async.map(logs, (log, callback) => {
-                    Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
-                        const {transactionIndex, args: {_value}} = log;
-                        callback(null, {
-                            timestamp,
-                            transactionIndex,
-                            tokens: new BigNumber(_value).toNumber()
-                        });
+                return;
+            }
+
+            function isLogToShow(log) {
+                return log.args._from === '0x0000000000000000000000000000000000000000';
+            }
+
+            function timestampLog(log, callback) {
+                Ether.getBlockTimestamp(log.blockNumber, (error, timestamp) => {
+                    const {transactionIndex, args: {_value}} = log;
+                    callback(null, {
+                        timestamp,
+                        transactionIndex,
+                        tokens: new BigNumber(_value).toNumber()
                     });
-                }, (err, tokens) => {
-                    if (err) {
-                        callback(err);
+                });
+            }
+
+            function watchLogs(fromBlock, onLog) {
+
+                function handleLogAsync(log, callback) {
+                    if (!isLogToShow(log)) {
                         return;
                     }
+                    timestampLog(log, callback);
+                }
 
-                    function transactionsToXY(transactions) {
-                        const transactionsForTimestamps = transactions.reduce(
-                            (parts, trx) => {
-                                const {transactionIndex, timestamp} = trx;
-                                const transactionsForTimestamp = parts[timestamp] || 0;
-                                const atLeastTransactionsForTimestamp = transactionIndex + 1;
-                                if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
-                                    parts[timestamp] = atLeastTransactionsForTimestamp;
-                                }
-                                return parts;
-                            },
-                            {}
-                        );
-                        const lastTimestamp = Math.floor(+new Date() / 1000);
-                        const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
-                        transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
-                        return transactions.map(trx => ({
-                            x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
-                            y: trx.tokens
-                        }));
+                const web3contract = web3.eth
+                    .contract(CONTRACT.ABI)
+                    .at(CONTRACT.ID);
+                const transferEvent = web3contract.Transfer({}, {fromBlock: fromBlock, toBlock: 'latest'});
+                transferEvent.watch((err, log) => {
+                    if (err) {
+                        return;
                     }
+                    handleLogAsync(log, (err, log) => {
+                        if (err) {
+                            return;
+                        }
+                        onLog(log);
+                    })
+                });
+            }
 
+            const logs = allLogs.filter(isLogToShow);
+            async.map(logs, timestampLog, (err, tokens) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                function transactionsToXY(transactions) {
+                    const transactionsForTimestamps = transactions.reduce(
+                        (parts, trx) => {
+                            const {transactionIndex, timestamp} = trx;
+                            const transactionsForTimestamp = parts[timestamp] || 0;
+                            const atLeastTransactionsForTimestamp = transactionIndex + 1;
+                            if (transactionsForTimestamp < atLeastTransactionsForTimestamp) {
+                                parts[timestamp] = atLeastTransactionsForTimestamp;
+                            }
+                            return parts;
+                        },
+                        {}
+                    );
+                    const lastTimestamp = Math.floor(+new Date() / 1000);
+                    const transactionsInLastTimestamp = transactionsForTimestamps[lastTimestamp] || 0;
+                    transactionsForTimestamps[lastTimestamp] = transactionsInLastTimestamp + 1;
+                    return transactions.map(trx => ({
+                        x: 1000 * (trx.timestamp + trx.transactionIndex / transactionsForTimestamps[trx.timestamp]),
+                        y: trx.tokens
+                    }));
+                }
+
+                watchLogs(logs.length ? logs[logs.length - 1].blockNumber + 1 : 0, (log) => {
+                    tokens.push(log);
+                    handleTokens(tokens, (err, data) => {
+                        callback(err, Object.assign({}, data, {update: true}));
+                    });
+                });
+
+                function handleTokens(tokens, callback) {
                     const xy = transactionsToXY(tokens);
                     const xyAccum = XYData.makeAccumulation(xy);
                     const xyStepped = XYData.makeStepped(xyAccum);
                     const steppedDataMarks = XYData.makeLastInX(xyStepped);
-                    callback(null, {
+                    callback(null, {data: {
                         tokens: xyStepped,
                         tokensDots: steppedDataMarks,
                         target: [
@@ -437,9 +505,11 @@ const Ether = {
                                 y: target
                             }
                         ]
-                    });
-                });
-            }
+                    }});
+                }
+
+                handleTokens(tokens, callback);
+            });
         });
     },
     getPriceData(client, web3contract, callback) {
@@ -955,19 +1025,33 @@ function onload() {
         console.log('No chart canvas element');
     } else {
         const wc = createChartWaiting(chartCtx);
-        Ether.getTokensHistory((err, data) => {
-            wc.destroy();
+
+        let fromDate = 0;
+
+        function showChart() {
+            TokenPriceChart.show(fromDate);
+        }
+
+        Ether.getTokensHistory((err, result) => {
             if (err) {
                 throw `Tokens history error, ${err}`;
             }
+            const {data, update} = result;
+            if (update) {
+                TokenPriceChart.show(fromDate, data, true);
+                return;
+            }
+            wc.destroy();
             TokenPriceChart.createChart(chartCtx, data);
             Page.onChartShowWhole = () => {
-                TokenPriceChart.show(0);
+                fromDate = 0;
+                showChart()
             };
             Page.onChartShowMonth = () => {
-                TokenPriceChart.show(+moment().subtract(7, 'day'));
+                fromDate = +moment().subtract(7, 'day');
+                showChart()
             };
-            TokenPriceChart.show(0);
+            showChart();
         });
     }
 }
