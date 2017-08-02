@@ -540,18 +540,11 @@ const Ether = {
             }
         });
     },
-    buyTokens(wallet, contractAddress, value, onTransaction) {
+    buyTokens(wallet, contractAddress, value, gasPrice, onTransaction) {
         const provider = wallet.provider;
-        const gasPricePromise = provider.getGasPrice();
-        const transactionCountPromise = provider.getTransactionCount(wallet.address);
 
-        return Promise.all([
-            gasPricePromise,
-            transactionCountPromise,
-        ])
-            .then((result) => {
-                const gasPrice = result[0];
-                const transactionCount = result[1];
+        return provider.getTransactionCount(wallet.address)
+            .then((transactionCount) => {
                 const transactionParams = {
                     to: contractAddress,
                     from: wallet.address,
@@ -888,15 +881,17 @@ function onload() {
             .then((wallet) => {
                 const currentNode = Nodes.getCurrentNode();
                 wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
-                return Ether.getWalletInfoAsync(wallet)
-                    .then((info) => ({wallet, info}));
-            })
-            .then(({wallet, info}) => {
-                currentWallet = {
-                    wallet,
-                    info
-                };
-                return currentWallet;
+                const info = Ether.getWalletInfoAsync(wallet);
+                const gasPrice = wallet.provider.getGasPrice();
+                return Promise.all([info,gasPrice])
+                    .then(([info, gasPrice]) => {
+                        currentWallet = {
+                            wallet,
+                            info,
+                            gasPrice
+                        };
+                        return currentWallet;
+                    });
             });
     };
 
@@ -909,19 +904,25 @@ function onload() {
         return !currentWallet.info.tokensAvailable.lessThan(count);
     };
 
-    Page.onBuyTokensAsync = (count, onTransaction) => {
+    Page.onBuyTokensAsync = (count, gasPrice, onTransaction) => {
         const contract = web3.eth
             .contract(CONTRACT.ABI)
             .at(CONTRACT.ID);
         const tokenPrice = contract.tokenPrice();
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
-        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, onTransaction)
-            .then(() => Ether.getWalletInfoAsync(currentWallet.wallet))
-            .then((info) => {
+        const gasPriceStr = `0x${new BigNumber(gasPrice).toString(16)}`;
+        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, gasPriceStr, onTransaction)
+            .then(() => {
+                const info = Ether.getWalletInfoAsync(currentWallet.wallet);
+                const gasPrice = currentWallet.wallet.provider.getGasPrice();
+                return Promise.all([info,gasPrice]);
+            })
+            .then(([info, gasPrice]) => {
                 currentWallet = {
                     wallet: currentWallet.wallet,
-                    info
+                    info,
+                    gasPrice
                 };
                 Page.showCurrentWallet(currentWallet);
             });
@@ -1009,12 +1010,15 @@ function onload() {
                 });
             })
             .then(() => {
-                return Ether.getWalletInfoAsync(currentWallet.wallet);
+                const info = Ether.getWalletInfoAsync(currentWallet.wallet);
+                const gasPrice = currentWallet.wallet.provider.getGasPrice();
+                return Promise.all([info,gasPrice]);
             })
-            .then((info) => {
+            .then(([info, gasPrice]) => {
                 currentWallet = {
                     wallet: currentWallet.wallet,
-                    info
+                    info,
+                    gasPrice
                 };
                 Page.showCurrentWallet(currentWallet);
             });
