@@ -882,7 +882,7 @@ function onload() {
                 const currentNode = Nodes.getCurrentNode();
                 wallet.provider = new ethers.providers.JsonRpcProvider(currentNode.url, false, currentNode.chainId);
                 const info = Ether.getWalletInfoAsync(wallet);
-                const gasPrice= wallet.provider.getGasPrice();
+                const gasPrice = wallet.provider.getGasPrice();
                 return Promise.all([info,gasPrice])
                     .then(([info, gasPrice]) => {
                         currentWallet = {
@@ -912,10 +912,10 @@ function onload() {
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
         const gasPriceStr = `0x${new BigNumber(gasPrice).toString(16)}`;
-        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr,gasPriceStr, onTransaction)
+        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, gasPriceStr, onTransaction)
             .then(() => {
                 const info = Ether.getWalletInfoAsync(currentWallet.wallet);
-                const gasPrice= currentWallet.wallet.provider.getGasPrice();
+                const gasPrice = currentWallet.wallet.provider.getGasPrice();
                 return Promise.all([info,gasPrice]);
             })
             .then(([info, gasPrice]) => {
@@ -1011,7 +1011,7 @@ function onload() {
             })
             .then(() => {
                 const info = Ether.getWalletInfoAsync(currentWallet.wallet);
-                const gasPrice= currentWallet.wallet.provider.getGasPrice();
+                const gasPrice = currentWallet.wallet.provider.getGasPrice();
                 return Promise.all([info,gasPrice]);
             })
             .then(([info, gasPrice]) => {

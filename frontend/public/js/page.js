@@ -549,7 +549,7 @@ const Page = {
                     Page.showBuyTransaction(id, false);
                 }
 
-                Page.onBuyTokensAsync(count,gasPrice, onTransactionId)
+                Page.onBuyTokensAsync(count, gasPrice, onTransactionId)
                     .then(() => {
                         Page.buyTokensState.toggleWait(false);
                         Page.showBuyTransaction(transactionId, true);
