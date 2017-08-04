@@ -40,7 +40,7 @@ function createChartWaiting(ctx) {
                 }]
             },
             legend: false,
-            responsive: false
+            responsive: true
         }
     };
 

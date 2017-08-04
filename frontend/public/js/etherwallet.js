@@ -260,7 +260,7 @@ TokenPriceChart = {
                     id: "y-axis-1"
                 }]
             },
-            responsive: false
+            responsive: true
         };
 
         const yRange = TokenPriceChart._calcYRange(data.target, data.tokens);
