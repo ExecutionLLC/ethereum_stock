@@ -551,7 +551,7 @@ const Ether = {
             }
         });
     },
-    buyTokens(wallet, contractAddress, value, gasPrice, onTransaction) {
+    buyForSelfTokens(wallet, contractAddress, value, gasPrice, onTransaction) {
         const provider = wallet.provider;
 
         return provider.getTransactionCount(wallet.address)
@@ -906,12 +906,12 @@ function onload() {
             });
     };
 
-    Page.onBuyTokensValidation = (count) => {
+    Page.onBuyForSelfTokensValidation = (count) => {
         if (!Validator.tokenCount(count)) {
-            Page.showBuyTokensPrice(0);
+            Page.showBuyForSelfTokensPrice(0);
             return false;
         }
-        Page.showBuyTokensPrice(currentWallet.info.price.mul(count).toString());
+        Page.showBuyForSelfTokensPrice(currentWallet.info.price.mul(count).toString());
         return !currentWallet.info.tokensAvailable.lessThan(count);
     };
 
@@ -923,7 +923,7 @@ function onload() {
         const wei = tokenPrice.times(count);
         const weiStr = `0x${wei.toString(16)}`;
         const gasPriceStr = `0x${new BigNumber(gasPrice).toString(16)}`;
-        return Ether.buyTokens(currentWallet.wallet, CONTRACT.ID, weiStr, gasPriceStr, onTransaction)
+        return Ether.buyForSelfTokens(currentWallet.wallet, CONTRACT.ID, weiStr, gasPriceStr, onTransaction)
             .then(() => {
                 const info = Ether.getWalletInfoAsync(currentWallet.wallet);
                 const gasPrice = currentWallet.wallet.provider.getGasPrice();
@@ -982,13 +982,13 @@ function onload() {
         return Nodes.canRemoveNode(id);
     };
 
-    Page.onSellTokensValidation = (count, walletId) => {
+    Page.onBuyForUserTokensValidation = (count, walletId) => {
         let countValid;
         if (!Validator.tokenCount(count)) {
             countValid = false;
-            Page.showSellTokensPrice(0);
+            Page.showBuyForUserTokensPrice(0);
         } else {
-            Page.showSellTokensPrice(currentWallet.info.price.mul(count));
+            Page.showBuyForUserTokensPrice(currentWallet.info.price.mul(count));
             countValid = !currentWallet.info.tokensAvailable.lessThan(count);
         }
         return {
@@ -997,7 +997,7 @@ function onload() {
         };
     };
 
-    Page.onSellTokensAsync = (count, walletId, onTransaction) => {
+    Page.onBuyForUserTokensAsync = (count, walletId, onTransaction) => {
         const contract = new ethers.Contract(CONTRACT.ID, CONTRACT.ABI, currentWallet.wallet);
         return contract.tokenPrice()
             .then((tokenPrice) => {
@@ -1014,7 +1014,7 @@ function onload() {
                 onTransaction(hash);
                 return new Promise((resolve) => {
                     currentWallet.wallet.provider.once(hash, (transaction) => {
-                        console.log('Transaction sell Minded: ' + transaction.hash);
+                        console.log('Transaction Minded: ' + transaction.hash);
                         console.log(transaction);
                         resolve();
                     });

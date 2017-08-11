@@ -62,29 +62,29 @@ const Page = {
             OPERATIONS: {
                 CONTAINER: 'wallet-ops',
                 WALLET_ADDRESS: 'wallet-address',
-                BUY: {
-                    GROUP: 'buy-tokens-group',
-                    COUNT: 'buy-tokens-count',
-                    GAS_PRICE: 'buy-gas-price',
-                    BUTTON: 'buy-tokens-button',
-                    PRICE: 'buy-tokens-price',
-                    WAIT: 'buy-tokens-wait',
-                    ERROR: 'buy-tokens-error',
-                    TRANSACTION_WAIT: 'buy-tokens-transaction-waiting',
-                    TRANSACTION_COMPLETE: 'buy-tokens-transaction-completed',
-                    TRANSACTION_FAILED: 'buy-tokens-transaction-failed'
+                BUY_FOR_SELF: {
+                    GROUP: 'buy-for-self-tokens-group',
+                    COUNT: 'buy-for-self-tokens-count',
+                    GAS_PRICE: 'buy-for-self-gas-price',
+                    BUTTON: 'buy-for-self-tokens-button',
+                    PRICE: 'buy-for-self-tokens-price',
+                    WAIT: 'buy-for-self-tokens-wait',
+                    ERROR: 'buy-for-self-tokens-error',
+                    TRANSACTION_WAIT: 'buy-for-self-tokens-transaction-waiting',
+                    TRANSACTION_COMPLETE: 'buy-for-self-tokens-transaction-completed',
+                    TRANSACTION_FAILED: 'buy-for-self-tokens-transaction-failed'
                 },
-                SELL: {
-                    GROUP: 'sell-tokens-group',
-                    COUNT: 'sell-tokens-count',
-                    WALLET: 'sell-tokens-wallet',
-                    BUTTON: 'sell-tokens-button',
-                    PRICE: 'sell-tokens-price',
-                    WAIT: 'sell-tokens-wait',
-                    ERROR: 'sell-tokens-error',
-                    TRANSACTION_WAIT: 'sell-tokens-transaction-waiting',
-                    TRANSACTION_COMPLETE: 'sell-tokens-transaction-completed',
-                    TRANSACTION_FAILED: 'buy-tokens-transaction-failed'
+                BUY_FOR_USER: {
+                    GROUP: 'buy-for-user-tokens-group',
+                    COUNT: 'buy-for-user-tokens-count',
+                    WALLET: 'buy-for-user-tokens-wallet',
+                    BUTTON: 'buy-for-user-tokens-button',
+                    PRICE: 'buy-for-user-tokens-price',
+                    WAIT: 'buy-for-user-tokens-wait',
+                    ERROR: 'buy-for-user-tokens-error',
+                    TRANSACTION_WAIT: 'buy-for-user-tokens-transaction-waiting',
+                    TRANSACTION_COMPLETE: 'buy-for-user-tokens-transaction-completed',
+                    TRANSACTION_FAILED: 'buy-for-user-tokens-transaction-failed'
                 }
             },
             INFO: {
@@ -223,13 +223,13 @@ const Page = {
             .text(error)
             .toggle(error != null);
     },
-    showBuyTokensError(error) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.ERROR)
+    showBuyForSelfTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.ERROR)
             .text(error)
             .toggle(error != null);
     },
-    showSellTokensError(error) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.ERROR)
+    showBuyForUserTokensError(error) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.ERROR)
             .text(error)
             .toggle(error != null);
     },
@@ -256,72 +256,72 @@ const Page = {
         Page.$id(INFO_IDS.TOKENS_LEFT).text(info.tokensLeft);
         Page.$id(INFO_IDS.WALLET_TOKENS).text(info.walletTokens);
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).val(gasPrice);
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.GAS_PRICE).val(gasPrice);
     },
-    buyTokensState: {
+    buyForSelfTokensState: {
         _isValid: false,
         _isWaiting: false,
         _showCurrentState() {
-            const isValid = Page.buyTokensState._isValid;
-            const isWaiting = Page.buyTokensState._isWaiting;
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GROUP).toggleClass('has-error', !isValid);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).prop('disabled', !isValid || isWaiting);
+            const isValid = Page.buyForSelfTokensState._isValid;
+            const isWaiting = Page.buyForSelfTokensState._isWaiting;
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.GROUP).toggleClass('has-error', !isValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.COUNT).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.GAS_PRICE).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.BUTTON).prop('disabled', !isValid || isWaiting);
         },
         init() {
-            Page.buyTokensState._isValid = false;
-            Page.buyTokensState._isWaiting = false;
-            Page.buyTokensState._showCurrentState();
+            Page.buyForSelfTokensState._isValid = false;
+            Page.buyForSelfTokensState._isWaiting = false;
+            Page.buyForSelfTokensState._showCurrentState();
         },
         toggleWait(isWait) {
-            Page.buyTokensState._isWaiting = isWait;
-            Page.buyTokensState._showCurrentState();
+            Page.buyForSelfTokensState._isWaiting = isWait;
+            Page.buyForSelfTokensState._showCurrentState();
         },
         toggleValid(isValid) {
-            Page.buyTokensState._isValid = isValid;
-            Page.buyTokensState._showCurrentState();
+            Page.buyForSelfTokensState._isValid = isValid;
+            Page.buyForSelfTokensState._showCurrentState();
         }
     },
-    sellTokensState: {
+    buyForUserTokensState: {
         _isCountValid: false,
         _isRecipientValid: false,
         _isWaiting: false,
         _showCurrentState() {
-            const isCountValid = Page.sellTokensState._isCountValid;
-            const isRecipientValid = Page.sellTokensState._isRecipientValid;
-            const isWaiting = Page.sellTokensState._isWaiting;
+            const isCountValid = Page.buyForUserTokensState._isCountValid;
+            const isRecipientValid = Page.buyForUserTokensState._isRecipientValid;
+            const isWaiting = Page.buyForUserTokensState._isWaiting;
             const isGroupValid = isCountValid && isRecipientValid;
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.GROUP).toggleClass('has-error', !isGroupValid);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).toggleClass('alert-danger', !isCountValid);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).toggleClass('alert-danger', !isRecipientValid);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).prop('disabled', isWaiting);
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
-            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).prop('disabled', !isCountValid || !isRecipientValid || isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.GROUP).toggleClass('has-error', !isGroupValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.COUNT).toggleClass('alert-danger', !isCountValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WALLET).toggleClass('alert-danger', !isRecipientValid);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WALLET).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.COUNT).prop('disabled', isWaiting);
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WAIT).css('visibility', isWaiting ? 'visible' : 'hidden');
+            Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.BUTTON).prop('disabled', !isCountValid || !isRecipientValid || isWaiting);
         },
         init() {
-            Page.sellTokensState._isCountValid = false;
-            Page.sellTokensState._isRecipientValid = false;
-            Page.sellTokensState._isWaiting = false;
-            Page.sellTokensState._showCurrentState();
+            Page.buyForUserTokensState._isCountValid = false;
+            Page.buyForUserTokensState._isRecipientValid = false;
+            Page.buyForUserTokensState._isWaiting = false;
+            Page.buyForUserTokensState._showCurrentState();
         },
         toggleWait(isWait) {
-            Page.sellTokensState._isWaiting = isWait;
-            Page.sellTokensState._showCurrentState();
+            Page.buyForUserTokensState._isWaiting = isWait;
+            Page.buyForUserTokensState._showCurrentState();
         },
         toggleValid(isCountValid, isRecipientValid) {
-            Page.sellTokensState._isCountValid = isCountValid;
-            Page.sellTokensState._isRecipientValid = isRecipientValid;
-            Page.sellTokensState._showCurrentState();
+            Page.buyForUserTokensState._isCountValid = isCountValid;
+            Page.buyForUserTokensState._isRecipientValid = isRecipientValid;
+            Page.buyForUserTokensState._showCurrentState();
         }
     },
-    showBuyTokensPrice(price) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.PRICE).text(price);
+    showBuyForSelfTokensPrice(price) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.PRICE).text(price);
     },
-    showSellTokensPrice(price) {
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.PRICE).text(price);
+    showBuyForUserTokensPrice(price) {
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.PRICE).text(price);
     },
     showTransaction(ids, id, complete, fail) {
         const $wait = Page.$id(ids.TRANSACTION_WAIT);
@@ -342,11 +342,11 @@ const Page = {
         const text = templateText.replace('%', id);
         $caption.text(text).show();
     },
-    showBuyTransaction(id, complete, fail) {
-        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY, id, complete, fail);
+    showBuyForSelfTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF, id, complete, fail);
     },
-    showSellTransaction(id, complete, fail) {
-        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL, id, complete, fail);
+    showBuyForUserTransaction(id, complete, fail) {
+        Page.showTransaction(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER, id, complete, fail);
     },
     getChartCanvasElement() {
         return Page.$id(Page.ELEMENT_ID.CHART.ID)[0];
@@ -386,13 +386,13 @@ const Page = {
         Page.showCurrentWallet();
         Page.showAlterWalletPrivateKeyError();
         Page.showAlterWalletFileError();
-        Page.showBuyTokensError();
-        Page.showSellTokensError();
-        Page.showBuyTransaction();
-        Page.showSellTransaction();
+        Page.showBuyForSelfTokensError();
+        Page.showBuyForUserTokensError();
+        Page.showBuyForSelfTransaction();
+        Page.showBuyForUserTransaction();
 
-        Page.buyTokensState.init();
-        Page.sellTokensState.init();
+        Page.buyForSelfTokensState.init();
+        Page.buyForUserTokensState.init();
         Page.nodesState.init();
 
         Page.$id(Page.ELEMENT_ID.NODES.ADD_NODE_SHOW_BUTTON).click(() => {
@@ -536,64 +536,64 @@ const Page = {
             return false;
         });
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.BUTTON).click(() => {
-            Page.showBuyTokensError();
-            Page.showBuyTransaction();
-            Page.buyTokensState.toggleWait(true);
-            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).val();
-            const gasPrice = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.GAS_PRICE).val();
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.BUTTON).click(() => {
+            Page.showBuyForSelfTokensError();
+            Page.showBuyForSelfTransaction();
+            Page.buyForSelfTokensState.toggleWait(true);
+            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.COUNT).val();
+            const gasPrice = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.GAS_PRICE).val();
             try {
                 let transactionId;
                 function onTransactionId(id) {
                     transactionId = id;
-                    Page.showBuyTransaction(id, false);
+                    Page.showBuyForSelfTransaction(id, false);
                 }
 
                 Page.onBuyTokensAsync(count, gasPrice, onTransactionId)
                     .then(() => {
-                        Page.buyTokensState.toggleWait(false);
-                        Page.showBuyTransaction(transactionId, true);
+                        Page.buyForSelfTokensState.toggleWait(false);
+                        Page.showBuyForSelfTransaction(transactionId, true);
                     })
                     .catch((err) => {
-                        Page.showBuyTokensError(err);
-                        Page.buyTokensState.toggleWait(false);
-                        Page.showBuyTransaction(transactionId, true, true);
+                        Page.showBuyForSelfTokensError(err);
+                        Page.buyForSelfTokensState.toggleWait(false);
+                        Page.showBuyForSelfTransaction(transactionId, true, true);
                     })
             }
             catch (e) {
-                Page.showBuyTokensError(e);
-                Page.buyTokensState.toggleWait(false);
+                Page.showBuyForSelfTokensError(e);
+                Page.buyForSelfTokensState.toggleWait(false);
             }
             return false;
         });
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.BUTTON).click(() => {
-            Page.showSellTokensError();
-            Page.showSellTransaction();
-            Page.sellTokensState.toggleWait(true);
-            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val();
-            const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val();
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.BUTTON).click(() => {
+            Page.showBuyForUserTokensError();
+            Page.showBuyForUserTransaction();
+            Page.buyForUserTokensState.toggleWait(true);
+            const count = +Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.COUNT).val();
+            const walletId = Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WALLET).val();
             try {
                 let transactionId;
                 function onTransactionId(id) {
                     transactionId = id;
-                    Page.showSellTransaction(id, false);
+                    Page.showBuyForUserTransaction(id, false);
                 }
 
-                Page.onSellTokensAsync(count, walletId, onTransactionId)
+                Page.onBuyForUserTokensAsync(count, walletId, onTransactionId)
                     .then(() => {
-                        Page.sellTokensState.toggleWait(false);
-                        Page.showSellTransaction(transactionId, true);
+                        Page.buyForUserTokensState.toggleWait(false);
+                        Page.showBuyForUserTransaction(transactionId, true);
                     })
                     .catch((err) => {
-                        Page.showSellTokensError(err);
-                        Page.sellTokensState.toggleWait(false);
-                        Page.showSellTransaction(transactionId, true, true);
+                        Page.showBuyForUserTokensError(err);
+                        Page.buyForUserTokensState.toggleWait(false);
+                        Page.showBuyForUserTransaction(transactionId, true, true);
                     })
             }
             catch (e) {
-                Page.showSellTokensError(e);
-                Page.sellTokensState.toggleWait(false);
+                Page.showBuyForUserTokensError(e);
+                Page.buyForUserTokensState.toggleWait(false);
             }
             return false;
         });
@@ -668,33 +668,33 @@ const Page = {
 
         // Buy tokens validation >>>
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY.COUNT).on('input', (evt) => {
-            Page.buyTokensState.toggleValid(
-                Page.onBuyTokensValidation(evt.target.value)
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_SELF.COUNT).on('input', (evt) => {
+            Page.buyForSelfTokensState.toggleValid(
+                Page.onBuyForSelfTokensValidation(evt.target.value)
             );
         });
 
         // <<< Buy tokens validation
 
-        // Sell tokens validation >>>
+        // Buy for user tokens validation >>>
 
-        function showCurrentSellTokensValid() {
-            const {countValid, recipientValid} = Page.onSellTokensValidation(
-                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).val(),
-                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).val()
+        function showCurrentBuyForUserTokensValid() {
+            const {countValid, recipientValid} = Page.onBuyForUserTokensValidation(
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.COUNT).val(),
+                Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WALLET).val()
             );
-            Page.sellTokensState.toggleValid(countValid, recipientValid);
+            Page.buyForUserTokensState.toggleValid(countValid, recipientValid);
         }
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.WALLET).on('input', () => {
-            showCurrentSellTokensValid();
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.WALLET).on('input', () => {
+            showCurrentBuyForUserTokensValid();
         });
 
-        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.SELL.COUNT).on('input', () => {
-            showCurrentSellTokensValid();
+        Page.$id(Page.ELEMENT_ID.ALTER_WALLET.OPERATIONS.BUY_FOR_USER.COUNT).on('input', () => {
+            showCurrentBuyForUserTokensValid();
         });
 
-        // <<< Sell tokens validation
+        // <<< Buy for user  tokens validation
 
     },
     onNodeAdd() {},
@@ -704,12 +704,12 @@ const Page = {
     onAlterWalletPrivateKeyAsync() {},
     onAlterWalletFileAsync() {},
     onBuyTokensAsync() {},
-    onSellTokensAsync() {},
+    onBuyForUserTokensAsync() {},
     onAddNodeValidation() {},
     onBalanceWalletValidation() {},
     onAlterWalletValidation() {},
-    onBuyTokensValidation() {},
-    onSellTokensValidation() {},
+    onBuyForSelfTokensValidation() {},
+    onBuyForUserTokensValidation() {},
     onChartShowWhole() {},
     onChartShowMonth() {}
 };
