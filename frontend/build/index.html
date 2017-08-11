@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="robots" content="noindex, nofollow"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <h1 class="hideable-header">Awesome ethereum token</h1>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Eethereum stock</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#about">Settings of ethereum node</a></li>
+                <li><a href="#balance">Token balance and operations history</a></li>
+                <li><a href="#currency">Crowdfunding progress</a></li>
+                <li><a href="#buysell">Purchase tokens</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <a id="about" class="anchor" name="about"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Settings of ethereum node</h3>
+        </div>
+        <div class="panel-body">
+            <form>
+                <div class="form-group form-inline">
+                    <label class="control-label">Current node</label>
+                    <select id="select-node" class="form-control"></select>
+                    <button id="add-node-button" class="btn btn-default">Add node...</button>
+                    <button id="remove-node-button" class="btn btn-default">Remove node</button>
+                    <span id="node-error" class="help-block"></span>
+                </div>
+                <div id="add-node-group" class="form-group">
+                    <span class="control-label">Add new Node:</span>
+                    <div class="form-group">
+                        <label class="control-label">Name</label>
+                        <input id="select-node-name" class="form-control" placeholder="Display node name" />
+                        <label class="control-label">URL</label>
+                        <input id="select-node-url" class="form-control" placeholder="http(s)://location.to.node:port"/>
+                        <label class="control-label">Chain id</label>
+                        <input id="select-node-chain-id" class="form-control" placeholder="Chain id" />
+                    </div>
+                    <button id="select-node-add" class="btn btn-default">Add Node</button>
+                    <button id="select-node-cancel" class="btn btn-default">Cancel</button>
+                    <span id="add-node-error" class="help-block"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <a id="balance" class="anchor" name="balance"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Check balance</h3>
+        </div>
+        <div class="panel-body">
+            <div class="container-fluid">
+                <div class="row show-grid">
+                    <div class="col-sm-5">
+                        <form>
+                            <div class="form-group">
+                                <label class="control-label">Enter the address of wallet:</label>
+                            </div>
+                            <div id="wallet-form-group" class="form-group form-inline">
+                                <input id="wallet-input" class="form-control" placeholder="0xaaaD4da8A374a8F39476F8CD0Dd2D950d0BDDDCd" />
+                                <button id="wallet-button" class="btn btn-default">Check</button>
+                                <span id="balance-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="balance-error" class="help-block"></span>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="balance-container">
+                        <div class="col-sm-2">
+                            Your balance:
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="container-fluid">
+                                <div class="row show-grid">
+                                    <div id="balance-tokens" class="col-sm-8"></div>
+                                    <div class="col-sm-4">Tokens</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-btc" class="col-sm-8"></div>
+                                    <div class="col-sm-4">BTC</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-eth" class="col-sm-8"></div>
+                                    <div class="col-sm-4">ETH</div>
+                                </div>
+                                <div class="row show-grid">
+                                    <div id="balance-withdrawals-eth" class="col-sm-8"></div>
+                                    <div class="col-sm-4">Withdrawals ETH</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tokens-history-container">
+                        <div class="col-sm-2">
+                            Last operations:
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="container-fluid">
+                                <div class="row show-grid">
+                                    <div class="col-sm-4">Timestamp</div>
+                                    <div class="col-sm-4">Operation Type</div>
+                                    <div class="col-sm-4">Quantity</div>
+                                </div>
+                                <div id="tokens-history-template" class="row show-grid" style="display:none;">
+                                    <div id="tokens-history-op-time" class="col-sm-4"></div>
+                                    <div id="tokens-history-op-name-buy" class="col-sm-4">IN</div>
+                                    <div id="tokens-history-op-name-sell" class="col-sm-4">OUT</div>
+                                    <div id="tokens-history-op-count" class="col-sm-4"></div>
+                                </div>
+                                <div id="tokens-history-content">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a id="currency" class="anchor" name="currency"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Crowdfunding progress</h3>
+        </div>
+        <div class="panel-body">
+        	<canvas id="chart"></canvas>
+            <form>
+                <div class="form-group">
+                    <button id="chart-whole" class="btn btn-default">All time</button>
+                    <button id="chart-month" class="btn btn-default">Last week</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <a id="buysell" class="anchor" name="buysell"></a>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Purchase tokens</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li id="" role="presentation" class="active"><a href="#alter-wallet-key" data-toggle="tab">By private key</a></li>
+                <li role="presentation"><a href="#alter-wallet-file" data-toggle="tab">By keystore file (UTC/JSON)</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="alter-wallet-key">
+                    <div class="container">
+                        <form>
+                            <div id="add-wallet-private-key-group" class="form-group form-inline">
+                                <input id="add-wallet-private-key" class="form-control" placeholder="Private key..." />
+                                <button id="add-wallet-private-key-button" class="btn btn-default">Set wallet</button>
+                                <span id="add-wallet-private-key-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="add-wallet-private-key-error" class="help-block"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="tab-pane" id="alter-wallet-file">
+                    <div class="container">
+                        <form>
+                            <div id="add-wallet-file-group" class="form-group form-inline">
+                                <input id="add-wallet-file" type="file" class="form-control"/>
+                                <label class="control-label">Password:</label>
+                                <input id="add-wallet-file-password" type="password" class="form-control" />
+                                <button id="add-wallet-file-button" class="btn btn-default">Set wallet</button>
+                                <span id="add-wallet-file-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="add-wallet-file-error" class="help-block"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <form>
+                        <div id="wallet-ops">
+                            <div class="form-group">
+                                <label class="control-label">Buy tokens <span id="wallet-address"></span></label>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    Balance: <span id="alter-wallet-balance"></span> ETH
+                                </div>
+                                <div>
+                                    Withdrawals: <span id="alter-wallet-withdrawals"></span> ETH
+                                </div>
+                                <div>
+                                    Token price: <span id="alter-wallet-token-price"></span> ETH
+                                </div>
+                                <div>
+                                    You can buy up to: <span id="alter-wallet-tokens-can-be-bought"></span>
+                                </div>
+                                <div>
+                                    Tokens left: <span id="alter-wallet-tokens-left"></span>
+                                </div>
+                                <div>
+                                    Your token balance: <span id="alter-wallet-tokens"></span>
+                                </div>
+                            </div>
+                            <div id="buy-tokens-group" class="form-group form-inline">
+                                <label class="control-label">Buy</label>
+                                <input id="buy-tokens-count" class="form-control"/>
+                                <label class="control-label">Gas Price</label>
+                                <input id="buy-gas-price" class="form-control"/>
+                                <button id="buy-tokens-button" class="btn btn-default">Buy</button>
+                                (<span id="buy-tokens-price"></span> ETH)
+                                <span id="buy-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="buy-tokens-transaction-waiting" data-template="Transaction running % ..."></span>
+                                <span id="buy-tokens-transaction-completed" data-template="Transaction % was successfully completed"></span>
+                                <span id="buy-tokens-transaction-failed" data-template="Transaction % failed"></span>
+                                <span id="buy-tokens-error" class="help-block"></span>
+                            </div>
+                            <div id="sell-tokens-group" class="form-group form-inline">
+                                <label class="control-label">Buy for</label>
+                                <input id="sell-tokens-wallet" class="form-control"/>
+                                <label class="control-label">Quantity</label>
+                                <input id="sell-tokens-count" class="form-control"/>
+                                <button id="sell-tokens-button" class="btn btn-default">Buy</button>
+                                (<span id="sell-tokens-price"></span> ETH)
+                                <span id="sell-tokens-wait" class="glyphicon glyphicon-refresh rotating"></span>
+                                <span id="sell-tokens-transaction-waiting" data-template="Transaction running % ..."></span>
+                                <span id="sell-tokens-transaction-completed" data-template="Transaction % was successfully completed"></span>
+                                <span id="sell-tokens-transaction-failed" data-template="Transaction % failed"></span>
+                                <span id="sell-tokens-error" class="help-block"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(window).scroll(() => {
+        $('body').toggleClass('hide-header', $(this).scrollTop() > 10);
+        $('body').scrollspy({ target: '#navbar' })
+    });
+</script>
+</body>
+</html>

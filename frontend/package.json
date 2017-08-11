@@ -4,16 +4,27 @@
   "version": "1.0.0",
   "license": "ISC",
   "scripts": {
-    "makecss": "lessc src/less/styles.less > public/resources/css/etherwallet.css; cp node_modules/bootstrap/fonts/* public/resources/fonts;"
+    "makecss": "lessc src/less/styles.less > public/resources/css/etherwallet.css; cp node_modules/bootstrap/fonts/* public/resources/fonts;",
+    "build": "gulp build",
+    "start": "gulp"
   },
   "dependencies": {
     "async": "^2.5.0",
     "bootstrap": "^3.3.7",
+    "browser-sync": "^2.2.3",
     "chart.js": "^2.6.0",
     "ethers": "^2.1.1",
+    "gulp": "^3.8.11",
+    "gulp-autoprefixer": "^2.1.0",
+    "gulp-less": "^3.3.2",
+    "gulp-minify-css": "^1.0.0",
+    "gulp-rigger": "^0.5.8",
+    "gulp-sourcemaps": "^1.5.0",
+    "gulp-watch": "^4.1.1",
     "jquery": "^1.12.4",
     "less": "^2.7.2",
     "moment": "^2.18.1",
+    "rimraf": "^2.3.1",
     "web3": "^0.19.1"
   }
 }
