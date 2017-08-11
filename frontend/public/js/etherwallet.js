@@ -312,15 +312,16 @@ TokenPriceChart = {
             options: options
         });
     },
-    show(fromDate, newData, overrideNow) {
+    show(fromDate, newData) {
         if (newData) {
             TokenPriceChart.data = newData;
         }
         let now;
-        if (overrideNow && TokenPriceChart.data.tokens.length) {
-            now = TokenPriceChart.data.tokens[TokenPriceChart.data.tokens.length - 1].x
+        const currentDate = +new Date();
+        if (TokenPriceChart.data.tokens.length) {
+            now = Math.max(TokenPriceChart.data.tokens[TokenPriceChart.data.tokens.length - 1].x, currentDate);
         } else {
-            now = +new Date();
+            now = currentDate;
         }
         const newTokens = XYData.setRange(TokenPriceChart.data.tokens, fromDate, now, true);
         const newTokensDots = XYData.setRange(TokenPriceChart.data.tokensDots, fromDate, now, false);
@@ -1042,7 +1043,7 @@ function onload() {
             }
             const {data, update} = result;
             if (update) {
-                TokenPriceChart.show(fromDate, data, true);
+                TokenPriceChart.show(fromDate, data);
                 return;
             }
             wc.destroy();
