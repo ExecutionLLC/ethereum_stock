@@ -7,29 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <link href="resources/css/etherwallet.css" type="text/css" rel="stylesheet"/>
-    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../node_modules/async/dist/async.min.js"></script>
-    <script type="text/javascript" src="../node_modules/moment/moment.js"></script>
-    <script type="text/javascript" src="../node_modules/chart.js/dist/Chart.js"></script>
-    <script type="text/javascript" src="../node_modules/web3/dist/web3.js"></script>
-    <script type="text/javascript">
-        const Web3_require = ((require) => {
-            return (moduleName) => {
-                const moduleKey = {
-                    'solidity': 7
-                }[moduleName];
-                return require(moduleKey == null ? moduleName : moduleKey);
-            }
-        })(require);
-        delete require;
-    </script>
-    <script type="text/javascript" src="../node_modules/ethers/dist/ethers.js"></script>
-    <script type="text/javascript" src="js/nodes.js"></script>
-    <script type="text/javascript" src="js/page.js"></script>
-    <script type="text/javascript" src="js/chart-waiting.js"></script>
-    <script type="text/javascript" src="js/etherwallet.js"></script>
-
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
+    <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -269,7 +248,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript">
     $(window).scroll(() => {
         $('body').toggleClass('hide-header', $(this).scrollTop() > 10);
