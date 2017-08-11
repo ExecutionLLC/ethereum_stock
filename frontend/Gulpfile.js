@@ -8,7 +8,7 @@ const gulp = require('gulp'),
     cssmin = require('gulp-minify-css'),
     less = require('gulp-less'),
     rimraf = require('rimraf'),
-    browserSync = require("browser-sync"),
+    browserSync = require('browser-sync'),
     reload = browserSync.reload;
 
 const path = {
@@ -35,12 +35,12 @@ const path = {
 
 const config = {
     server: {
-        baseDir: "./build"
+        baseDir: './build'
     },
     tunnel: true,
     host: 'localhost',
     port: 9000,
-    logPrefix: "etherium-stock"
+    logPrefix: 'etherium-stock'
 };
 
 gulp.task('html:build', function () {
